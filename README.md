@@ -24,8 +24,14 @@ Help
 Authors
     Contributors names and contact info
 
-    ex. Dominique Pizzie
-    ex. @DomPizzie
+    Jack Murray
+    @DirectedHunt42
+
+    Owen Turner
+    @Oaturner5
+
+    Jacob Bourassa
+    @Gofoto66
 
 Version History
     0.2
