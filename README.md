@@ -33,10 +33,7 @@ Authors
     @Gofoto66
 
 Version History
-    0.2
-    Various bug fixes and optimizations
-    See commit change or See release history
-    0.1
+    0.0
 
 Initial Release
 
