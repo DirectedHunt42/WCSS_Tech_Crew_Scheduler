@@ -4,4 +4,3 @@ User:
     3. As an admin, I same calendar as Internal page, each day booked see teacher name and the details of the service, as well as the option to post it to the members page as well as selecting members for each event that opt in, So that I can asses the needs and delegate appropriately.
 
 Jack:
-    1. 
