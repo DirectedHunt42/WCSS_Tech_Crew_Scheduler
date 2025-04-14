@@ -32,8 +32,7 @@ Authors
     Jacob Bourassa
     @Gofoto66
 
-Version History
-    0.0
+0.0
 
 Initial Release
 
