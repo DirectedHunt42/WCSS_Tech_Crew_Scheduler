@@ -3,5 +3,7 @@ User:
     2. As a member, I want a calendar to see events, the option to opt in to an event as well as helpful information, So that I may sign up for events.
     3. As an admin, I want see the same calendar as the internal page, with each day booked and able to see the teacher name and the details of the service, as well as the option to post it to the members page as well as selecting members for each event the opted in, So that I can asses the needs and delegate appropriately.
 
-Jack: 
-Owen: As a student, I want to see a fully functional program that has multiple graphical user interfaces, So that there are no errors and I can get a good mark.
+Jack:
+    1. As a user, I want to see a calendar showing events and teacher requests, as well as a way to submit a request myself, I would also like to be be able to navagate to both member mode as well as admin mode in order to access requred settings.
+Owen:
+    1. As a student, I want to see a fully functional program that has multiple graphical user interfaces, So that there are no errors and I can get a good mark.
