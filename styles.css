@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.calendar {
+    width: 350px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.calendar-header button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+#month-year {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.calendar-weekdays {
+    background-color: #eaeef3;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0; /* Remove any extra spacing */
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.calendar-weekdays div,
+.calendar-dates div {
+    text-align: center;
+    padding: 10px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #eaeef3;
+    cursor: pointer;
+}
+
+.calendar-weekdays {
+    background-color: #eaeef3;
+}
+
+.calendar-weekdays div {
+    font-weight: bold;
+}
+
+.calendar-dates div {
+    border-bottom: 1px solid #eaeef3;
+    cursor: pointer;
+}
+
+.calendar-dates div:hover {
+    background-color: #f1f1f1;
+}
+
+.ghost-day {
+    color: #ccc; /* Light gray color for ghost numbers */
+    pointer-events: none; /* Disable interaction */
+}
