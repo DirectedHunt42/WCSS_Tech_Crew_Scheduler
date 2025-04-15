@@ -1,0 +1,31 @@
+body {
+    background-color: rgb(12, 13, 13);
+    color: white; /* Set text color to white for better contrast on black background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Make the body take up the full viewport height */
+    margin: 0; /* Remove default margin */
+    font-family: Arial, sans-serif; /* Optional: Set a font */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Add spacing between form elements */
+    text-align: left; /* Align labels and inputs to the left */
+}
+
+button {
+    background-color: #444; /* Optional: Add a background color */
+    color: white; /* Optional: Set text color */
+    padding: 10px 15px; /* Optional: Add padding */
+    border: none; /* Optional: Remove border */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    cursor: pointer; /* Optional: Change cursor to pointer */
+}
+
+button:hover {
+    background-color: #666; /* Optional: Change background color on hover */
+}
