@@ -7,7 +7,7 @@ body {
     align-items: center;
     height: 100vh; /*Make the body take up the full viewport height */
     margin: 0; /*Remove default margin */
-    font-family: monospace; /*Set font */
+    font-family: monospace; /*Set a font */
 }
 
 form {
@@ -27,5 +27,5 @@ button {
 }
 
 button:hover {
-    background-color: #666; /*Change background color on hover*/
+    background-color: #666; /*Change background color on hover */
 }
