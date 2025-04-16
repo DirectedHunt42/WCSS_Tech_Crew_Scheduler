@@ -31,7 +31,7 @@ button:hover {
 }
 
 a {
-    color: rgb(255, 255, 255); /*Set link color */
+    color: white; /*Set link color */
     text-decoration: none; /*Remove underline from links */
     font-size: large; /*Set font size for links */
     font-weight: bold; /*Make links bold */
