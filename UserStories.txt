@@ -6,3 +6,5 @@ Jack:
     1. As a user, I want to see a calendar showing events and teacher requests, as well as a way to submit a request myself, I would also like to be be able to navagate to both member mode as well as admin mode in order to access requred settings.
 Owen:
     1. As a student, I want to see a fully functional program that has multiple graphical user interfaces, So that there are no errors and I can get a good mark.
+Jacob:
+    1. As a member/admin/user i want the system to have a fully working scheduler as well as resources that will help new members. The event creation systems for admins must be easy to use and allow for the addition of events in ~1 min. For the app on the internal page, the system needs to be easy to use so that any teacher/ faculty member that needs A/V tech for an event may book it with extreme ease. With all the features, more events at school will have proper tech setup for them so that the events will run efficiently.
