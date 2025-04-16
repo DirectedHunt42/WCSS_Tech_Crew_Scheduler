@@ -20,6 +20,16 @@ body {
     padding: 10px;
 }
 
+.dropdown {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown content {
+    display: flex;
+    position: relative;
+}
+
 .calendar-header button {
     background-color: transparent;
     border: none;

@@ -1,5 +1,6 @@
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
+
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 
