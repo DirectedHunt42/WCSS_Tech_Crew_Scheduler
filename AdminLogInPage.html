@@ -35,12 +35,8 @@
 
         .button-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             width: 300px;
-        }
-
-        .button-row button {
-            width: 48%;
         }
 
         h1 {
@@ -51,24 +47,23 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WCSS Tech Crew Booking</title>
+        <title>Admin Log In</title>
         <link rel="stylesheet" href="MasterStyle.css">
     </head>
     <body>
-        <h1>Log In</h1>
-        <form action="/login" method="post">
-            <!--Username-->
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <!--Password-->
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+        <h1>Admin Log In</h1>
+        <form action="/admin-login" method="post">
+            <!--Admin Username-->
+            <label for="admin-username">Username:</label>
+            <input type="text" id="admin-username" name="admin-username" required>
+            <!--Admin Password-->
+            <label for="admin-password">Password:</label>
+            <input type="password" id="admin-password" name="admin-password" required>
             <!--Submit-->
             <button type="submit">Log In</button>
-            <!--Admin and Forgot Password Buttons-->
+            <!--Back to Log In Button-->
             <div class="button-row">
-                <button type="button" onclick="window.location.href='AdminLogInPage.html'">Admin</button>
-                <button type="button" onclick="window.location.href='ForgotPassword.html'">Forgot Password</button>
+                <button type="button" onclick="window.location.href='LogInPage.html'">Back to Log In</button>
             </div>
         </form>
     </body>
