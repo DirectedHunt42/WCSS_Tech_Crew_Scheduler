@@ -22,3 +22,13 @@ button {
 button:hover {
     background-color: #666;
 }
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(100, 69, 255);
+    text-decoration: underline;
+}
