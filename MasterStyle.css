@@ -2,18 +2,11 @@ body {
     background-color: rgb(20, 20, 20);
     color: white;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
     font-family: monospace;
 }
 
 form {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
     text-align: left;
 }
 
@@ -29,29 +22,13 @@ button {
 button:hover {
     background-color: #666;
 }
-.sidebar {
-    height: 100vh;
-    width: 250px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    padding-top: 20px;
-}
 
-.sidebar a {
-    padding: 10px 15px;
-    text-decoration: none;
-    font-size: 18px;
+a {
     color: white;
-    display: block;
+    text-decoration: none;
 }
 
-.sidebar a:hover {
-    background-color: #575757;
-}
-
-.content {
-    margin-left: 250px;
-    padding: 20px;
+a:hover {
+    color: rgb(100, 69, 255);
+    text-decoration: underline;
 }

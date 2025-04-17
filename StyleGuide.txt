@@ -1,7 +1,0 @@
-Background colour should be rgb(20, 20, 20)
-Text colour should be white
-font-family should be monospace
-Button background colour should be #444
-Button hover colour should be #666
-Link colour should be white
-Link hover colour should be rgb(100, 69, 255)
