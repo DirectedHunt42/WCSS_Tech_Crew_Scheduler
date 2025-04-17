@@ -25,8 +25,38 @@
         <a href="contacts.html">Contacts</a>
     </div>
     <div class="content">
-        <h1>Welcome to the Members Page</h1>
-        <p>This is the main content area.</p>
+        <h1>Upcoming Events</h1>
+            <script>
+                fetch('eventList.txt')
+                    .then(response => response.text())
+                    .then(data => {
+                        const lines = data.split('\n');
+                        lines.forEach(line => {
+                            const eventContainer = document.createElement('div');
+                            eventContainer.style.display = 'flex';
+                            eventContainer.style.alignItems = 'center';
+                            eventContainer.style.marginBottom = '10px';
+
+                            const contactInfo = document.createElement('p');
+                            contactInfo.textContent = line;
+                            contactInfo.style.marginRight = '10px';
+
+                            const optInButton = document.createElement('button');
+                            optInButton.textContent = 'Opt into event';
+                            optInButton.addEventListener('click', () => {
+                                const eventName = line.split(',')[0];
+                                alert(`Opt in request sent for: ${eventName}`);
+                                optInButton.disabled = true;
+                                optInButton.textContent = 'Opted in';
+                            });
+
+                            eventContainer.appendChild(contactInfo);
+                            eventContainer.appendChild(optInButton);
+                            document.querySelector('.content').appendChild(eventContainer);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching contacts:', error));
+            </script>
     </div>
 </body></head>
 </html>
