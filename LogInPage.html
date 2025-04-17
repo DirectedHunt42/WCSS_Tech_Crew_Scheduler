@@ -2,6 +2,7 @@
 <html lang="en">
     <style>
         body {
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -19,7 +20,29 @@
         label, input, button {
             margin: 10px;
         }
-    </style
+
+        input {
+            width: 200px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 48%;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+    </style>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,10 +60,11 @@
             <input type="password" id="password" name="password" required>
             <!--Submit-->
             <button type="submit">Log In</button>
-            <!--Admin-->
-            <button type="button" onclick="window.location.href='AdminLogInPage.html'">Admin</button>
-            <!--Forgot Password-->
-            <button type="button" onclick="window.location.href='ForgotPassword.html'">Forgot Password</button>
+            <!--Admin and Forgot Password Buttons-->
+            <div class="button-row">
+                <button type="button" onclick="window.location.href='AdminLogInPage.html'">Admin</button>
+                <button type="button" onclick="window.location.href='ForgotPassword.html'">Forgot Password</button>
+            </div>
         </form>
     </body>
 </html>
