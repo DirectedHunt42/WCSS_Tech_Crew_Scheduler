@@ -1,3 +1,4 @@
+
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 
@@ -66,6 +67,12 @@ function renderCalendar(month, year) {
     }
 }
 
+// Make current date have a light blue border
+// const currentDateDiv = document.querySelector(`.calendar-dates div[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
+// if (currentDateDiv) {
+//     currentDateDiv.style.border = '2px solid lightblue';
+// }
+
 // Initial render
 renderCalendar(currentMonth, currentYear);
 
@@ -130,7 +137,7 @@ calendarDates.addEventListener('click', (event) => {
         const date = new Date(selectedDate);
         console.log("date clicked was " + date);
         const dateContent = document.getElementById('dates-content');
-        const thisSelectedDate =  document.getElementById('current-date');
+        const thisSelectedDate = document.getElementById('current-date');
         thisSelectedDate.textContent = date.toLocaleDateString();
 
         dateContent.style.display = 'block';
@@ -139,8 +146,6 @@ calendarDates.addEventListener('click', (event) => {
 
         dateContent.style.top = rect.top + 'px';
         dateContent.style.left = rect.left + 'px';
-
-        
     }
 });
 
@@ -150,5 +155,7 @@ document.addEventListener('click', (event) => {
     }
     datesContent.style.display = 'none';
 });
+
+
 
 
