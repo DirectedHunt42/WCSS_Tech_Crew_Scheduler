@@ -5,19 +5,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WCSS Tech Booking</title>
         <link rel="stylesheet" href="MasterStyle.css">
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+            .main-content, .how-to-use {
+                width: 90%;
+                max-width: 800px;
+                margin: 20px auto;
+                text-align: left;
+            }
+        </style>
     </head>
     <body>
         <div class="sidebar">
-            <a href = "BookingPage.html">Book a Tech Event</a>
-            <a href = "LogInPage.html">Member Log In</a>
-            <a href = "https://internal.westcarletonss.ca/">WCSS Internal</a>
-            <a href = "https://westcarletonss.ocdsb.ca/">WCSS External</a>
+            <a href="BookingPage.html">Book a Tech Event</a>
+            <a href="LogInPage.html">Member Log In</a>
+            <a href="https://internal.westcarletonss.ca/">WCSS Internal</a>
+            <a href="https://westcarletonss.ocdsb.ca/">WCSS External</a>
+            <a href="">Help</a>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
             <h1>Welcome to the WCSS Tech Booking Site</h1>
             <p>This is a basic user page that includes the sidebar from MasterStyle.css.</p>
+        </div>
+
+        <div class="how-to-use">
+            <h2>How to Use This Website</h2>
+            <p>Welcome to the WCSS Tech Booking Site! Follow these steps to book an event:</p>
+            <ol>
+                <li>Navigate to the <strong>Book a Tech Event</strong> page by clicking the "Book a Tech Event" link in the sidebar.</li>
+                <li>On the booking page, fill out the required fields:
+                    <ul>
+                        <li><strong>Full Name:</strong> Enter your full name.</li>
+                        <li><strong>Email Address:</strong> Provide a valid email address for communication.</li>
+                        <li><strong>Booking Date:</strong> Select the date of your event using the date picker.</li>
+                        <li><strong>Booking Time:</strong> Choose the time of your event using the time picker.</li>
+                        <li><strong>Equipment Needed:</strong> List any equipment you require for the event.</li>
+                        <li><strong>Additional Notes:</strong> Add any extra details or special requests.</li>
+                    </ul>
+                </li>
+                <li>Once all fields are completed, click the <strong>Submit Booking</strong> button to finalize your request.</li>
+                <li>If you need to return to the main page, click the <strong>Back to Main Page</strong> button.</li>
+            </ol>
+            <p>If you encounter any issues, please contact the WCSS Tech Crew using the Help section for assistance.</p>
         </div>
     </body>
 </html>
