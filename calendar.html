@@ -4,37 +4,77 @@
 <head>
     <meta charset="UTF-8">
     <title>Dynamic Calendar</title>
-    <link rel="stylesheet" href="MasterStyles.css">
     <style>
+        html {
+            overflow: hidden;
+        }
+
         body {
-            display: flex;
-            justify-content: center;
+            display: grid;
             align-items: center;
-            height: 100vh;
             margin: 0;
+            grid-template-columns: 250px auto;
         }
 
         .calendar {
-            width: 1000px;
             background-color: #fff;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px;
         }
 
         .calendar-header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            justify-items: center;
             align-items: center;
             padding: 10px;
+            gap: 10px;
+            grid-template-columns: auto auto 1fr auto auto;
         }
 
         .dropdown {
-            display: flex;
-            align-items: center;
+            position: relative;
+            display: inline-block;
         }
 
-        .dropdown content {
-            display: flex;
-            position: relative;
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content div {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .dropdown-content div:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropbtn {
+            background-color: #4CAF50;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dates-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            padding: 8px;
+            width: 300px;
+            height: 300px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 2;
         }
 
         .calendar-header button {
@@ -94,12 +134,37 @@
 
         .ghost-day {
             color: #ccc;
-            /* Light gray color for ghost numbers */
             pointer-events: none;
             /* Disable interaction */
         }
+
+        .sidebar {
+            height: 100vh;
+            background-color: #111;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .dates-content h1 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <a href="membersPage.html">Calendar</a>
@@ -110,13 +175,27 @@
 
     <div class="calendar">
         <div class="calendar-header">
+            <button id="prev-year">«</button>
             <button id="prev-month">‹</button>
             <div class="dropdown">
-                <a id="month-year"></a>
-                <!-- <select id="year-select">
-                </select> -->
+                <button id="month-year" class="dropbtn">Select Month</button>
+                <div id="month-year-select" class="dropdown-content">
+                    <div data-month="0">January</div>
+                    <div data-month="1">February</div>
+                    <div data-month="2">March</div>
+                    <div data-month="3">April</div>
+                    <div data-month="4">May</div>
+                    <div data-month="5">June</div>
+                    <div data-month="6">July</div>
+                    <div data-month="7">August</div>
+                    <div data-month="8">September</div>
+                    <div data-month="9">October</div>
+                    <div data-month="10">November</div>
+                    <div data-month="11">December</div>
+                </div>
             </div>
             <button id="next-month">›</button>
+            <button id="next-year">»</button>
         </div>
         <div class="calendar-body">
             <div class="calendar-weekdays">
@@ -128,11 +207,14 @@
                 <div>Fri</div>
                 <div>Sat</div>
             </div>
-
             <div class="calendar-dates">
-                <!-- Dates will be populated here -->
+                <!-- Dates are populated here-->
             </div>
         </div>
+    </div>
+
+    <div id="dates-content" class="dates-content">
+        <h1 id="current-date">Current Date</h1>
     </div>
 
     <script src="calendar_script.js"></script>
