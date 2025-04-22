@@ -3,6 +3,16 @@ const monthYear = document.getElementById('month-year');
 
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
+const prevYearBtn = document.getElementById('prev-year');
+const nextYearBtn = document.getElementById('next-year');
+
+const monthYearSelect = document.getElementById('month-year-select');
+// const calendarDates =document.getElementById('calendar-dates');
+
+const dropdownContent = document.querySelector('.dropdown-content');
+const dropbtn = document.querySelector('.dropbtn');
+
+const datesContent = document.querySelector('.dates-content');
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
@@ -41,6 +51,7 @@ function renderCalendar(month, year) {
     // Add days for the current month
     for (let i = 1; i <= daysInMonth; i++) {
         const div = document.createElement('div');
+        div.dataset.day = currentYear + '-' + (currentMonth + 1) + '-' + i;
         div.textContent = i;
         calendarDates.appendChild(div);
     }
@@ -76,3 +87,68 @@ nextMonthBtn.addEventListener('click', () => {
     }
     renderCalendar(currentMonth, currentYear);
 });
+
+prevYearBtn.addEventListener('click', () => {
+    currentYear--;
+    renderCalendar(currentMonth, currentYear);
+});
+
+nextYearBtn.addEventListener('click', () => {
+    currentYear++;
+    renderCalendar(currentMonth, currentYear);
+});
+
+monthYearSelect.addEventListener('click', (event) => {
+    const selectedMonth = event.target.dataset.month;
+    if (selectedMonth) {
+        currentMonth = parseInt(selectedMonth);
+        dropdownContent.style.display = 'none';
+        renderCalendar(currentMonth, currentYear);
+    }
+});
+
+dropbtn.addEventListener('click', () => {
+    const isVisible = dropdownContent.style.display === 'block';
+    dropdownContent.style.display = isVisible ? 'none' : 'block';
+});
+
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.dropdown')) {
+        dropdownContent.style.display = 'none';
+    }
+});
+
+calendarDates.addEventListener('click', (event) => {
+    if (datesContent.style.display === 'block') {
+        return;
+    }
+
+    const selectedDate = event.target.dataset.day;
+    if (selectedDate != null) {
+        event.stopPropagation(); // Prevent the click event from bubbling up to the document
+
+        const date = new Date(selectedDate);
+        console.log("date clicked was " + date);
+        const dateContent = document.getElementById('dates-content');
+        const thisSelectedDate =  document.getElementById('current-date');
+        thisSelectedDate.textContent = date.toLocaleDateString();
+
+        dateContent.style.display = 'block';
+
+        const rect = event.target.getBoundingClientRect();
+
+        dateContent.style.top = rect.top + 'px';
+        dateContent.style.left = rect.left + 'px';
+
+        
+    }
+});
+
+document.addEventListener('click', (event) => {
+    if (datesContent.contains(event.target)) {
+        return;
+    }
+    datesContent.style.display = 'none';
+});
+
+
