@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="MasterStyle.css">
         <style>
             h1 {
+                margin-top: 200px;
                 font-size: 3rem;
                 text-align: center;
             }
@@ -78,16 +79,19 @@
             <label for="time">Booking Time:</label>
             <input type="time" id="time" name="time" required>
 
-            <label for="notes">Equipment Needed: (Please List)</label>
-            <textarea id="notes" name="equipment" rows="4"></textarea>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" rows="4" required>
+
+            <label for="equipment">Equipment Needed: (Please List)</label>
+            <textarea id="equipment" name="equipment" rows="4"></textarea>
 
             <label for="notes">Additional Notes:</label>
             <textarea id="notes" name="notes" rows="4"></textarea>
 
-            <dvi class = "button-row">
+            <div class="button-row">
                 <button type="submit">Submit Booking</button>
                 <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
-            </dvi>
+            </div>
         </form>
     </body>
 </html>
