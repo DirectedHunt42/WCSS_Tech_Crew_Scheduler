@@ -51,8 +51,18 @@ function renderCalendar(month, year) {
     // Add days for the current month
     for (let i = 1; i <= daysInMonth; i++) {
         const div = document.createElement('div');
-        div.dataset.day = currentYear + '-' + (currentMonth + 1) + '-' + i;
+        div.dataset.day = `${year}-${month + 1}-${i}`;
         div.textContent = i;
+
+        // Highlight the current date
+        if (
+            year === currentDate.getFullYear() &&
+            month === currentDate.getMonth() &&
+            i === currentDate.getDate()
+        ) {
+            div.style.borderBottom = '1px solid lightblue';
+        }
+
         calendarDates.appendChild(div);
     }
 
