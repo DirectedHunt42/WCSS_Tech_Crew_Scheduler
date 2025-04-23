@@ -1,4 +1,3 @@
-
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 
@@ -52,8 +51,18 @@ function renderCalendar(month, year) {
     // Add days for the current month
     for (let i = 1; i <= daysInMonth; i++) {
         const div = document.createElement('div');
-        div.dataset.day = currentYear + '-' + (currentMonth + 1) + '-' + i;
+        div.dataset.day = `${year}-${month + 1}-${i}`;
         div.textContent = i;
+
+        // Highlight the current date
+        if (
+            year === currentDate.getFullYear() &&
+            month === currentDate.getMonth() &&
+            i === currentDate.getDate()
+        ) {
+            div.style.borderBottom = '2px solid lightblue';
+        }
+
         calendarDates.appendChild(div);
     }
 
@@ -67,14 +76,15 @@ function renderCalendar(month, year) {
     }
 }
 
-// Make current date have a light blue border
-// const currentDateDiv = document.querySelector(`.calendar-dates div[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
-// if (currentDateDiv) {
-//     currentDateDiv.style.border = '2px solid lightblue';
-// }
-
 // Initial render
 renderCalendar(currentMonth, currentYear);
+
+// Make current date have a light blue border
+const currentDateDiv = document.querySelector(`[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
+console.log(currentDateDiv);
+if (currentDateDiv) {
+    currentDateDiv.style.borderBottom = '2px solid lightblue';
+}
 
 // Event listeners for navigation buttons
 prevMonthBtn.addEventListener('click', () => {
@@ -84,6 +94,9 @@ prevMonthBtn.addEventListener('click', () => {
         currentYear--;
     }
     renderCalendar(currentMonth, currentYear);
+    if (currentDateDiv) {
+        currentDateDiv.style.borderBottom = '2px solid lightblue';
+    }
 });
 
 nextMonthBtn.addEventListener('click', () => {
@@ -93,16 +106,25 @@ nextMonthBtn.addEventListener('click', () => {
         currentYear++;
     }
     renderCalendar(currentMonth, currentYear);
+    if (currentDateDiv) {
+        currentDateDiv.style.borderBottom = '2px solid lightblue';
+    }
 });
 
 prevYearBtn.addEventListener('click', () => {
     currentYear--;
     renderCalendar(currentMonth, currentYear);
+    if (currentDateDiv) {
+        currentDateDiv.style.borderBottom = '2px solid lightblue';
+    }
 });
 
 nextYearBtn.addEventListener('click', () => {
     currentYear++;
     renderCalendar(currentMonth, currentYear);
+    if (currentDateDiv) {
+        currentDateDiv.style.borderBottom = '2px solid lightblue';
+    }
 });
 
 monthYearSelect.addEventListener('click', (event) => {
@@ -111,6 +133,9 @@ monthYearSelect.addEventListener('click', (event) => {
         currentMonth = parseInt(selectedMonth);
         dropdownContent.style.display = 'none';
         renderCalendar(currentMonth, currentYear);
+        if (currentDateDiv) {
+            currentDateDiv.style.borderBottom = '2px solid lightblue';
+        }
     }
 });
 
