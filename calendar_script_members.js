@@ -69,6 +69,13 @@ function renderCalendar(month, year) {
 // Initial render
 renderCalendar(currentMonth, currentYear);
 
+// Make current date have a light blue border
+const currentDateDiv = document.querySelector(`[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
+console.log(currentDateDiv);
+if (currentDateDiv) {
+    currentDateDiv.style.borderBottom = '1px solid lightblue';
+}
+
 // Event listeners for navigation buttons
 prevMonthBtn.addEventListener('click', () => {
     currentMonth--;
