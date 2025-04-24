@@ -51,18 +51,8 @@ function renderCalendar(month, year) {
     // Add days for the current month
     for (let i = 1; i <= daysInMonth; i++) {
         const div = document.createElement('div');
-        div.dataset.day = `${year}-${month + 1}-${i}`;
+        div.dataset.day = currentYear + '-' + (currentMonth + 1) + '-' + i;
         div.textContent = i;
-
-        // Highlight the current date
-        if (
-            year === currentDate.getFullYear() &&
-            month === currentDate.getMonth() &&
-            i === currentDate.getDate()
-        ) {
-            div.style.borderBottom = '1px solid lightblue';
-        }
-
         calendarDates.appendChild(div);
     }
 
@@ -135,37 +125,60 @@ document.addEventListener('click', (event) => {
     }
 });
 
-calendarDates.addEventListener('click', (event) => {
-    if (datesContent.style.display === 'block') {
-        return;
-    }
 
+calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
-    if (selectedDate != null) {
-        event.stopPropagation(); // Prevent the click event from bubbling up to the document
+    if (!selectedDate) return;
 
-        const date = new Date(selectedDate);
-        console.log("date clicked was " + date);
-        const dateContent = document.getElementById('dates-content');
-        const thisSelectedDate =  document.getElementById('current-date');
-        thisSelectedDate.textContent = date.toLocaleDateString();
+    const [year, month, day] = selectedDate.split('-').map(Number);
 
-        dateContent.style.display = 'block';
+    // Fetch and parse the event list
+    const response = await fetch('eventList.txt');
+    const text = await response.text();
+    const events = text.split('\n').map(line => line.split(','));
 
-        const rect = event.target.getBoundingClientRect();
+    // Filter events for the selected date
+    const matchingEvents = events.filter(event => 
+        parseInt(event[0]) === year &&
+        parseInt(event[1]) === month &&
+        parseInt(event[2]) === day
+    );
 
-        dateContent.style.top = rect.top + 'px';
-        dateContent.style.left = rect.left + 'px';
+    // Create and display the popup
+    if (matchingEvents.length > 0) {
+        datesContent.innerHTML = matchingEvents.map(event => `
+            <p>Event Name: ${event[3]}</p>
+            <p>Start Time: ${event[4]}</p>
+            <p>End Time: ${event[5]}</p>
+            <p>Location: ${event[6]}</p>
+            <p>Tech Required: ${event[7]}</p>
+            <p>Volunteer Hours: ${event[8]}</p>
+            <button class="opt-in-btn">Opt In</button>
+        `).join('');
 
-        
+        // Add event listeners to the buttons
+        const optInButtons = datesContent.querySelectorAll('.opt-in-btn');
+        optInButtons.forEach(button => {
+            button.addEventListener('click', () => {
+            alert('Opt in request sent');
+            button.disabled = true; // Disable the button
+            button.textContent = 'Request Sent'; // Update button text
+            });
+        });
+    } else {
+        datesContent.innerHTML = '<p>No events for this date.</p>';
     }
+    datesContent.style.display = 'block';
+
+    const rect = event.target.getBoundingClientRect();
+    datesContent.style.top = `${rect.bottom + window.scrollY}px`;
+    datesContent.style.left = `${rect.left + window.scrollX}px`;
 });
 
+// Close the popup when clicking outside
 document.addEventListener('click', (event) => {
-    if (datesContent.contains(event.target)) {
-        return;
+    if (!datesContent.contains(event.target) && !event.target.dataset.day) {
+        datesContent.style.display = 'none';
     }
-    datesContent.style.display = 'none';
 });
-
 
