@@ -17,4 +17,4 @@ Authors
 
 Releases
 
-    Still in pre-alpha
+    alpha 0.0.1
