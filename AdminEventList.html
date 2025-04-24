@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Event Editor</title>
+        <link rel="stylesheet" href="MasterStyle.css">
+        <link rel="icon" type="image/x-icon" href="FavIcon.ico">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: flex-start;
+                text-align: left;
+            }
+            .tab-container {
+                display: flex;
+                flex-direction: column;
+                width: calc(100% - 250px);
+                margin-left: 250px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sidebar">
+            <a href="AdminPage.html">Admin Main</a>
+            <a href="AdminEventList.html">Event Management</a>
+            <a href="">Member Management</a>
+            <a href="">Edit Site</a>
+            <a href="UserPage.html">User Main</a>
+            <a href="https://internal.westcarletonss.ca/">WCSS Internal</a>
+            <a href="https://westcarletonss.ocdsb.ca/">WCSS External</a>
+        </div>
+
+        <!-- Tab system -->
+        <div class="tab-container">
+            <!-- Tab buttons -->
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="add-event" style="flex: 1 1 auto; text-align: center;">Add Event</button>
+                <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve Event</button>
+                <button class="tab-button" data-tab="edit-event" style="flex: 1 1 auto; text-align: center;">Edit Event</button>
+                <button class="tab-button" data-tab="remove-event" style="flex: 1 1 auto; text-align: center;">Remove Event</button>
+            </div>
+
+            <!-- Tab content -->
+            <div id="add-event" class="tab-content active">
+                <h2>Add Event</h2>
+                <p>Form or content for adding an event goes here.</p>
+            </div>
+            <div id="approve-event" class="tab-content">
+                <h2>Approve Event</h2>
+                <p>Content for approving events goes here.</p>
+            </div>
+            <div id="edit-event" class="tab-content">
+                <h2>Edit Event</h2>
+                <p>Content for editing events goes here.</p>
+            </div>
+            <div id="remove-event" class="tab-content">
+                <h2>Remove Event</h2>
+                <p>Content for removing events goes here.</p>
+            </div>
+        </div>
+
+        <script>
+            // JavaScript for tab switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to the clicked button and corresponding content
+                    button.classList.add('active');
+                    document.getElementById(button.dataset.tab).classList.add('active');
+                });
+            });
+        </script>
+    </body>
+</html>

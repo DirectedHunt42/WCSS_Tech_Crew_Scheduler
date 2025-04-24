@@ -99,3 +99,43 @@ a:hover {
 .tooltip:hover .tooltip-text {
     visibility: visible;
 }
+
+.tab-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid #000000;
+}
+
+.tab-buttons button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #444;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 16px;
+}
+
+.tab-buttons button.active {
+    background-color: rgb(20, 20, 20);
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #444;
+    border: 1px solid #000000;
+    border-top: none;
+}
+
+.tab-content.active {
+    display: block;
+}
