@@ -31,7 +31,7 @@
         <h1>Contact Info</h1>
         <p>
             <script>
-                fetch('/Lists/contacts.txt')
+                fetch('/Resources/contacts.txt')
                     .then(response => response.text())
                     .then(data => {
                         const lines = data.split('\n');
