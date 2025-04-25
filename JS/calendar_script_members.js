@@ -146,27 +146,49 @@ calendarDates.addEventListener('click', async (event) => {
 
     // Create and display the popup
     if (matchingEvents.length > 0) {
-        datesContent.innerHTML = matchingEvents.map(event => `
+        datesContent.innerHTML = `
+            <div class="popup-header">
+            <button class="close-popup-btn" style="float: right;">&times;</button>
+            </div>
+            ${matchingEvents.map(event => `
             <p>Event Name: ${event[3]}</p>
             <p>Start Time: ${event[4]}</p>
             <p>End Time: ${event[5]}</p>
             <p>Location: ${event[6]}</p>
             <p>Tech Required: ${event[7]}</p>
             <p>Volunteer Hours: ${event[8]}</p>
-            <button class="opt-in-btn">Opt In</button>
-        `).join('');
+            <button class="opt-in-btn" style="float: left;">Opt In</button>
+            `).join('')}
+        `;
 
         // Add event listeners to the buttons
         const optInButtons = datesContent.querySelectorAll('.opt-in-btn');
         optInButtons.forEach(button => {
             button.addEventListener('click', () => {
-            alert('Opt in request sent');
-            button.disabled = true; // Disable the button
-            button.textContent = 'Request Sent'; // Update button text
+                alert('Opt in request sent');
+                button.disabled = true; // Disable the button
+                button.textContent = 'Request Sent'; // Update button text
             });
         });
+
+        // Add event listener to close button
+        const closePopupBtn = datesContent.querySelector('.close-popup-btn');
+        closePopupBtn.addEventListener('click', () => {
+            datesContent.style.display = 'none';
+        });
     } else {
-        datesContent.innerHTML = '<p>No events for this date.</p>';
+        datesContent.innerHTML = `
+            <div class="popup-header">
+                <button class="close-popup-btn">&times;</button>
+            </div>
+            <p>No events for this date.</p>
+        `;
+
+        // Add event listener to close button
+        const closePopupBtn = datesContent.querySelector('.close-popup-btn');
+        closePopupBtn.addEventListener('click', () => {
+            datesContent.style.display = 'none';
+        });
     }
     datesContent.style.display = 'block';
 
