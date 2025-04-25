@@ -133,7 +133,7 @@ calendarDates.addEventListener('click', async (event) => {
     const [year, month, day] = selectedDate.split('-').map(Number);
 
     // Fetch and parse the event list
-    const response = await fetch('eventList.txt');
+    const response = await fetch('/Lists/eventList.txt');
     const text = await response.text();
     const events = text.split('\n').map(line => line.split(','));
 

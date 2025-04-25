@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Members Page</title>
-    <link rel="stylesheet" href="MasterStyle.css">
-    <link rel="icon" type="image/x-icon" href="FavIcon.ico">
+    <link rel="stylesheet" href="/MasterStyle.css">
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -24,13 +24,13 @@
         <a href="MembersEventlist.html">Event List</a>
         <a href="MembersHelpfulResources.html">Helpful Resources</a>
         <a href="MembersPageContacts.html">Contacts</a>
-        <a href="LogInPage.html">Sign Out</a>
-        <a href="UserPage.html">Return To Main Page</a>
+        <a href="/LoginPage/LogInPage.html">Sign Out</a>
+        <a href="/UserPage/UserPage.html">Return To Main Page</a>
     </div>
     <div class="content">
         <h1>Upcoming Events</h1>
             <script>
-                fetch('eventList.txt')
+                fetch('/Lists/eventList.txt')
                     .then(response => response.text())
                     .then(data => {
                         const lines = data.split('\n');
