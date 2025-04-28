@@ -13,10 +13,13 @@ const dropdownContent = document.querySelector('.dropdown-content');
 const dropbtn = document.querySelector('.dropbtn');
 
 const datesContent = document.querySelector('.dates-content');
+const buttonStyle = "background-color: #444; color: white; padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
+
+
 
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -51,8 +54,18 @@ function renderCalendar(month, year) {
     // Add days for the current month
     for (let i = 1; i <= daysInMonth; i++) {
         const div = document.createElement('div');
-        div.dataset.day = currentYear + '-' + (currentMonth + 1) + '-' + i;
+        div.dataset.day = `${year}-${month + 1}-${i}`;
         div.textContent = i;
+
+        // Highlight the current date
+        if (
+            year === currentDate.getFullYear() &&
+            month === currentDate.getMonth() &&
+            i === currentDate.getDate()
+        ) {
+            div.style.borderBottom = '1px solid lightblue';
+        }
+
         calendarDates.appendChild(div);
     }
 
@@ -138,7 +151,7 @@ calendarDates.addEventListener('click', async (event) => {
     const events = text.split('\n').map(line => line.split(','));
 
     // Filter events for the selected date
-    const matchingEvents = events.filter(event => 
+    const matchingEvents = events.filter(event =>
         parseInt(event[0]) === year &&
         parseInt(event[1]) === month &&
         parseInt(event[2]) === day
@@ -146,9 +159,11 @@ calendarDates.addEventListener('click', async (event) => {
 
     // Create and display the popup
     if (matchingEvents.length > 0) {
+        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
-            <div class="popup-header">
-            <button class="close-popup-btn" style="float: right;">&times;</button>
+            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
+            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             ${matchingEvents.map(event => `
             <p>Event Name: ${event[3]}</p>
@@ -157,7 +172,7 @@ calendarDates.addEventListener('click', async (event) => {
             <p>Location: ${event[6]}</p>
             <p>Tech Required: ${event[7]}</p>
             <p>Volunteer Hours: ${event[8]}</p>
-            <button class="opt-in-btn" style="float: left;">Opt In</button>
+            <button class="opt-in-btn" style="${buttonStyle}">Opt In</button>
             `).join('')}
         `;
 
@@ -177,9 +192,11 @@ calendarDates.addEventListener('click', async (event) => {
             datesContent.style.display = 'none';
         });
     } else {
+        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
-            <div class="popup-header">
-                <button class="close-popup-btn">&times;</button>
+            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
+            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             <p>No events for this date.</p>
         `;
@@ -193,8 +210,24 @@ calendarDates.addEventListener('click', async (event) => {
     datesContent.style.display = 'block';
 
     const rect = event.target.getBoundingClientRect();
-    datesContent.style.top = `${rect.bottom + window.scrollY}px`;
-    datesContent.style.left = `${rect.left + window.scrollX}px`;
+    const popupWidth = datesContent.offsetWidth;
+    const popupHeight = datesContent.offsetHeight;
+
+    // Determine column and row indices
+    const columnIndex = Array.from(calendarDates.children).indexOf(event.target) % 7;
+    const rowIndex = Math.floor(Array.from(calendarDates.children).indexOf(event.target) / 7);
+
+    if (columnIndex >= 5) {
+        datesContent.style.left = `${rect.left - popupWidth + rect.width + window.scrollX}px`;
+    } else {
+        datesContent.style.left = `${rect.left + window.scrollX}px`;
+    }
+
+    if (rowIndex >= 3) {
+        datesContent.style.top = `${rect.top - popupHeight + window.scrollY}px`;
+    } else {
+        datesContent.style.top = `${rect.bottom + window.scrollY}px`;
+    }
 });
 
 // Close the popup when clicking outside
