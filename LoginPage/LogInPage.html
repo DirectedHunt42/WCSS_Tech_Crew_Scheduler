@@ -57,7 +57,8 @@
     </head>
     <body>
         <h1>Log In</h1>
-        <form action="/login" method="post">
+        <p id="error-message" style="color: red; display: none;"></p>
+        <form id="login-form">
             <!--Username-->
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
@@ -65,7 +66,7 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <!--Submit-->
-            <button type="submit" onclick="window.location.href='/MemberPage/membersPage.html'">Log In</button>
+            <button type="submit">Log In</button>
             <!--Admin and Forgot Password Buttons-->
             <div class="button-row">
                 <button type="button" onclick="window.location.href='/AdminPage/AdminLogInPage.html'">Admin</button>
@@ -74,5 +75,6 @@
             <!-- Go Back Button -->
             <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
         </form>
+        <script src="/JS/login.js"></script>
     </body>
 </html>
