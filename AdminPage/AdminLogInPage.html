@@ -53,19 +53,21 @@
     </head>
     <body>
         <h1>Admin Login</h1>
-        <form action="/admin-login" method="post">
+        <p id="error-message" style="color: red; display: none;"></p>
+        <form id="login-form">
             <!--Admin Username-->
-            <label for="admin-username">Username:</label>
-            <input type="text" id="admin-username" name="admin-username" required>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
             <!--Admin Password-->
-            <label for="admin-password">Password:</label>
-            <input type="password" id="admin-password" name="admin-password" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
             <!--Submit-->
-            <button type="submit" onclick="window.location.href='AdminPage.html'">Log In</button>
+            <button type="submit">Log In</button>
             <!--Back to Log In Button-->
             <div class="button-row">
                 <button type="button" onclick="window.location.href='LogInPage.html'">Back to Log In</button>
             </div>
         </form>
+        <script src="/JS/adminlogin.js"></script>
     </body>
 </html>
