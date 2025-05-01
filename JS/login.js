@@ -25,6 +25,18 @@ function loadCredentials() {
         });
 }
 
+// Function to set a cookie
+function setCookie(name, value, maxAgeSeconds) {
+    document.cookie = `${name}=${value}; path=/; max-age=${maxAgeSeconds}`;
+}
+
+// Function to get a cookie value
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
 // Handle form submission
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
@@ -41,6 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Check if credentials are valid
             if (validCredentials[username] && validCredentials[username] === password) {
+                // Set a cookie for the logged-in user (expires in 1 hour)
+                setCookie('loggedInUser', username, 3600);
+
                 // Redirect to a success page
                 window.location.href = "/MemberPage/membersPage.html";
             } else {
