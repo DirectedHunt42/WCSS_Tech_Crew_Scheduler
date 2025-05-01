@@ -172,10 +172,17 @@ calendarDates.addEventListener('click', (event) => {
         dateContent.style.top = rect.top + 'px';
         dateContent.style.left = rect.left + 'px';
 
+        // Adjust the size of the popup
+        dateContent.style.width = '200px';
+        dateContent.style.height = '100px';
+        dateContent.style.padding = '10px';
+        dateContent.style.boxSizing = 'border-box';
+
         // Create a button for redirecting to AdminEventBooking.html
         const redirectButton = document.createElement('button');
         redirectButton.id = 'redirect-button';
         redirectButton.textContent = 'Book Event';
+        redirectButton.style.fontSize = '12px'; // Make the button smaller
         redirectButton.addEventListener('click', () => {
             window.location.href = `AdminEventBooking.html?date=${encodeURIComponent(selectedDate)}`;
         });
