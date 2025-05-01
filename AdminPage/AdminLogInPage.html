@@ -50,6 +50,7 @@
         <title>Admin Login</title>
         <link rel="stylesheet" href="/MasterStyle.css">
         <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+        <script src="/JS/authCheck.js"></script>
     </head>
     <body>
         <h1>Admin Login</h1>
@@ -62,12 +63,18 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <!--Submit-->
-            <button type="submit">Log In</button>
+            <button type="submit" id="login-button">Log In</button>
             <!--Back to Log In Button-->
             <div class="button-row">
-                <button type="button" onclick="window.location.href='LogInPage.html'">Back to Log In</button>
+                <button type="button" onclick="window.location.href='/LoginPage/LogInPage.html'">Back to Log In</button>
             </div>
         </form>
-        <script src="/JS/adminlogin.js"></script>
+        <script src="/JS/loginAdmin.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                // Bypass admin login if already logged in
+                bypassLoginIfLoggedIn();
+            });
+        </script>
     </body>
 </html>
