@@ -3,7 +3,7 @@ let validCredentials = {};
 
 // Load credentials from logInList.txt
 function loadCredentials() {
-    return fetch('/Resources/logInList.txt')
+    return fetch('/Resources/AdminLogInList.txt')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to load credentials file');
@@ -54,10 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
             // Check if credentials are valid
             if (validCredentials[username] && validCredentials[username] === password) {
                 // Set a cookie for the logged-in user (expires in 1 hour)
-                setCookie('loggedInUser', username, 3600);
+                setCookie('loggedInAdmin', username, 3600);
 
                 // Redirect to a success page
-                window.location.href = "/MemberPage/membersPage.html";
+                window.location.href = "/AdminPage/AdminPage.html";
             } else {
                 // Show error message
                 errorMessage.textContent = "Invalid username or password.";
