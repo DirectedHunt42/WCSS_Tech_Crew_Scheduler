@@ -96,28 +96,28 @@
         };
     </script>
     <div class="content">
-        <form action="http://localhost:5000/save-event" method="POST">
+        <form action="http://127.0.0.1:5501/save-event" method="POST">
             <label for="date">Date (MM-DD-YYYY):</label>
             <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}" title="Please enter the date in the format MM-DD-YYYY">
-        
+            
             <label for="EventName">Event Name:</label>
             <input type="text" id="EventName" name="EventName" required>
-        
+            
             <label for="Location">Location:</label>
             <input type="text" id="Location" name="Location" required>
-        
+            
             <label for="Stime">Start Time:</label>
             <input type="time" id="Stime" name="Stime" required>
-        
+            
             <label for="Etime">End Time:</label>
             <input type="time" id="Etime" name="Etime" required>
-        
+            
             <label for="people">Types Of People Needed: (Please List)</label>
             <textarea id="people" name="people" rows="4"></textarea>
-        
+            
             <label for="VolHours">Volunteer Hours:</label>
             <textarea id="VolHours" name="VolHours" rows="4"></textarea>
-        
+            
             <div class="button-row">
                 <button type="submit">Submit Event</button>
                 <button type="button" onclick="window.location.href='AdminPage.html'">Back to Main Page</button>
