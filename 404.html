@@ -21,7 +21,7 @@
             position: relative;
             color: #fff;
             text-shadow: 0 0 5px #fff, 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000;
-            animation: glitch 1s infinite;
+            animation: glitch 2s infinite;
         }
         h1::before, h1::after {
             content: '404';
@@ -36,47 +36,47 @@
         @keyframes glitch {
             0% {
                 clip: rect(0, 900px, 0, 0);
-                transform: translate(0, 0) rotate(0deg);
+                transform: translate(0, 0);
             }
             10% {
                 clip: rect(10px, 950px, 50px, 0);
-                transform: translate(-5px, -5px) rotate(-1deg);
+                transform: translate(-5px, -5px);
             }
             20% {
                 clip: rect(20px, 900px, 70px, 0);
-                transform: translate(5px, 5px) rotate(1deg);
+                transform: translate(5px, 5px);
             }
             30% {
                 clip: rect(30px, 900px, 90px, 0);
-                transform: translate(-10px, 10px) rotate(-2deg);
+                transform: translate(-10px, 10px);
             }
             40% {
                 clip: rect(40px, 900px, 110px, 0);
-                transform: translate(10px, -10px) rotate(2deg);
+                transform: translate(10px, -10px);
             }
             50% {
                 clip: rect(50px, 900px, 130px, 0);
-                transform: translate(0, 0) rotate(0deg);
+                transform: translate(0, 0);
             }
             60% {
                 clip: rect(60px, 950px, 150px, 0);
-                transform: translate(-5px, 5px) rotate(-1deg);
+                transform: translate(-5px, 5px);
             }
             70% {
                 clip: rect(70px, 900px, 170px, 0);
-                transform: translate(5px, -5px) rotate(1deg);
+                transform: translate(5px, -5px);
             }
             80% {
                 clip: rect(80px, 900px, 190px, 0);
-                transform: translate(-10px, 10px) rotate(-2deg);
+                transform: translate(-10px, 10px);
             }
             90% {
                 clip: rect(90px, 900px, 210px, 0);
-                transform: translate(10px, -10px) rotate(2deg);
+                transform: translate(10px, -10px);
             }
             100% {
                 clip: rect(100px, 900px, 230px, 0);
-                transform: translate(0, 0) rotate(0deg);
+                transform: translate(0, 0);
             }
         }
         p {
