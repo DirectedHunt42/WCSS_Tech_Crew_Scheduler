@@ -4,12 +4,13 @@ import os
 app = Flask(__name__)
 
 # Ensure the directory for the file exists
-os.makedirs("Resources", exist_ok=True)
+resources_dir = os.path.join(os.path.dirname(__file__), "../Resources")
+os.makedirs(resources_dir, exist_ok=True)
 
 @app.route('/save-event', methods=['POST'])
 def save_event():
     # Get form data
-    date = request.form.get('date')
+    date = request.form.get('date').replace('-', ',')
     event_name = request.form.get('EventName')
     location = request.form.get('Location')
     start_time = request.form.get('Stime')
@@ -18,16 +19,17 @@ def save_event():
     volunteer_hours = request.form.get('VolHours')
 
     # Format the data
-    event_data = f"Date: {date}\nEvent Name: {event_name}\nLocation: {location}\nStart Time: {start_time}\nEnd Time: {end_time}\nPeople Needed: {people}\nVolunteer Hours: {volunteer_hours}\n\n"
+    event_data = f"\n{date},{event_name},{location},{start_time},{end_time},{people},{volunteer_hours}"
 
     # Save to eventList.txt
-    with open("Resources/eventList.txt", "a") as file:
+    event_list_path = os.path.join(resources_dir, "eventList.txt")
+    with open(event_list_path, "a") as file:
         file.write(event_data)
 
     # Return a success message
     return '''
         <h1>Event Saved Successfully!</h1>
-        <a href="AdminEventBooking.html">Back to Form</a>
+        <a href="/AdminPage/AdminEventBooking.html">Back to Form</a>
     '''
 
 if __name__ == '__main__':
