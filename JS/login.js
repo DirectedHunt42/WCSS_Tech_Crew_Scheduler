@@ -37,10 +37,47 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+// Function to show the cookie consent popup
+function showCookiePopup() {
+    const popup = document.createElement("div");
+    popup.id = "cookie-popup";
+    popup.style.position = "fixed";
+    popup.style.bottom = "20px";
+    popup.style.left = "50%";
+    popup.style.transform = "translateX(-50%)";
+    popup.style.backgroundColor = "#111";
+    popup.style.border = "1px solid #ccc";
+    popup.style.padding = "20px";
+    popup.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.1)";
+    popup.style.zIndex = "1000";
+
+    popup.innerHTML = `
+        <p>This site uses cookies. Do you accept?</p>
+        <button id="accept-cookies">Accept</button>
+        <button id="reject-cookies">Reject</button>
+    `;
+
+    document.body.appendChild(popup);
+
+    document.getElementById("accept-cookies").addEventListener("click", () => {
+        setCookie("cookiesAccepted", "true", 3600 * 24 * 100); // Set cookie for 100 days
+        popup.remove();
+    });
+
+    document.getElementById("reject-cookies").addEventListener("click", () => {
+        window.location.href = "/UserPage/UserPage.html"; // Redirect to main page
+    });
+}
+
 // Handle form submission
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("login-form");
     const errorMessage = document.getElementById("error-message");
+
+    // Check if the user has already accepted cookies
+    if (!getCookie("cookiesAccepted")) {
+        showCookiePopup();
+    }
 
     // Load credentials before setting up the form listener
     loadCredentials().then(() => {
