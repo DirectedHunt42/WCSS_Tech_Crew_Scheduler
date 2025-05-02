@@ -47,9 +47,25 @@
                             optInButton.textContent = 'Opt into event';
                             optInButton.addEventListener('click', () => {
                                 const eventName = line.split(',')[0];
-                                alert(`Opt in request sent for: ${eventName}`);
-                                optInButton.disabled = true;
-                                optInButton.textContent = 'Opted in';
+                                const userId = 'currentUserId'; // Replace with the actual user ID 
+
+                                fetch('http://localhost:6420/opt-in', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ userId, eventName })
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert(`Opt-in request sent`);
+                                        optInButton.disabled = true;
+                                        optInButton.textContent = 'Request Sent';
+                                    } else {
+                                        alert('Failed to send opt-in request');
+                                    }
+                                })
+                                .catch(error => console.error('Error sending opt-in request:', error));
                             });
 
                             eventContainer.appendChild(contactInfo);
@@ -57,7 +73,7 @@
                             document.querySelector('.content').appendChild(eventContainer);
                         });
                     })
-                    .catch(error => console.error('Error fetching contacts:', error));
+                    .catch(error => console.error('Error fetching events:', error));
             </script>
             <script src="/JS/authCheck.js"></script>
     </div>
