@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Booking Admin</title>
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        h1 {
+            margin-top: 200px;
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+            background-color: rgb(20, 20, 20);
+            color: white;
+            font-family: monospace;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Get the selected date from the URL and format it to YYYY-MM-DD
+        const selectedDate = getQueryParam('date');
+        const formattedDate = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : '';
+
+        // Autofill the date input field if a date is provided
+        window.onload = function () {
+            if (formattedDate) {
+                const dateInput = document.getElementById('date');
+                if (dateInput) {
+                    dateInput.value = formattedDate;
+                }
+            }
+        };
+
+        // Function to handle form submission via AJAX
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(event.target);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5501/save-event', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Show the popup on success
+                    document.querySelector('.popup').style.display = 'block';
+                    document.querySelector('.overlay').style.display = 'block';
+                } else {
+                    alert('Failed to save the event. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        // Function to close the popup and redirect to AdminPage.html
+        function closePopup() {
+            // Hide the popup and overlay
+            document.querySelector('.popup').style.display = 'none';
+            document.querySelector('.overlay').style.display = 'none';
+
+            // Redirect to AdminPage.html
+            window.location.href = 'AdminPage.html';
+        }
+    </script>
+
+    <div class="overlay"></div>
+    <div class="popup">
+        <p>Event saved successfully!</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+
+    <div class="content">
+        <form onsubmit="submitForm(event)">
+            <label for="date">Date (MM-DD-YYYY):</label>
+            <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}" title="Please enter the date in the format MM-DD-YYYY">
+
+            <label for="EventName">Event Name:</label>
+            <input type="text" id="EventName" name="EventName" required>
+
+            <label for="Location">Location:</label>
+            <input type="text" id="Location" name="Location" required>
+
+            <label for="Stime">Start Time:</label>
+            <input type="time" id="Stime" name="Stime" required>
+
+            <label for="Etime">End Time:</label>
+            <input type="time" id="Etime" name="Etime" required>
+
+            <label for="people">Types Of People Needed: (Please List)</label>
+            <textarea id="people" name="people" rows="4"></textarea>
+
+            <label for="VolHours">Volunteer Hours:</label>
+            <textarea id="VolHours" name="VolHours" rows="4"></textarea>
+
+            <div class="button-row">
+                <button type="submit">Submit Event</button>
+                <button type="button" onclick="window.location.href='AdminPage.html'">Back to Main Page</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
