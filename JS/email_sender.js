@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail', // Email provider
     auth: {
         user: 'wcsstechcrew@gmail.com', 
-        pass: 'WCSSgoodpassword'  
+        pass: 'qoxjficgrvakjiju'  
     }
 });
 
@@ -46,7 +46,12 @@ app.post('/send-reset-email', (req, res) => {
     });
 });
 
+app.get("/", (req, res) => {
+    res.send("Welcome to the email sender service!");
+});
+
 // Start the server
 app.listen(6420, () => {
     console.log('Server is running on port 6420');
 });
+
