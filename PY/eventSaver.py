@@ -38,4 +38,4 @@ def save_event():
     return redirect('/AdminPage/AdminPage.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5501)
+    app.run(debug=True, port=5500)
