@@ -46,18 +46,19 @@
         
             // Remove a member
             function removeMember(member) {
-                const confirmRemoval = confirm(`Are you sure you want to remove ${member}?`);
+                const trimmedMember = member.trim(); // Trim whitespace and newlines
+                const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
                 if (confirmRemoval) {
-                    fetch('http://127.0.0.1:5500/remove-member', {
+                    fetch('/remove-member', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ member }),
+                        body: JSON.stringify({ member: trimmedMember }), // Send the trimmed member name
                     })
                         .then(response => {
                             if (response.ok) {
-                                console.log(`Removed member: ${member}`);
+                                console.log(`Removed member: ${trimmedMember}`);
                                 location.reload(); // Refresh the page to reload the updated member list
                             } else {
                                 console.error('Error removing member.');

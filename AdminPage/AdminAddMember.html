@@ -64,10 +64,41 @@
                 cursor: pointer;
             }
         </style>
+        <script>
+            async function submitForm(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get form values
+                const username = document.getElementById('name').value;
+                const job = document.getElementById('job').value;
+
+                // Send data to the Flask backend
+                try {
+                    const response = await fetch('/add-member', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, job }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert(result.message); // Show success message
+                    } else {
+                        alert(`Error: ${result.message || 'Failed to add member'}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the member.');
+                }
+            }
+        </script>
     </head>
     <body>
         <h1>Add Member</h1>
-        <form action="/submit-member" method="POST">
+        <form onsubmit="submitForm(event)">
             <label for="name">Username:</label>
             <input type="text" id="name" name="name" required>
 
@@ -78,7 +109,7 @@
             <input type="text" id="job" name="job" required>
 
             <div class="button-row">
-                <button type="submit">Submit Member</button>
+                <button type="submit" onclick="window.location.href='AdminMemberManagment.html'">Submit Member</button>
                 <button type="button" onclick="window.location.href='AdminMemberManagment.html'">Back to Admin Page</button>
             </div>
         </form>
