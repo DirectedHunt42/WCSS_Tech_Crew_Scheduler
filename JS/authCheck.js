@@ -25,27 +25,25 @@ function checkLoggedInUser(redirectToLogin = true) {
 
     if (!loggedInUser && !loggedInAdmin) {
         if (redirectToLogin) {
-            // Prevent redirection on the admin login page
-            if (window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-                console.log("No admin is logged in, staying on the admin login page.");
-                return;
-            }
-            // Redirect to the regular login page for other pages
+            // Redirect to the login page if no user or admin is logged in
             window.location.href = "/LoginPage/LogInPage.html";
         } else {
             console.log("No user or admin is logged in.");
         }
     } else {
-        // Ensure users cannot access admin pages and vice versa
+        // Allow admins to access both admin and member pages
+        if (loggedInAdmin) {
+            console.log("Admin is logged in. No redirection needed.");
+            return loggedInAdmin;
+        }
+
+        // Redirect members trying to access admin pages
         if (loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
-            console.log("User cannot access admin pages. Redirecting...");
-            window.location.href = "/LoginPage/LogInPage.html";
-        } else if (loggedInAdmin && !window.location.pathname.startsWith("/AdminPage")) {
-            console.log("Admin cannot access user pages. Redirecting...");
-            window.location.href = "/AdminPage/AdminPage.html";
+            console.log("User cannot access admin pages. Redirecting to member page...");
+            window.location.href = "/MemberPage/membersPage.html";
         } else {
-            console.log(`Logged in as: ${loggedInUser || loggedInAdmin}`);
-            return loggedInUser || loggedInAdmin;
+            console.log(`Logged in as: ${loggedInUser}`);
+            return loggedInUser;
         }
     }
 }
@@ -55,22 +53,37 @@ function bypassLoginIfLoggedIn() {
     const loggedInUser = getCookie('loggedInUser');
     const loggedInAdmin = getCookie('loggedInAdmin');
 
-    // Check if the user is on the regular login page
+    // Redirect logged-in users from the regular login page
     if (loggedInUser && window.location.pathname === "/LoginPage/LogInPage.html") {
-        // Redirect to the members page if the user is already logged in
         window.location.href = "/MemberPage/membersPage.html";
     } 
-    // Check if the user is on the admin login page
+    // Redirect logged-in admins from the admin login page
     else if (loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-        // Redirect to the admin dashboard if the admin is already logged in
         window.location.href = "/AdminPage/AdminPage.html";
+    }
+
+    // Allow access to the admin login page without a cookie
+    else if (!loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
+        console.log("Accessing admin login page without a cookie.");
+        // Do nothing, allow access to the page
+    }
+
+    // Allow access to the regular login page without a cookie
+    else if (!loggedInUser && window.location.pathname === "/LoginPage/LogInPage.html") {
+        console.log("Accessing regular login page without a cookie.");
+        // Do nothing, allow access to the page
+    }
+
+    // Redirect users without cookies from other pages to the regular login page
+    else if (!loggedInUser && !loggedInAdmin && window.location.pathname !== "/AdminPage/AdminLogInPage.html") {
+        window.location.href = "/LoginPage/LogInPage.html";
     }
 }
 
 // Example usage: Call this function on the login page
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname === "/LoginPage/LogInPage.html") {
-        // Use this on the login page to bypass login if the user or admin is already logged in
+    if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
+        // Use this on the login pages to bypass login if the user or admin is already logged in
         bypassLoginIfLoggedIn();
     } else {
         // Redirect to login page if not logged in (for other pages)
