@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Members Page</title>
     <link rel="stylesheet" href="/MasterStyle.css">
@@ -18,6 +19,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <a href="MembersPage.html">Calendar</a>
@@ -28,54 +30,73 @@
     </div>
     <div class="content">
         <h1>Upcoming Events</h1>
-            <script>
-                fetch('/Resources/eventList.txt')
-                    .then(response => response.text())
-                    .then(data => {
-                        const lines = data.split('\n');
-                        lines.forEach(line => {
-                            const eventContainer = document.createElement('div');
-                            eventContainer.style.display = 'flex';
-                            eventContainer.style.alignItems = 'center';
-                            eventContainer.style.marginBottom = '10px';
+        <script>
+            async function optIn(eventName) {
+                try {
+                    // First, set the cookie
+                    const setCookieResponse = await fetch('http://localhost:6421/set-cookie');
+                    if (!setCookieResponse.ok) {
+                        throw new Error(`Failed to set cookie: ${setCookieResponse.status}`);
+                    }
 
-                            const contactInfo = document.createElement('p');
-                            contactInfo.textContent = line;
-                            contactInfo.style.marginRight = '10px';
+                    // Then, make the opt-in request
+                    const response = await fetch('http://localhost:6421/opt-in', {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ eventName: eventName }),
+                    });
 
-                            const optInButton = document.createElement('button');
-                            optInButton.textContent = 'Opt into event';
-                            optInButton.addEventListener('click', () => {
-                                const eventName = line.split(',')[0];
-                                const userId = 'currentUserId'; // Replace with the actual user ID 
+                    if (!response.ok) {
+                        const errorText = await response.text(); // Get the error message from the server
+                        throw new Error(`Opt-in failed: ${response.status} - ${errorText}`);
+                    }
 
-                                fetch('http://localhost:6421/opt-in', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ userId, eventName })
-                                })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert(`Opt-in request sent`);
-                                        optInButton.disabled = true;
-                                        optInButton.textContent = 'Request Sent';
-                                    } else {
-                                        alert('Failed to send opt-in request');
-                                    }
-                                })
-                                .catch(error => console.error('Error sending opt-in request:', error));
-                            });
+                    const data = await response.text();
+                    console.log(data); // "Opt-in request saved successfully"
+                    alert(`Opt-in request sent for: ${eventName}`);
+                } catch (error) {
+                    console.error('Error during opt-in:', error);
+                    alert('Failed to send opt-in request. Please try again.');
+                }
+            }
 
-                            eventContainer.appendChild(contactInfo);
-                            eventContainer.appendChild(optInButton);
-                            document.querySelector('.content').appendChild(eventContainer);
+            fetch('/Resources/eventList.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const lines = data.split('\n');
+                    lines.forEach(line => {
+                        const eventContainer = document.createElement('div');
+                        eventContainer.style.display = 'flex';
+                        eventContainer.style.alignItems = 'center';
+                        eventContainer.style.marginBottom = '10px';
+
+                        const contactInfo = document.createElement('p');
+                        contactInfo.textContent = line;
+                        contactInfo.style.marginRight = '10px';
+
+                        const optInButton = document.createElement('button');
+                        optInButton.textContent = 'Opt into event';
+
+                        optInButton.addEventListener('click', () => {
+                            const eventName = line.split(',')[0]; // Adjust this to extract the correct event name
+                            optIn(eventName); // Call the async function
+                            optInButton.disabled = true;
+                            optInButton.textContent = 'Request Sent';
                         });
-                    })
-                    .catch(error => console.error('Error fetching events:', error));
-            </script>
-            <script src="/JS/authCheck.js"></script>
+
+                        eventContainer.appendChild(contactInfo);
+                        eventContainer.appendChild(optInButton);
+                        document.querySelector('.content').appendChild(eventContainer);
+                    });
+                })
+                .catch(error => console.error('Error fetching events:', error));
+        </script>
+        <script src="/JS/authCheck.js"></script>
     </div>
-</body></head>
+</body>
+</head>
+
 </html>
