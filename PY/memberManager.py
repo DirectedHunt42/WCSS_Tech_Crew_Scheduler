@@ -1,10 +1,15 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, send_from_directory
 import os
 
 app = Flask(__name__)
 
 # Define the path to the memberList.txt file
 MEMBER_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/memberList.txt')
+
+# Serve static files (HTML, CSS, JS, etc.)
+@app.route('/<path:filename>')
+def serve_static_files(filename):
+    return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), filename)
 
 @app.route('/remove-member', methods=['POST'])
 def remove_member():
@@ -27,7 +32,7 @@ def remove_member():
             file.writelines(updated_members)
 
         print(f"Member '{member_to_remove}' removed successfully!")
-        return {"success": True}, 200
+        return {"success": True, "redirect": "/AdminPage/AdminMemberManagement.html"}, 200
     except Exception as e:
         print(f"Error removing member: {e}")
         return "Internal Server Error", 500

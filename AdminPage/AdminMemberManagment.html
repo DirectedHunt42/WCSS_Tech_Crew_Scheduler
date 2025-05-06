@@ -26,26 +26,26 @@
                         const members = data.split('\n').filter(member => member.trim() !== '');
                         const memberList = document.getElementById('member-list');
                         memberList.innerHTML = ''; // Clear the list
-
+        
                         members.forEach(member => {
                             const listItem = document.createElement('li');
                             listItem.textContent = member;
-
+        
                             // Create the "Remove" button
                             const removeButton = document.createElement('button');
                             removeButton.textContent = 'Remove';
                             removeButton.style.marginLeft = '10px';
-                            removeButton.onclick = () => removeMember(member, listItem);
-
+                            removeButton.onclick = () => removeMember(member);
+        
                             listItem.appendChild(removeButton);
                             memberList.appendChild(listItem);
                         });
                     })
                     .catch(error => console.error('Error fetching member list:', error));
             }
-
+        
             // Remove a member
-            function removeMember(member, listItem) {
+            function removeMember(member) {
                 const confirmRemoval = confirm(`Are you sure you want to remove ${member}?`);
                 if (confirmRemoval) {
                     fetch('http://127.0.0.1:5500/remove-member', {
@@ -57,8 +57,8 @@
                     })
                         .then(response => {
                             if (response.ok) {
-                                listItem.remove(); // Remove the member from the DOM
                                 console.log(`Removed member: ${member}`);
+                                location.reload(); // Refresh the page to reload the updated member list
                             } else {
                                 console.error('Error removing member.');
                             }
@@ -66,7 +66,7 @@
                         .catch(error => console.error('Error:', error));
                 }
             }
-
+        
             // Load members when the page loads
             window.onload = loadMembers;
         </script>
