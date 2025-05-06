@@ -47,7 +47,7 @@
             <!-- Tab content -->
             <div id="add-event" class="tab-content active">
                 <h2>Add Event</h2>
-                <p>Form or content for adding an event goes here.</p>
+                <button onclick="window.location.href='AdminEventBooking.html'" style="border: 1px solid black; background-color: #242424;">Go to Event Booking</button>
             </div>
             <div id="approve-event" class="tab-content">
                 <h2>Approve Event</h2>
@@ -55,7 +55,7 @@
             </div>
             <div id="edit-event" class="tab-content">
                 <h2>Edit Event</h2>
-                <p>Content for editing events goes here.</p>
+                <ul id="edit-event-list"></ul>
             </div>
             <div id="remove-event" class="tab-content">
                 <h2>Remove Event</h2>
@@ -79,6 +79,43 @@
                     document.getElementById(button.dataset.tab).classList.add('active');
                 });
             });
+        </script>
+        <script>
+            // Load events into the "Edit Event" section
+            function loadEvents() {
+            fetch('../Resources/eventList.txt')
+                .then(response => response.text())
+                .then(data => {
+                const events = data.split('\n').filter(event => event.trim() !== '');
+                const eventList = document.getElementById('edit-event-list');
+                eventList.innerHTML = ''; // Clear the list
+        
+                events.forEach(event => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = event;
+        
+                    // Create the "Edit Event" button
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit Event';
+                    editButton.style.marginLeft = '10px';
+                    editButton.style.border = '1px solid black';
+                    editButton.style.backgroundColor = '#242424';
+                    editButton.onclick = () => {
+                    const encodedEvent = encodeURIComponent(event);
+                    window.location.href = `AdminEventEditor.html?event=${encodedEvent}`;
+                    };
+        
+                    listItem.appendChild(editButton);
+                    eventList.appendChild(listItem);
+                });
+                })
+                .catch(error => console.error('Error fetching event list:', error));
+            }
+        
+            // Load events when the page loads
+            window.onload = () => {
+            loadEvents();
+            };
         </script>
     </body>
 </html>

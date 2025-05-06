@@ -1,3 +1,5 @@
-2025,5,14, Musical Rehersal 1, 14:30, 15:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight , 3
-2025,4,25, Creative Name, 18:00, 19:00, caf, 1 sound, 1
-2025,4,15, Creative Name, 18:00, 19:00, caf, 1 sound, 1
+2025,5,14, Musical Rehersal 1, 14:30, 15:30, Cafeteria, Jacob, 3
+2025,5,15, Musical Rehersal 1, 14:30, 15:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3
+2025,5,21, Musical Rehersal 1, 14:30, 15:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3
+2025,5,22, Musical Rehersal 1, 14:30, 15:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3
+2025,5,29, Musical Rehersal 1, 14:30, 15:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3
