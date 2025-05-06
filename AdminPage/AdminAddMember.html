@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WCSS Tech Add Member</title>
+        <link rel="stylesheet" href="/MasterStyle.css">
+        <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+        <style>
+            h1 {
+                font-size: 3rem;
+                text-align: center;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 20px;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 10px;
+            }
+            
+            label {
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            input, select, textarea {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 20px;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+            }
+
+            button {
+                width: 94%;
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .button-row {
+                display: flex;
+                justify-content: space-between;
+                width: 300px;
+                margin-bottom: 20px;
+            }
+
+            .button-row button {
+                width: 48%;
+            }
+
+            input[type="date"]:hover, input[type="time"]:hover {
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            async function submitForm(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Get form values
+                const username = document.getElementById('name').value;
+                const job = document.getElementById('job').value;
+
+                // Send data to the Flask backend
+                try {
+                    const response = await fetch('/add-member', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, job }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert(result.message); // Show success message
+                    } else {
+                        alert(`Error: ${result.message || 'Failed to add member'}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the member.');
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Add Member</h1>
+        <form onsubmit="submitForm(event)">
+            <label for="name">Username:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" required>
+
+            <label for="job">Job:</label>
+            <input type="text" id="job" name="job" required>
+
+            <div class="button-row">
+                <button type="submit" onclick="window.location.href='AdminMemberManagment.html'">Submit Member</button>
+                <button type="button" onclick="window.location.href='AdminMemberManagment.html'">Back to Admin Page</button>
+            </div>
+        </form>
+    </body>
+</html>
