@@ -1,14 +1,14 @@
 /* General body styling */
 body {
-    background-color: rgb(20, 20, 20); /* Dark background for the page */
-    color: white; /* White text for contrast */
+    background-color: rgb(240, 240, 240); /* Light background for the page */
+    color: black; /* Black text for contrast */
     display: flex; /* Flexbox layout for the body */
     font-family: monospace; /* Monospace font for consistency */
 }
 
 /* Title styling */
 h1, h2, h3, h4, h5, h6 {
-    color: white; /* Set title text color to black */
+    color: black; /* Set title text color to black */
 }
 
 /* Form styling */
@@ -19,8 +19,8 @@ form {
 
 /* Button styling */
 button {
-    background-color: #444; /* Dark gray background */
-    color: white; /* White text */
+    background-color: #ddd; /* Light gray background */
+    color: black; /* Black text */
     padding: 10px 15px; /* Padding for button size */
     border: none; /* No border */
     border-radius: 5px; /* Rounded corners */
@@ -28,17 +28,17 @@ button {
 }
 
 button:hover {
-    background-color: #666; /* Lighter gray on hover */
+    background-color: #bbb; /* Darker gray on hover */
 }
 
 /* Link styling */
 a {
-    color: white; /* White text for links */
+    color: black; /* Black text for links */
     text-decoration: none; /* Remove underline */
 }
 
 a:hover {
-    color: rgb(100, 69, 255); /* Purple color on hover */
+    color: rgb(0, 102, 204); /* Blue color on hover */
     text-decoration: underline; /* Add underline on hover */
 }
 
@@ -49,7 +49,7 @@ a:hover {
     position: fixed; /* Fixed position on the left */
     top: 0; /* Start at the top */
     left: 0; /* Align to the left */
-    background-color: #111; /* Dark background */
+    background-color: #f0f0f0; /* Light gray background */
     padding-top: 20px; /* Padding at the top */
 }
 
@@ -58,12 +58,12 @@ a:hover {
     padding: 10px 15px; /* Padding for clickable area */
     text-decoration: none; /* Remove underline */
     font-size: 18px; /* Font size for links */
-    color: white; /* White text */
+    color: black; /* Black text */
     display: block; /* Block layout for links */
 }
 
 .sidebar a:hover {
-    background-color: #575757; /* Gray background on hover */
+    background-color: #ddd; /* Darker gray background on hover */
 }
 
 /* Content area styling */
@@ -80,7 +80,7 @@ a:hover {
 }
 
 .tooltip-icon {
-    background-color: #00000000; /* Transparent background */
+    background-color: #ffffff; /* White background */
     border-radius: 50%; /* Circular shape */
     padding: 5px; /* Padding for size */
     cursor: help; /* Help cursor */
@@ -91,8 +91,8 @@ a:hover {
 .tooltip-text {
     visibility: hidden; /* Hidden by default */
     width: 200px; /* Fixed width */
-    background-color: #666; /* Dark gray background */
-    color: #ffffff; /* White text */
+    background-color: #ddd; /* Light gray background */
+    color: black; /* Black text */
     text-align: center; /* Center text */
     border-radius: 5px; /* Rounded corners */
     padding: 10px; /* Padding for size */
@@ -119,14 +119,14 @@ a:hover {
 /* Tab button styling */
 .tab-buttons {
     display: flex; /* Flexbox layout */
-    border-bottom: 2px solid #000000; /* Bottom border */
+    border-bottom: 2px solid #ccc; /* Bottom border */
 }
 
 .tab-buttons button {
     flex: 1; /* Equal width for buttons */
     padding: 10px; /* Padding for size */
     cursor: pointer; /* Pointer cursor */
-    background-color: #444; /* Dark gray background */
+    background-color: #ddd; /* Light gray background */
     border: none; /* No border */
     outline: none; /* Remove outline */
     text-align: center; /* Center text */
@@ -134,7 +134,7 @@ a:hover {
 }
 
 .tab-buttons button.active {
-    background-color: rgb(20, 20, 20); /* Darker background for active tab */
+    background-color: rgb(240, 240, 240); /* Lighter background for active tab */
     font-weight: bold; /* Bold text */
 }
 
@@ -142,8 +142,8 @@ a:hover {
 .tab-content {
     display: none; /* Hidden by default */
     padding: 20px; /* Padding for content */
-    background-color: #444; /* Dark gray background */
-    border: 1px solid #000000; /* Border around content */
+    background-color: #ddd; /* Light gray background */
+    border: 1px solid #ccc; /* Border around content */
     border-top: none; /* Remove top border */
 }
 
@@ -153,8 +153,8 @@ a:hover {
 
 /* Calendar container styling */
 .calendar {
-    background-color: #000; /* Black background */
-    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1); /* Subtle shadow */
+    background-color: #fff; /* White background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     margin: 50px auto; /* Centered with margin */
 }
 
@@ -164,19 +164,19 @@ a:hover {
     border: none; /* No border */
     font-size: 1.5em; /* Large font size */
     cursor: pointer; /* Pointer cursor */
-    color: white; /* White text */
+    color: black; /* Black text */
 }
 
 /* Month-year display styling */
 #month-year {
     font-size: 1.2em; /* Slightly larger font */
     font-weight: bold; /* Bold text */
-    color: white; /* White text */
+    color: black; /* Black text */
 }
 
 /* Weekday header styling */
 .calendar-weekdays {
-    background-color: #151515; /* Dark gray background */
+    background-color: #f0f0f0; /* Light gray background */
     display: grid; /* Grid layout */
     grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
     gap: 0; /* No gap between columns */
@@ -198,9 +198,9 @@ a:hover {
     display: flex; /* Flexbox layout */
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
-    border-bottom: 1px solid #151515; /* Bottom border */
+    border-bottom: 1px solid #ccc; /* Bottom border */
     cursor: pointer; /* Pointer cursor */
-    color: white; /* White text */
+    color: black; /* Black text */
 }
 
 /* Bold text for weekday headers */
@@ -210,12 +210,12 @@ a:hover {
 
 /* Hover effect for calendar dates */
 .calendar-dates div:hover {
-    background-color: #0e0e0e; /* Slightly lighter background */
+    background-color: #e0e0e0; /* Slightly darker background */
 }
 
 /* Styling for days outside the current month */
 .ghost-day {
-    color: #c0c0c0 !important; /* Light gray text */
+    color: #999 !important; /* Gray text */
     opacity: 0.7; /* Reduced opacity */
     pointer-events: none; /* Disable interactions */
 }
@@ -239,14 +239,14 @@ a:hover {
 .dropdown-content {
     display: none; /* Hidden by default */
     position: absolute; /* Absolute position */
-    background-color: #060606; /* Dark background */
+    background-color: #f9f9f9; /* Light background */
     min-width: 160px; /* Minimum width */
-    box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2); /* Subtle shadow */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     z-index: 1; /* Above other elements */
 }
 
 .dropdown-content div {
-    color: white; /* White text */
+    color: black; /* Black text */
     padding: 12px 16px; /* Padding for size */
     text-decoration: none; /* Remove underline */
     display: block; /* Block layout */
@@ -255,12 +255,12 @@ a:hover {
 }
 
 .dropdown-content div:hover {
-    background-color: #0e0e0e; /* Slightly lighter background on hover */
+    background-color: #e0e0e0; /* Slightly darker background on hover */
 }
 
 /* Dropdown button styling */
 .dropbtn {
-    background-color: #b35; /* Red background */
+    background-color: #d55; /* Light red background */
     padding: 16px; /* Padding for size */
     font-size: 16px; /* Font size */
     border: none; /* No border */
@@ -275,6 +275,6 @@ a:hover {
     padding: 8px; /* Padding for spacing */
     width: 300px; /* Fixed width */
     height: 300px; /* Fixed height */
-    box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.2); /* Subtle shadow */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     z-index: 2; /* Above other elements */
 }
