@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WCSS Tech Booking</title>
-        <link rel="stylesheet" href="/MasterStyle.css">
+        <link rel="stylesheet" href="/CSS/DarkStyle.css">
         <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
         <style>
             h1 {
@@ -64,6 +64,27 @@
                 cursor: pointer;
             }
         </style>
+        <script>
+            // Function to switch stylesheets based on the user's preference
+            function applyTheme() {
+                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                const linkElement = document.querySelector('link[rel="stylesheet"]');
+
+                if (darkModeMediaQuery.matches) {
+                    // If the user prefers dark mode, load the dark stylesheet
+                    linkElement.href = '/CSS/DarkStyle.css';
+                } else {
+                    // If the user prefers light mode, load the light stylesheet
+                    linkElement.href = '/CSS/LightStyle.css';
+                }
+            }
+
+            // Apply the theme on page load
+            applyTheme();
+
+            // Listen for changes in the user's color scheme preference
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+        </script>
     </head>
     <body>
         <h1>Booking a Tech Crew</h1>
