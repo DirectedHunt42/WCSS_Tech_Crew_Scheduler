@@ -16,6 +16,27 @@
                 padding: 20px;
             }
         </style>
+        <script>
+            // Function to switch stylesheets based on the user's preference
+            function applyTheme() {
+                const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                const linkElement = document.querySelector('link[rel="stylesheet"]');
+
+                if (darkModeMediaQuery.matches) {
+                    // If the user prefers dark mode, load the dark stylesheet
+                    linkElement.href = '/CSS/DarkStyle.css';
+                } else {
+                    // If the user prefers light mode, load the light stylesheet
+                    linkElement.href = '/CSS/LightStyle.css';
+                }
+            }
+
+            // Apply the theme on page load
+            applyTheme();
+
+            // Listen for changes in the user's color scheme preference
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+        </script>
         <script src="/JS/authCheck.js"></script>
     </head>
     <body>
