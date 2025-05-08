@@ -91,8 +91,12 @@
                 eventList.innerHTML = ''; // Clear the list
         
                 events.forEach(event => {
+                    const lastCommaIndex = event.lastIndexOf(',');
+                    const trimmedEvent = event.substring(0, lastCommaIndex).trim();
+                    const ID = event.substring(lastCommaIndex + 1).trim();
+
                     const listItem = document.createElement('li');
-                    listItem.textContent = event;
+                    listItem.textContent = trimmedEvent;
         
                     // Create the "Edit Event" button
                     const editButton = document.createElement('button');
@@ -101,8 +105,8 @@
                     editButton.style.border = '1px solid black';
                     editButton.style.backgroundColor = '#242424';
                     editButton.onclick = () => {
-                    const encodedEvent = encodeURIComponent(event);
-                    window.location.href = `AdminEventEditor.html?event=${encodedEvent}`;
+                        const encodedID = encodeURIComponent(ID);
+                        window.location.href = `AdminEventEditor.html?id=${encodedID}`;
                     };
         
                     listItem.appendChild(editButton);

@@ -22,8 +22,24 @@ def save_event():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
+    # Determine the next ID
+    next_id = 1  # Default ID if the file is empty
+    try:
+        with open(EVENT_LIST_PATH, 'r') as file:
+            lines = file.readlines()
+            if lines:
+                last_line = lines[-1]
+                last_id = int(last_line.strip().split(',')[-1])
+                next_id = last_id + 1
+    except FileNotFoundError:
+        # File doesn't exist, start with ID 1
+        pass
+    except Exception as e:
+        print(f"Error reading event list: {e}")
+        return "Internal Server Error", 500
+
     # Format the data as a CSV line
-    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}"
+    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
 
     # Write the data to eventList.txt
     try:

@@ -1,165 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WCSS Tech Booking Admin</title>
-        <!-- <link rel="stylesheet" href="/MasterStyle.css"> -->
-        <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-        <style>
-            h1 {
-                margin-top: 200px;
-                font-size: 3rem;
-                text-align: center;
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Booking Admin</title>
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        h1 {
+            margin-top: 200px;
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+            background-color: rgb(20, 20, 20);
+            color: white;
+            font-family: monospace;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script src="/JS/authCheck.js"></script>
+</head>
+
+<body>
+    <h1>Edit Event</h1>
+    <form id="eventForm">
+
+        <label for="eventDate">Event Date:</label>
+        <input type="text" id="eventDate" name="eventDate" required>
+
+        <label for="eventName">Event Name:</label>
+        <input type="text" id="eventName" name="eventName" required>
+
+        <label for="eventStartTime">Start Time:</label>
+        <input type="text" id="eventStartTime" name="eventStartTime" required>
+
+        <label for="eventEndTime">End Time:</label>
+        <input type="text" id="eventEndTime" name="eventEndTime" required>
+
+        <label for="eventLocation">Location:</label>
+        <input type="text" id="eventLocation" name="eventLocation" required>
+
+        <label for="TCP">Tech People Needed:</label>
+        <textarea id="TCP" name="TCP" rows="4" required></textarea>
+
+        <label for="volunteerHours">Volunteer Hours:</label>
+        <input type="text" id="volunteerHours" name="volunteerHours" required>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        async function loadEvent() {
+            try {
+                const response = await fetch(`/api/getEvent?id=${eventId}`);
+                if (!response.ok) throw new Error('Failed to fetch event data');
+                const event = await response.json();
+
+                document.getElementById('eventName').value = event.name;
+                document.getElementById('eventDate').value = event.date;
+                document.getElementById('eventStartTime').value = event.startTime;
+                document.getElementById('eventEndTime').value = event.endTime;
+                document.getElementById('eventLocation').value = event.location;
+                document.getElementById('TCP').value = event.TCP;
+                document.getElementById('volunteerHours').value = event.voulenteerHours;
+
+            } catch (error) {
+                console.error(error);
+                alert('Error loading event data');
             }
-    
-            body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 20px;
-                box-sizing: border-box;
-                background-color: rgb(20, 20, 20);
-                color: white;
-                font-family: monospace;
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedEvent = {
+                id: eventId,
+                name: document.getElementById('eventName').value,
+                date: document.getElementById('eventDate').value,
+                startTime: document.getElementById('eventStartTime').value,
+                endTime: document.getElementById('eventEndTime').value,
+                location: document.getElementById('eventLocation').value,
+                details: document.getElementById('TCP').value,
+            };
+
+            try {
+                const response = await fetch('/api/updateEvent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedEvent),
+                });
+
+                if (!response.ok) throw new Error('Failed to save event data');
+
+                // Save to eventList.txt file (simulated here)
+                await fetch('/api/saveToEventList', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedEvent),
+                });
+
+                alert('Event updated successfully');
+                window.location.href = 'AdminEventList.html';
+            } catch (error) {
+                console.error(error);
+                alert('Error saving event data');
             }
-    
-            form {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 10px;
-            }
-    
-            label {
-                display: block;
-                margin-bottom: 10px;
-            }
-    
-            input,
-            select,
-            textarea {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 20px;
-                border-radius: 5px;
-                border: 1px solid #ccc;
-            }
-    
-            button {
-                width: 94%;
-                padding: 10px;
-                font-size: 12px;
-            }
-    
-            .button-row {
-                display: flex;
-                justify-content: space-between;
-                width: 300px;
-                margin-bottom: 20px;
-            }
-    
-            .button-row button {
-                width: 48%;
-            }
-    
-            input[type="date"]:hover,
-            input[type="time"]:hover {
-                cursor: pointer;
-            }
-    
-            /* Popup styles */
-            .popup {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: white;
-                color: black;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                z-index: 1000;
-            }
-    
-            .popup button {
-                margin-top: 10px;
-                padding: 10px;
-                background-color: #007bff;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-    
-            .popup button:hover {
-                background-color: #0056b3;
-            }
-    
-            .overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 999;
-            }
-        </style>
-        <script src="/JS/authCheck.js"></script>
-        <script>
-            // Autofill form fields from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const eventDetails = urlParams.get('event');
-        
-            if (eventDetails) {
-                // Assuming the event details are in the format: "Event Name, Date, Location, Start Time, End Time, People Needed, Volunteer Hours"
-                const [eventName, date, location, startTime, endTime, people, volunteerHours] = eventDetails.split(',');
-        
-                document.getElementById('date').value = date?.trim() || '';
-                document.getElementById('EventName').value = eventName?.trim() || '';
-                document.getElementById('Location').value = location?.trim() || '';
-                document.getElementById('Stime').value = startTime?.trim() || '';
-                document.getElementById('Etime').value = endTime?.trim() || '';
-                document.getElementById('people').value = people?.trim() || '';
-                document.getElementById('VolHours').value = volunteerHours?.trim() || '';
-            }
-        </script>
-    </head>
-    <body>
-        <div class="content">
-            <form onsubmit="submitForm(event)">
-                <label for="date">Date (MM-DD-YYYY):</label>
-                <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}" title="Please enter the date in the format MM-DD-YYYY">
-    
-                <label for="EventName">Event Name:</label>
-                <input type="text" id="EventName" name="EventName" required>
-    
-                <label for="Location">Location:</label>
-                <input type="text" id="Location" name="Location" required>
-    
-                <label for="Stime">Start Time:</label>
-                <input type="time" id="Stime" name="Stime" required>
-    
-                <label for="Etime">End Time:</label>
-                <input type="time" id="Etime" name="Etime" required>
-    
-                <label for="people">Types Of People Needed: (Please List)</label>
-                <textarea id="people" name="people" rows="4"></textarea>
-    
-                <label for="VolHours">Volunteer Hours:</label>
-                <textarea id="VolHours" name="VolHours" rows="4"></textarea>
-    
-                <div class="button-row">
-                    <button type="submit">Submit Event</button>
-                    <button type="button" onclick="window.location.href='AdminPage.html'">Back to Main Page</button>
-                </div>
-            </form>
-            
-        </div>
-    </body>
+        });
+
+        loadEvent();
+    </script>
+</body>
+
 </html>

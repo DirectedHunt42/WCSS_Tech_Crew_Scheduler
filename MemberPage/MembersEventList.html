@@ -34,19 +34,20 @@
                     .then(data => {
                         const lines = data.split('\n');
                         lines.forEach(line => {
+                            const trimmedLine = line.substring(0, line.lastIndexOf(','));
                             const eventContainer = document.createElement('div');
                             eventContainer.style.display = 'flex';
                             eventContainer.style.alignItems = 'center';
                             eventContainer.style.marginBottom = '10px';
 
                             const contactInfo = document.createElement('p');
-                            contactInfo.textContent = line;
+                            contactInfo.textContent = trimmedLine;
                             contactInfo.style.marginRight = '10px';
 
                             const optInButton = document.createElement('button');
                             optInButton.textContent = 'Opt into event';
                             optInButton.addEventListener('click', () => {
-                                const eventName = line.split(',')[0];
+                                const eventName = trimmedLine.split(',')[0];
                                 const userId = 'currentUserId'; // Replace with the actual user ID 
 
                                 fetch('http://localhost:6420/opt-in', {
