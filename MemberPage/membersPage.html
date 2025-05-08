@@ -3,11 +3,12 @@
 
 <head>
     <title>Members Page</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <script src="/JS/authCheck.js"></script>
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     <style>
         /* Ensure the body and html fill the entire screen */
         body {
@@ -41,36 +42,23 @@
             box-sizing: border-box;
         }
     </style>
-    <script>
-        // Function to switch stylesheets based on the user's preference
-        function applyTheme() {
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            const linkElement = document.querySelector('link[rel="stylesheet"]');
-
-            if (darkModeMediaQuery.matches) {
-                // If the user prefers dark mode, load the dark stylesheet
-                linkElement.href = '/CSS/DarkStyle.css';
-            } else {
-                // If the user prefers light mode, load the light stylesheet
-                linkElement.href = '/CSS/LightStyle.css';
-            }
-        }
-
-        // Apply the theme on page load
-        applyTheme();
-
-        // Listen for changes in the user's color scheme preference
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-    </script>
+    <script src="/JS/themeHandler.js"></script>
 </head>
 
 <body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
     <!-- Sidebar navigation -->
     <div class="sidebar">
         <a href="MembersPage.html">Calendar</a>
         <a href="MembersEventlist.html">Event List</a>
         <a href="MembersHelpfulResources.html">Helpful Resources</a>
         <a href="MembersPageContacts.html">Contacts</a>
+        <a href="/UserPage/UserPage.html">UserPage</a>
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
 

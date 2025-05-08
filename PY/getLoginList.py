@@ -5,8 +5,8 @@ import os
 app = Flask(__name__)
 
 # Paths to the login files
-USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), 'Resources/logInList.txt')
-ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), 'Resources/adminLogInList.txt')
+USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.txt')
+ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLogInList.txt')
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
@@ -30,7 +30,10 @@ def login():
         # Read the login file and validate credentials
         with open(login_path, 'r') as file:
             for line in file:
-                stored_username, stored_password = line.strip().split(':')
+                try:
+                    stored_username, stored_password = line.strip().split(':')
+                except ValueError:
+                    continue  # Skip malformed lines
                 if username == stored_username and password == stored_password:
                     return jsonify({"success": True, "message": "Login successful"}), 200
 
