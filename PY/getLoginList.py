@@ -1,5 +1,5 @@
 # filepath: c:\Users\jackp\School\Computer_Science\Computer_Science-Grade_11\Final\WCSS_Tech_Crew_Scheduler\server.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, send_from_directory
 import os
 
 app = Flask(__name__)
@@ -7,6 +7,11 @@ app = Flask(__name__)
 # Paths to the login files
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), 'Resources/logInList.txt')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), 'Resources/adminLogInList.txt')
+
+# Serve static files (HTML, CSS, JS, etc.)
+@app.route('/<path:filename>')
+def serve_static_files(filename):
+    return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), filename)
 
 @app.route('/api/login', methods=['POST'])
 def login():
