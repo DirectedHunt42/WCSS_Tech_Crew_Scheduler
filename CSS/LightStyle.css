@@ -49,7 +49,7 @@ a:hover {
     position: fixed; /* Fixed position on the left */
     top: 0; /* Start at the top */
     left: 0; /* Align to the left */
-    background-color: #f0f0f0; /* Light gray background */
+    background-color: rgb(220,220,220); /* Light gray background */
     padding-top: 20px; /* Padding at the top */
 }
 
@@ -63,7 +63,7 @@ a:hover {
 }
 
 .sidebar a:hover {
-    background-color: #ddd; /* Darker gray background on hover */
+    background-color: rgb(200,200,200); /* Darker gray background on hover */
 }
 
 /* Content area styling */
