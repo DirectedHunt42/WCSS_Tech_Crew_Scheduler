@@ -79,8 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
         showCookiePopup();
     }
 
-    loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
+
+    // Load credentials before setting up the form listener
+    loadCredentials().then(() => {
+        loginForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form from submitting
+main
 
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
