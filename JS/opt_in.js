@@ -1,24 +1,17 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser'); // Import cookie-parser
+const cookieParser = require('cookie-parser'); 
 const fs = require('fs');
 
 const app = express();
 app.use(cors({
-    origin: 'http://127.0.0.1:5500', 
-    credentials: true, // Allow cookies to be sent
+    origin: '*', 
     methods: ['GET', 'POST', 'OPTIONS'], // Allow specific HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 }));
-app.options('*', cors({
-    origin: 'http://127.0.0.1:5500', 
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
 app.use(bodyParser.json());
-app.use(cookieParser()); // Use cookie-parser middleware
+app.use(cookieParser());
 
 const optInFile = 'optInRequests.json';
 
@@ -29,13 +22,12 @@ if (!fs.existsSync(optInFile)) {
 
 // Endpoint to handle opt-in requests
 app.post('/opt-in', (req, res) => {
-    const { eventName } = req.body;
-
     // Get the logged-in user ID from the cookie
-    const userId = req.cookies?.userId;
+    const userId = req.cookies?.loggedInUser;
     if (!userId) {
         return res.status(401).send('User is not logged in');
     }
+    const { eventName } = req.body;
     if (!eventName) {
         return res.status(400).send('Missing eventName');
     }
@@ -70,16 +62,6 @@ app.get('/opt-in-state', (req, res) => {
 
     // Return the opt-in state for the user
     res.json(optInData[userId] || []);
-});
-
-app.get('/set-cookie', (req, res) => {
-    res.cookie('userId', 'exampleUserId', {
-        path: '/',
-        httpOnly: false, 
-        sameSite: 'none', 
-        secure: false, 
-    });
-    res.send('Cookie set');
 });
 
 // Start the server

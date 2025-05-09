@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load credentials before setting up the form listener
     loadCredentials().then(() => {
-        loginForm.addEventListener("submit", function(event) {
+        loginForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent form from submitting
 
             // Get username and password values

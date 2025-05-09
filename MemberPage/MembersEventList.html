@@ -33,16 +33,9 @@
         <script>
             async function optIn(eventName) {
                 try {
-                    // First, set the cookie
-                    const setCookieResponse = await fetch('http://localhost:6421/set-cookie');
-                    if (!setCookieResponse.ok) {
-                        throw new Error(`Failed to set cookie: ${setCookieResponse.status}`);
-                    }
-
                     // Then, make the opt-in request
-                    const response = await fetch('http://localhost:6421/opt-in', {
+                    const response = await fetch('http://127.0.0.1:6421/opt-in', {
                         method: 'POST',
-                        credentials: 'include', // Include cookies
                         headers: {
                             'Content-Type': 'application/json',
                         },
