@@ -1,2 +1,4 @@
 Jhon:Doe
 Jack Murray:password
+Jacob Bourassa:betterPassword
+JOwen Turner:password

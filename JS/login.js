@@ -79,27 +79,37 @@ document.addEventListener("DOMContentLoaded", () => {
         showCookiePopup();
     }
 
+
     // Load credentials before setting up the form listener
     loadCredentials().then(() => {
         loginForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Prevent form from submitting
+main
 
-            // Get username and password values
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
-            // Check if credentials are valid
-            if (validCredentials[username] && validCredentials[username] === password) {
-                // Set a cookie for the logged-in user (expires in 1 hour)
-                setCookie('loggedInUser', username, 3600);
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, type: 'user' }) // 'user' for regular login
+            });
 
-                // Redirect to a success page
+            const result = await response.json();
+
+            if (response.ok) {
+                // Set a cookie or redirect on successful login
+                document.cookie = `loggedInUser=${username}; path=/; max-age=3600`;
                 window.location.href = "/MemberPage/membersPage.html";
             } else {
-                // Show error message
-                errorMessage.textContent = "Invalid username or password.";
+                errorMessage.textContent = result.error || "Login failed";
                 errorMessage.style.display = "block";
             }
-        });
+        } catch (error) {
+            console.error("Error:", error);
+            errorMessage.textContent = "An error occurred. Please try again.";
+            errorMessage.style.display = "block";
+        }
     });
 });

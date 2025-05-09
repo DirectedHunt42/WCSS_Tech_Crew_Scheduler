@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WCSS Tech Booking Help</title>
-        <link rel="stylesheet" href="/MasterStyle.css">
+        <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
         <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
         <style>
             body {
@@ -18,8 +18,15 @@
                 text-align: left;
             }
         </style>
+        <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     </head>
     <body>
+        <div id="theme-switcher">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
         <div class="sidebar">
             <a href="UserPage.html">Main Page</a>
             <a href="BookingPage.html">Book a Tech Event</a>
