@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify, redirect, send_from_directory
+from flask import Flask, request, jsonify, redirect, send_from_directory, make_response
 import os
 
 app = Flask(__name__)
 
-# Define the path to the eventList.txt file
+# Define the path to the .txt files
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.txt')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLogInList.txt')
@@ -62,12 +62,30 @@ def login():
                 except ValueError:
                     continue  # Skip malformed lines
                 if username == stored_username and password == stored_password:
-                    return jsonify({"success": True, "message": "Login successful"}), 200
+                    # Set a cookie for successful login
+                    response = make_response(jsonify({"success": True, "message": "Login successful"}))
+                    cookie_name = 'loggedInUser' if user_type == 'user' else 'loggedInAdmin'
+                    response.set_cookie(cookie_name, username, max_age=3600, path='/')
+                    return response
 
         return jsonify({"error": "Invalid username or password"}), 401
     except Exception as e:
         return jsonify({"error": "Internal server error"}), 500
-    
+
+@app.route('/api/cookies', methods=['POST'])
+def handle_cookies():
+    data = request.json
+    consent = data.get('consent')  # 'accept' or 'reject'
+
+    if consent == 'accept':
+        response = make_response(jsonify({"success": True, "message": "Cookies accepted"}))
+        response.set_cookie('cookiesAccepted', 'true', max_age=3600 * 24 * 100, path='/')  # 100 days
+        return response
+    elif consent == 'reject':
+        return jsonify({"success": True, "message": "Cookies rejected"}), 200
+    else:
+        return jsonify({"error": "Invalid consent value"}), 400
+
 @app.route('/remove-member', methods=['POST'])
 def remove_member():
     try:
