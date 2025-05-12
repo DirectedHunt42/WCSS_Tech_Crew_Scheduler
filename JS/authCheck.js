@@ -1,79 +1,63 @@
-// Function to get a cookie value
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+const app = express();
 
-// Function to delete a cookie
-function deleteCookie(name) {
-    document.cookie = `${name}=; path=/; max-age=0`;
-}
+app.use(cookieParser());
+app.use(express.json());
 
-// Function to handle sign out
-function signOut() {
-    deleteCookie('loggedInUser'); // Delete the loggedInUser cookie
-    deleteCookie('loggedInAdmin'); // Delete the loggedInAdmin cookie
-    window.location.href = '/UserPage/UserPage.html'; // Redirect to the main page
-}
+// Serve static files from the LoginPage directory
+app.use(express.static(path.join(__dirname, '../LoginPage.html')));
 
-// Function to check if the user is logged in
-function checkLoggedInUser(redirectToLogin = true) {
-    const loggedInUser = getCookie('loggedInUser');
-    const loggedInAdmin = getCookie('loggedInAdmin');
+// login 
+app.post('/login', (req, res) => {
+    const { username, isAdmin } = req.body;
 
-    if (!loggedInUser && !loggedInAdmin) {
-        if (redirectToLogin) {
-            // Prevent redirection on the admin login page
-            if (window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-                console.log("No admin is logged in, staying on the admin login page.");
-                return;
-            }
-            // Redirect to the regular login page for other pages
-            window.location.href = "/LoginPage/LogInPage.html";
-        } else {
-            console.log("No user or admin is logged in.");
+    if (username) {
+        // Set a cookie for the logged-in user
+        res.cookie('loggedInUser', username, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Strict',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
+        });
+
+        if (isAdmin) {
+            // Set a cookie for admin users
+            res.cookie('loggedInAdmin', username, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'Strict',
+                maxAge: 24 * 60 * 60 * 1000
+            });
         }
+
+        res.status(200).send({ message: 'Login successful' });
     } else {
-        // Ensure users cannot access admin pages and vice versa
-        if (loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
-            console.log("User cannot access admin pages. Redirecting...");
-            window.location.href = "/LoginPage/LogInPage.html";
-        } else if (loggedInAdmin && !window.location.pathname.startsWith("/AdminPage")) {
-            console.log("Admin cannot access user pages. Redirecting...");
-            window.location.href = "/AdminPage/AdminPage.html";
-        } else {
-            console.log(`Logged in as: ${loggedInUser || loggedInAdmin}`);
-            return loggedInUser || loggedInAdmin;
-        }
+        res.status(400).send({ message: 'Invalid login credentials' });
     }
-}
+});
 
-// Function to bypass login if the user or admin is already logged in
-function bypassLoginIfLoggedIn() {
-    const loggedInUser = getCookie('loggedInUser');
-    const loggedInAdmin = getCookie('loggedInAdmin');
+// // login endpoint
+// app.post('/api/login', (req, res) => {
+//     const { username, password } = req.body;
 
-    // Check if the user is on the regular login page
-    if (loggedInUser && window.location.pathname === "/LoginPage/LogInPage.html") {
-        // Redirect to the members page if the user is already logged in
-        window.location.href = "/MemberPage/membersPage.html";
-    } 
-    // Check if the user is on the admin login page
-    else if (loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-        // Redirect to the admin dashboard if the admin is already logged in
-        window.location.href = "/AdminPage/AdminPage.html";
-    }
-}
+//     // Replace this with your actual authentication logic
+//     if (username === 'testuser' && password === 'password123') {
+//         res.status(200).json({ message: 'Login successful' });
+//     } else {
+//         res.status(401).json({ message: 'Invalid username or password' });
+//     }
+// });
 
-// Example usage: Call this function on the login page
-document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname === "/LoginPage/LogInPage.html") {
-        // Use this on the login page to bypass login if the user or admin is already logged in
-        bypassLoginIfLoggedIn();
-    } else {
-        // Redirect to login page if not logged in (for other pages)
-        checkLoggedInUser();
-    }
+// logout 
+app.post('/logout', (req, res) => {
+    res.clearCookie('loggedInUser');
+    res.clearCookie('loggedInAdmin');
+    res.status(200).send({ message: 'Logout successful' });
+});
+
+// Start the server
+app.listen(6422, () => {
+    console.log(`Server is running on port 6422`);
 });

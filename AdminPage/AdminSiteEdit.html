@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WCSS Tech Booking Admin</title>
-        <link rel="stylesheet" href="/MasterStyle.css">
+        <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
         <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
         <style>
             body {
@@ -16,14 +16,23 @@
                 padding: 20px;
             }
         </style>
+        <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
         <script src="/JS/authCheck.js"></script>
     </head>
     <body>
+        <div id="theme-switcher">
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
         <div class="sidebar">
             <a href="AdminPage.html">Admin Main</a>
             <a href="AdminEventList.html">Event Management</a>
             <a href="AdminMemberManagment.html">Member Management</a>
             <a href="AdminSiteEdit.html">Edit Site</a>
+            <a href="/UserPage/UserPage.html">UserPage</a>
+            <a href="/MemberPage/membersPage.html">MemberPage</a>
             <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
         </div>
         <div class="content">
