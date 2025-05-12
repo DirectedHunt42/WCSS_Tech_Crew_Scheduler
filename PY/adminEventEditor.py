@@ -52,7 +52,7 @@ def update_event():
         if line_index < 0 or line_index >= len(lines):
             return "Event not found", 404
 
-        lines[line_index] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['details']}\n"
+        lines[line_index] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
 
         with open(EVENT_LIST_FILE, 'w') as file:
             file.writelines(lines)

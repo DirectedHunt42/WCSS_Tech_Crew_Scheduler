@@ -135,7 +135,8 @@
                 startTime: document.getElementById('eventStartTime').value,
                 endTime: document.getElementById('eventEndTime').value,
                 location: document.getElementById('eventLocation').value,
-                details: document.getElementById('TCP').value,
+                TCP: document.getElementById('TCP').value, // Correct field name
+                voulenteerHours: document.getElementById('volunteerHours').value, // Correct field name
             };
 
             try {
@@ -146,13 +147,6 @@
                 });
 
                 if (!response.ok) throw new Error('Failed to save event data');
-
-                // Save to eventList.txt file (simulated here)
-                await fetch('/api/saveToEventList', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedEvent),
-                });
 
                 alert('Event updated successfully');
                 window.location.href = 'AdminEventList.html';

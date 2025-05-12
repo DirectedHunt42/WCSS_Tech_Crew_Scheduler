@@ -130,54 +130,54 @@
         };
     </script>
     <script>
-        // Load events into the "Remove Event" section
-        function loadRemoveEvents() {
-            fetch('../Resources/eventList.txt')
-                .then(response => response.text())
-                .then(data => {
-                    const events = data.split('\n').filter(event => event.trim() !== '');
-                    const removeEventList = document.getElementById('remove-event-list');
-                    removeEventList.innerHTML = ''; // Clear the list
+    // Load events into the "Remove Event" section
+function loadRemoveEvents() {
+    fetch('../Resources/eventList.txt')
+        .then(response => response.text())
+        .then(data => {
+            const events = data.split('\n').filter(event => event.trim() !== '');
+            const removeEventList = document.getElementById('remove-event-list');
+            removeEventList.innerHTML = ''; // Clear the list
 
-                    events.forEach(event => {
-                        const lastCommaIndex = event.lastIndexOf(',');
-                        const trimmedEvent = event.substring(0, lastCommaIndex).trim();
-                        const ID = event.substring(lastCommaIndex + 1).trim();
+            events.forEach(event => {
+                const lastCommaIndex = event.lastIndexOf(',');
+                const trimmedEvent = event.substring(0, lastCommaIndex).trim();
+                const ID = event.substring(lastCommaIndex + 1).trim();
 
-                        const listItem = document.createElement('li');
-                        listItem.textContent = trimmedEvent;
+                const listItem = document.createElement('li');
+                listItem.textContent = trimmedEvent;
 
-                        // Create the "Remove" button
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
-                        removeButton.style.marginLeft = '10px';
-                        removeButton.style.border = '1px solid black';
-                        removeButton.style.backgroundColor = '#ff4d4d';
-                        removeButton.onclick = () => {
-                            fetch(`/remove_event`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ id: ID }),
-                            })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert('Event removed successfully!');
-                                        loadRemoveEvents(); // Reload the list
-                                    } else {
-                                        alert('Failed to remove event.');
-                                    }
-                                })
-                                .catch(error => console.error('Error removing event:', error));
-                        };
+                // Create the "Remove" button
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.style.marginLeft = '10px';
+                removeButton.style.border = '1px solid black';
+                removeButton.style.backgroundColor = '#ff4d4d';
+                removeButton.onclick = () => {
+                    fetch(`/remove_event`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: ID }),
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Event removed successfully!');
+                                loadRemoveEvents(); // Reload the list
+                            } else {
+                                alert('Failed to remove event.');
+                            }
+                        })
+                        .catch(error => console.error('Error removing event:', error));
+                };
 
-                        listItem.appendChild(removeButton);
-                        removeEventList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching event list:', error));
-        }
+                listItem.appendChild(removeButton);
+                removeEventList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching event list:', error));
+}
 
         // Load events when the page loads
         window.onload = () => {

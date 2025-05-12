@@ -1,4 +1,5 @@
-2025,5,14, Musical Rehersal 1, 14:30, 17:30, Cafeteria, Jacob
+2025,5,14, Musical Rehersal 1, 14:30, 17:30, Cafeteria, Jacob, 3, 1
 2025,5,21, Musical Rehersal 1, 14:30, 17:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3, 2
 2025,5,22, Musical Rehersal 1, 14:30, 17:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3, 3 
 2025,5,29, Musical Rehersal 1, 14:30, 17:30, Cafeteria, 1 Soundboard 1 Lightboard 1 spotlight 3 backstage 2 seniors, 3, 4 
+2025,6,7, test, 14:00, 16:00, test2, test3, 2, 5
