@@ -1,15 +1,18 @@
 from flask import Flask, request, jsonify, redirect, send_from_directory, make_response
+from flask_cors import CORS
 import os
 import bcrypt
 import sqlite3
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 # Define the path to the .txt files
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLogInList.db')
 MEMBER_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/memberList.txt')
+EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
