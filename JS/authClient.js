@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const response = await fetch('/auth/status', { credentials: 'include' });
+        const response = await fetch('http://127.0.0.1:6422/auth/status', { credentials: 'include' });
         const data = await response.json();
 
         if (!data.loggedInUser && !data.loggedInAdmin) {
@@ -59,40 +59,34 @@ function getCookie(name) {
     return null;
 }
 
-// const loginForm = document.getElementById("login-form");
+const loginForm = document.getElementById("login-form");
 
-loginForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
+if (loginForm) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const userType = document.querySelector('input[name="userType"]:checked').value; // 'user' or 'admin'
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
-    try {
-        const response = await fetch('http://127.0.0.1:6422/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, type: userType })
-        });
+        try {
+            const response = await fetch('http://127.0.0.1:6422/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok) {
-            if (userType === 'user') {
+            if (response.ok) {
                 window.location.href = '/MemberPage/membersPage.html';
             } else {
-                window.location.href = '/AdminPage/AdminPage.html';
+                console.error('Login failed:', result.message);
             }
-        } else {
-            errorMessage.textContent = result.message || 'Login failed';
-            errorMessage.style.display = 'block';
+        } catch (error) {
+            console.error('Error during login:', error);
         }
-    } catch (error) {
-        console.error('Error:', error);
-        errorMessage.textContent = 'An error occurred. Please try again.';
-        errorMessage.style.display = 'block';
-    }
-});
+    });
+}
 
 async function logout() {
     try {

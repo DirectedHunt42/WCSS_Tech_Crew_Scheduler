@@ -77,6 +77,16 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/auth/status', (req, res) => {
+    const loggedInUser = req.cookies.loggedInUser || null;
+    const loggedInAdmin = req.cookies.loggedInAdmin || null;
+
+    res.status(200).json({
+        loggedInUser,
+        loggedInAdmin
+    });
+});
+
 // logout 
 app.post('/logout', (req, res) => {
     // Clear cookies with the same attributes as when they were set
