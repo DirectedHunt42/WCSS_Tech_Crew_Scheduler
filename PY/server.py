@@ -104,10 +104,12 @@ def remove_member():
         with open(MEMBER_LIST_PATH, 'r') as file:
             members = file.readlines()
 
+        # Filter out the member to remove
         updated_members = [member for member in members if not member.startswith(f"{member_to_remove},")]
         if len(members) == len(updated_members):
             return jsonify({"error": f"Member '{member_to_remove}' not found in the member list"}), 404
 
+        # Write the updated member list back to the file
         with open(MEMBER_LIST_PATH, 'w') as file:
             file.writelines(updated_members)
         print(f"Member '{member_to_remove}' removed from the member list successfully!")
@@ -129,6 +131,11 @@ def remove_member():
 
         print(f"Member '{member_to_remove}' removed from the login database successfully!")
         return jsonify({"success": True, "message": f"Member '{member_to_remove}' removed successfully!"}), 200
+    except FileNotFoundError:
+        return jsonify({"error": "Member list file not found"}), 500
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return jsonify({"error": "Database error"}), 500
     except Exception as e:
         print(f"Error removing member: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
