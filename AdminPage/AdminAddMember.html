@@ -72,6 +72,7 @@
                 // Get form values
                 const username = document.getElementById('name').value;
                 const job = document.getElementById('job').value;
+                const password = document.getElementById('password').value;
 
                 // Send data to the Flask backend
                 try {
@@ -80,7 +81,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ username, job }),
+                        body: JSON.stringify({ username, job, password }),
                     });
 
                     const result = await response.json();

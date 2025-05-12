@@ -47,7 +47,7 @@
         
             // Remove a member
             function removeMember(member) {
-                const trimmedMember = member.trim(); // Trim whitespace and newlines
+                const trimmedMember = member.split(',')[0].trim(); // Extract username and trim whitespace
                 const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
                 if (confirmRemoval) {
                     fetch('/remove-member', {
@@ -55,14 +55,15 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ member: trimmedMember }), // Send the trimmed member name
+                        body: JSON.stringify({ member: trimmedMember }), // Send only the username
                     })
-                        .then(response => {
-                            if (response.ok) {
-                                console.log(`Removed member: ${trimmedMember}`);
-                                location.reload(); // Refresh the page to reload the updated member list
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                location.reload();
                             } else {
-                                console.error('Error removing member.');
+                                alert(`Error: ${data.error}`);
                             }
                         })
                         .catch(error => console.error('Error:', error));
