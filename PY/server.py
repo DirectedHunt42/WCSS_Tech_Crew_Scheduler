@@ -241,5 +241,10 @@ def update_event():
     except Exception as e:
         return f"Error updating event list: {str(e)}", 500
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # Serve a custom 404 HTML page
+    return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), '404.html'), 404
+
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
