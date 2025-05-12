@@ -185,7 +185,7 @@ def add_member():
         return jsonify({"error": "Username already exists"}), 400
     except Exception as e:
         print(f"Error adding member: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
+        return "Internal Server Error", 500
     
 @app.route('/api/getEvent', methods=['GET'])
 def get_event():
