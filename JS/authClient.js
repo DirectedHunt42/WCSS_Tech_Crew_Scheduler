@@ -66,22 +66,23 @@ loginForm.addEventListener("submit", async function (event) {
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const userType = document.querySelector('input[name="userType"]:checked').value; // 'user' or 'admin'
 
     try {
         const response = await fetch('http://127.0.0.1:6422/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password, type: userType })
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const result = await response.json();
 
-        if (result.message === 'Login successful') {
-            window.location.href = '/MemberPage/membersPage.html';
+        if (response.ok) {
+            if (userType === 'user') {
+                window.location.href = '/MemberPage/membersPage.html';
+            } else {
+                window.location.href = '/AdminPage/AdminPage.html';
+            }
         } else {
             errorMessage.textContent = result.message || 'Login failed';
             errorMessage.style.display = 'block';
@@ -92,3 +93,21 @@ loginForm.addEventListener("submit", async function (event) {
         errorMessage.style.display = 'block';
     }
 });
+
+async function logout() {
+    try {
+        const response = await fetch('http://127.0.0.1:6422/logout', {
+            method: 'POST',
+            credentials: 'include' // Include cookies in the request
+        });
+
+        if (response.ok) {
+            console.log('Logout successful');
+            window.location.href = '/LoginPage/LogInPage.html'; // Redirect to login page
+        } else {
+            console.error('Failed to log out:', await response.text());
+        }
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
+}
