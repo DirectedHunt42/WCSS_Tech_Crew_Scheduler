@@ -33,7 +33,6 @@
                 <span class="slider"></span>
             </label>
         </div>
-
         <div class="sidebar">
             <a href="AdminPage.html">Admin Main</a>
             <a href="AdminEventList.html">Event Management</a>
@@ -44,51 +43,154 @@
             <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
         </div>
 
-        <!-- Tab system -->
-        <div class="tab-container">
-            <!-- Tab buttons -->
-            <div class="tab-buttons">
-                <button class="tab-button active" data-tab="add-event" style="flex: 1 1 auto; text-align: center;">Add Event</button>
-                <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve Event</button>
-                <button class="tab-button" data-tab="edit-event" style="flex: 1 1 auto; text-align: center;">Edit Event</button>
-                <button class="tab-button" data-tab="remove-event" style="flex: 1 1 auto; text-align: center;">Remove Event</button>
-            </div>
-
-            <!-- Tab content -->
-            <div id="add-event" class="tab-content active">
-                <h2>Add Event</h2>
-                <p>Form or content for adding an event goes here.</p>
-            </div>
-            <div id="approve-event" class="tab-content">
-                <h2>Approve Event</h2>
-                <p>Content for approving events goes here.</p>
-            </div>
-            <div id="edit-event" class="tab-content">
-                <h2>Edit Event</h2>
-                <p>Content for editing events goes here.</p>
-            </div>
-            <div id="remove-event" class="tab-content">
-                <h2>Remove Event</h2>
-                <p>Content for removing events goes here.</p>
-            </div>
+    <!-- Tab system -->
+    <div class="tab-container">
+        <!-- Tab buttons -->
+        <div class="tab-buttons">
+            <button class="tab-button active" data-tab="add-event" style="flex: 1 1 auto; text-align: center;">Add
+                Event</button>
+            <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve
+                Event</button>
+            <button class="tab-button" data-tab="edit-event" style="flex: 1 1 auto; text-align: center;">Edit
+                Event</button>
+            <button class="tab-button" data-tab="remove-event" style="flex: 1 1 auto; text-align: center;">Remove
+                Event</button>
         </div>
 
-        <script>
-            // JavaScript for tab switching
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
+        <!-- Tab content -->
+        <div id="add-event" class="tab-content active">
+            <h2>Add Event</h2>
+            <button onclick="window.location.href='AdminEventBooking.html'"
+                style="border: 1px solid black; background-color: #242424;">Go to Event Booking</button>
+        </div>
+        <div id="approve-event" class="tab-content">
+            <h2>Approve Event</h2>
+            <p>Content for approving events goes here.</p>
+        </div>
+        <div id="edit-event" class="tab-content">
+            <h2>Edit Event</h2>
+            <ul id="edit-event-list"></ul>
+        </div>
+        <div id="remove-event" class="tab-content">
+            <h2>Remove Event</h2>
+            <ul id="remove-event-list"></ul>
+        </div>
+    </div>
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
+    <script>
+        // JavaScript for tab switching
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-                    // Add active class to the clicked button and corresponding content
-                    button.classList.add('active');
-                    document.getElementById(button.dataset.tab).classList.add('active');
-                });
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to the clicked button and corresponding content
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
             });
-        </script>
-    </body>
+        });
+    </script>
+    <script>
+        // Load events into the "Edit Event" section
+        function loadEvents() {
+            fetch('../Resources/eventList.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const events = data.split('\n').filter(event => event.trim() !== '');
+                    const eventList = document.getElementById('edit-event-list');
+                    eventList.innerHTML = ''; // Clear the list
+
+                    events.forEach(event => {
+                        const lastCommaIndex = event.lastIndexOf(',');
+                        const trimmedEvent = event.substring(0, lastCommaIndex).trim();
+                        const ID = event.substring(lastCommaIndex + 1).trim();
+
+                        const listItem = document.createElement('li');
+                        listItem.textContent = trimmedEvent;
+
+                        // Create the "Edit Event" button
+                        const editButton = document.createElement('button');
+                        editButton.textContent = 'Edit Event';
+                        editButton.style.marginLeft = '10px';
+                        editButton.style.border = '1px solid black';
+                        editButton.style.backgroundColor = '#242424';
+                        editButton.onclick = () => {
+                            const encodedID = encodeURIComponent(ID);
+                            window.location.href = `AdminEventEditor.html?id=${encodedID}`;
+                        };
+
+                        listItem.appendChild(editButton);
+                        eventList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching event list:', error));
+        }
+
+        // Load events when the page loads
+        window.onload = () => {
+            loadEvents();
+        };
+    </script>
+    <script>
+    // Load events into the "Remove Event" section
+function loadRemoveEvents() {
+    fetch('../Resources/eventList.txt')
+        .then(response => response.text())
+        .then(data => {
+            const events = data.split('\n').filter(event => event.trim() !== '');
+            const removeEventList = document.getElementById('remove-event-list');
+            removeEventList.innerHTML = ''; // Clear the list
+
+            events.forEach(event => {
+                const lastCommaIndex = event.lastIndexOf(',');
+                const trimmedEvent = event.substring(0, lastCommaIndex).trim();
+                const ID = event.substring(lastCommaIndex + 1).trim();
+
+                const listItem = document.createElement('li');
+                listItem.textContent = trimmedEvent;
+
+                // Create the "Remove" button
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.style.marginLeft = '10px';
+                removeButton.style.border = '1px solid black';
+                removeButton.style.backgroundColor = '#ff4d4d';
+                removeButton.onclick = () => {
+                    fetch(`/remove_event`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: ID }),
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Event removed successfully!');
+                                loadRemoveEvents(); // Reload the list
+                            } else {
+                                alert('Failed to remove event.');
+                            }
+                        })
+                        .catch(error => console.error('Error removing event:', error));
+                };
+
+                listItem.appendChild(removeButton);
+                removeEventList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching event list:', error));
+}
+
+        // Load events when the page loads
+        window.onload = () => {
+            loadEvents(); // Load events for "Edit Event"
+            loadRemoveEvents(); // Load events for "Remove Event"
+        };
+    </script>
+</body>
+
 </html>
