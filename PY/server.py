@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, redirect, send_from_directory, make_response
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 # Define the path to the .txt files
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')

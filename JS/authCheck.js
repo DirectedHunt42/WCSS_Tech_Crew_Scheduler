@@ -1,7 +1,14 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const axios = require('axios'); 
+const cors = require('cors');
 const app = express();
+
+app.use(cors({
+    origin: 'http://127.0.0.1:5500', // Frontend origin
+    credentials: true
+}));
 
 app.use(cookieParser());
 app.use(express.json());
@@ -38,22 +45,54 @@ app.post('/login', (req, res) => {
     }
 });
 
-// // login endpoint
-// app.post('/api/login', (req, res) => {
-//     const { username, password } = req.body;
+app.post('/api/login', async (req, res) => {
+    const { username, password, type } = req.body;
 
-//     // Replace this with your actual authentication logic
-//     if (username === 'testuser' && password === 'password123') {
-//         res.status(200).json({ message: 'Login successful' });
-//     } else {
-//         res.status(401).json({ message: 'Invalid username or password' });
-//     }
-// });
+    try {
+        // Forward the login request to the Python login API
+        const pythonResponse = await axios.post('http://127.0.0.1:5500/api/login', {
+            username,
+            password,
+            type
+        });
+
+        // Check the response from the Python API
+        if (pythonResponse.data.success) {
+            // Set cookies for the logged-in user
+            const cookieName = type === 'user' ? 'loggedInUser' : 'loggedInAdmin';
+            res.cookie(cookieName, username, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'Strict',
+                maxAge: 3600 * 1000 // 1 hour
+            });
+
+            res.status(200).json({ message: 'Login successful' });
+        } else {
+            res.status(401).json({ message: pythonResponse.data.error });
+        }
+    } catch (error) {
+        console.error('Error communicating with Python login API:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 // logout 
 app.post('/logout', (req, res) => {
-    res.clearCookie('loggedInUser');
-    res.clearCookie('loggedInAdmin');
+    // Clear cookies with the same attributes as when they were set
+    res.clearCookie('loggedInUser', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Strict',
+        path: '/' // Ensure the path matches the one used when setting the cookie
+    });
+    res.clearCookie('loggedInAdmin', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Strict',
+        path: '/' // Ensure the path matches the one used when setting the cookie
+    });
+
     res.status(200).send({ message: 'Logout successful' });
 });
 
