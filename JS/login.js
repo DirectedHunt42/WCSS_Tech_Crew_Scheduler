@@ -25,17 +25,14 @@ function loadCredentials() {
         });
 }
 
-// Function to set a cookie
-function setCookie(name, value, maxAgeSeconds) {
-    document.cookie = `${name}=${value}; path=/; max-age=${maxAgeSeconds}`;
-}
-
-// Function to get a cookie value
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
+fetch('/logout', { method: 'POST', credentials: 'include' })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Logout successful') {
+            window.location.href = '/UserPage/UserPage.html';
+        }
+    })
+    .catch(error => console.error('Error during logout:', error));
 
 // Function to show the cookie consent popup
 function showCookiePopup() {
@@ -82,34 +79,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load credentials before setting up the form listener
     loadCredentials().then(() => {
-        loginForm.addEventListener("submit", function (event) {
+        loginForm.addEventListener("submit", async function (event) {
             event.preventDefault(); // Prevent form from submitting
-main
 
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
 
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, type: 'user' }) // 'user' for regular login
-            });
+            try {
+                const response = await fetch('http://127.0.0.1:6422/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (response.ok) {
-                // Set a cookie or redirect on successful login
-                document.cookie = `loggedInUser=${username}; path=/; max-age=3600`;
-                window.location.href = "/MemberPage/membersPage.html";
-            } else {
-                errorMessage.textContent = result.error || "Login failed";
+                if (response.ok) {
+                    // Set a cookie or redirect on successful login
+                    document.cookie = `loggedInUser=${username}; path=/; max-age=3600`;
+                    window.location.href = "/MemberPage/membersPage.html";
+                } else {
+                    errorMessage.textContent = result.error || "Login failed";
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                errorMessage.textContent = "An error occurred. Please try again.";
                 errorMessage.style.display = "block";
             }
-        } catch (error) {
-            console.error("Error:", error);
-            errorMessage.textContent = "An error occurred. Please try again.";
-            errorMessage.style.display = "block";
-        }
+        });
     });
 });
