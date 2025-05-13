@@ -17,4 +17,5 @@ Authors
 
 Releases
 
+    beta 0.1.0
     alpha 0.0.1
