@@ -6,7 +6,8 @@ const fs = require('fs');
 
 const app = express();
 app.use(cors({
-    origin: '*', 
+    origin: 'http://127.0.0.1:5500', // Frontend origin
+    credentials: true, // Allow cookies to be sent with requests
     methods: ['GET', 'POST', 'OPTIONS'], // Allow specific HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 }));
@@ -23,10 +24,11 @@ if (!fs.existsSync(optInFile)) {
 // Endpoint to handle opt-in requests
 app.post('/opt-in', (req, res) => {
     // Get the logged-in user ID from the cookie
-    const userId = req.cookies?.loggedInUser;
+    const userId = req.cookies?.loggedInUser || req.cookies?.loggedInAdmin;
     if (!userId) {
         return res.status(401).send('User is not logged in');
     }
+
     const { eventName } = req.body;
     if (!eventName) {
         return res.status(400).send('Missing eventName');
@@ -52,7 +54,7 @@ app.post('/opt-in', (req, res) => {
 // Endpoint to get opt-in state for a user
 app.get('/opt-in-state', (req, res) => {
     // Get the logged-in user ID from the cookie
-    const userId = req.cookies?.userId;
+    const userId = req.cookies?.loggedInUser || req.cookies?.loggedInAdmin;
     if (!userId) {
         return res.status(401).send('User is not logged in');
     }

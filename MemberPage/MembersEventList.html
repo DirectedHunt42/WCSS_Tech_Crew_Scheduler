@@ -40,23 +40,19 @@
         <script>
             async function optIn(eventName) {
                 try {
-                    // Then, make the opt-in request
                     const response = await fetch('http://127.0.0.1:6421/opt-in', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ eventName: eventName }),
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include', // Include cookies in the request
+                        body: JSON.stringify({ eventName })
                     });
 
-                    if (!response.ok) {
-                        const errorText = await response.text(); // Get the error message from the server
-                        throw new Error(`Opt-in failed: ${response.status} - ${errorText}`);
+                    if (response.ok) {
+                        alert('Opt-in request sent successfully!');
+                    } else {
+                        const errorText = await response.text();
+                        alert(`Failed to send opt-in request: ${errorText}`);
                     }
-
-                    const data = await response.text();
-                    console.log(data); // "Opt-in request saved successfully"
-                    alert(`Opt-in request sent for: ${eventName}`);
                 } catch (error) {
                     console.error('Error during opt-in:', error);
                     alert('Failed to send opt-in request. Please try again.');
@@ -94,7 +90,7 @@
                 .catch(error => console.error('Error fetching events:', error));
         </script>
         <script src="/JS/authCLient.js"defer></script>
-       <script src="/JS/themeHandler.js"></script>
+        <script src="/JS/themeHandler.js"></script>
     </div>
 </body>
 </head>
