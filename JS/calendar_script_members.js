@@ -223,7 +223,7 @@ calendarDates.addEventListener('click', async (event) => {
         datesContent.style.left = `${rect.left + window.scrollX}px`;
     }
 
-    if (rowIndex >= 3) {
+    if (rowIndex >= 2) {
         datesContent.style.top = `${rect.top - popupHeight + window.scrollY}px`;
     } else {
         datesContent.style.top = `${rect.bottom + window.scrollY}px`;
