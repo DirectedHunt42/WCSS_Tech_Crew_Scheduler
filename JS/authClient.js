@@ -6,6 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Redirect to login page if not logged in (for other pages)
         checkLoggedInUser();
     }
+
+    // Check for accepted cookies
+    checkAcceptedCookies();
 });
 
 // Function to check if the user is logged in
@@ -49,6 +52,70 @@ function bypassLoginIfLoggedIn() {
     } else if (loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
         window.location.href = "/AdminPage/AdminPage.html";
     }
+}
+
+// Function to check for the "acceptedcookies" cookie
+function checkAcceptedCookies() {
+    const acceptedCookies = getCookie('acceptedcookies');
+
+    if (!acceptedCookies) {
+        // Detect the user's preferred color scheme
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Create the overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'cookie-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.zIndex = '999'; // Ensure it appears above all other elements
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+
+        // Create the popup
+        const popup = document.createElement('div');
+        popup.id = 'cookie-popup';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '5px';
+        popup.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        popup.style.textAlign = 'center';
+
+        // Apply styles based on the theme
+        if (isDarkMode) {
+            popup.style.backgroundColor = '#333';
+            popup.style.color = '#fff';
+        } else {
+            popup.style.backgroundColor = '#fff';
+            popup.style.color = '#000';
+            popup.style.border = '1px solid #ccc';
+        }
+
+        popup.innerHTML = `
+            <p>We use cookies to improve your experience. By using our site, you accept our cookie policy.</p>
+            <button id="accept-cookies" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Accept</button>
+        `;
+
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+
+        // Add event listener to the "Accept" button
+        document.getElementById('accept-cookies').addEventListener('click', () => {
+            setCookie('acceptedcookies', 'true', 365); // Set the cookie for 1 year
+            document.body.removeChild(overlay); // Remove the overlay and popup
+        });
+    }
+}
+
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${date.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
 // Function to get a cookie value
