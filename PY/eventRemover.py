@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, redirect, send_from_directory
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 
