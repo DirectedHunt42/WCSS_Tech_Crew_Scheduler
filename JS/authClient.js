@@ -105,3 +105,22 @@ async function logout() {
         console.error('Error during logout:', error);
     }
 }
+
+async function signOut() {
+    try {
+        const response = await fetch('/api/signout', {
+            method: 'POST',
+            credentials: 'include', // Include cookies in the request
+        });
+
+        if (response.ok) {
+            alert("You have been signed out successfully.");
+            window.location.href = "/UserPage/UserPage.html"; // Redirect to the login page
+        } else {
+            alert("Failed to sign out. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error during sign out:", error);
+        alert("An error occurred. Please try again.");
+    }
+}

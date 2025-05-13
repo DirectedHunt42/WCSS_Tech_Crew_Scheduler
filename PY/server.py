@@ -241,6 +241,14 @@ def update_event():
     except Exception as e:
         return f"Error updating event list: {str(e)}", 500
 
+@app.route('/api/signout', methods=['POST'])
+def sign_out():
+    # Clear the authentication cookies
+    response = make_response(jsonify({"success": True, "message": "Signed out successfully"}))
+    response.set_cookie('loggedInUser', '', max_age=0, path='/')  # Clear user cookie
+    response.set_cookie('loggedInAdmin', '', max_age=0, path='/')  # Clear admin cookie
+    return response
+
 @app.errorhandler(404)
 def page_not_found(e):
     # Serve a custom 404 HTML page
