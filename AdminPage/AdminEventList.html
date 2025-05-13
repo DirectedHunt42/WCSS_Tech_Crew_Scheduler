@@ -160,7 +160,7 @@ function loadRemoveEvents() {
                 removeButton.style.border = '1px solid black';
                 removeButton.style.backgroundColor = '#ff4d4d';
                 removeButton.onclick = () => {
-                    fetch(`/remove_event`, {
+                    fetch(`http://127.0.0.1:5500/remove_event`, { // Use the Flask server's URL
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
