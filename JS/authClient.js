@@ -95,7 +95,7 @@ function checkAcceptedCookies() {
         }
 
         popup.innerHTML = `
-            <p>We use cookies to make this site work. By using our site, you accept our the use of cookies.</p>
+            <p>We use cookies to make this site work. By using our site, you accept the use of cookies.</p>
             <button id="accept-cookies" style="margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Accept</button>
         `;
 
