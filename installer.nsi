@@ -12,7 +12,7 @@ Section "Install"
 
   SetOutPath "$INSTDIR"
   ; Copy project files
-  File /r "C:\Users\jacob\OneDrive\Documents\GitHub\WCSS_Tech_Crew_Scheduler\*.*"
+  File /r "c:\Users\jacob\OneDrive\Documents\GitHub\WCSS_Tech_Crew_Scheduler\*.*"
 
   ; Install Node.js
   ExecWait '"$INSTDIR\node-setup.msi" /quiet'
