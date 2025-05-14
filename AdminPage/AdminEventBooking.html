@@ -22,11 +22,20 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 20px;
+            margin: 0; /* Remove default margin for full centering */
             box-sizing: border-box;
             background-color: rgb(20, 20, 20);
             color: white;
             font-family: monospace;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Take full viewport height */
+            width: 100vw;  /* Take full viewport width */
+            margin: 0;     /* Remove default margin */
         }
 
         form {

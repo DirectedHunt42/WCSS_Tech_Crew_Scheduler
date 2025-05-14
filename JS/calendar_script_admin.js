@@ -174,7 +174,7 @@ calendarDates.addEventListener('click', (event) => {
 
         // Adjust the size of the popup
         dateContent.style.width = '200px';
-        dateContent.style.height = '100px';
+        dateContent.style.height = '125px';
         dateContent.style.padding = '10px';
         dateContent.style.boxSizing = 'border-box';
 
@@ -182,6 +182,8 @@ calendarDates.addEventListener('click', (event) => {
         const redirectButton = document.createElement('button');
         redirectButton.id = 'redirect-button';
         redirectButton.textContent = 'Book Event';
+        redirectButton.style.backgroundColor = '#222'; // Darker background
+        redirectButton.style.color = '#fff'; // Optional: white text for contrast
         redirectButton.style.fontSize = '12px'; // Make the button smaller
         redirectButton.addEventListener('click', () => {
             window.location.href = `AdminEventBooking.html?date=${encodeURIComponent(selectedDate)}`;
