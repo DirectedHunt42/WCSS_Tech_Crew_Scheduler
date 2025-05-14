@@ -10,7 +10,7 @@ CORS(app, supports_credentials=True)
 # Define the path to the .txt files
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
-ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLogInList.db')
+ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
 MEMBER_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/memberList.txt')
 EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 
@@ -64,8 +64,12 @@ def login():
         cursor = conn.cursor()
 
         # Query the database for the user
-        cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
-        result = cursor.fetchone()
+        if user_type == 'user':
+            cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
+            result = cursor.fetchone()
+        else:
+            cursor.execute('SELECT password FROM admin_users WHERE username = ?', (username,))
+            result = cursor.fetchone()
         conn.close()
 
         if result and bcrypt.checkpw(password.encode('utf-8'), result[0].encode('utf-8')):
