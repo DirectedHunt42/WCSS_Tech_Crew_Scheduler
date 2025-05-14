@@ -7,6 +7,7 @@
     <title>WCSS Tech Booking Admin</title>
     <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
     <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     <style>
         h1 {
@@ -21,11 +22,20 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 20px;
+            margin: 0; /* Remove default margin for full centering */
             box-sizing: border-box;
             background-color: rgb(20, 20, 20);
             color: white;
             font-family: monospace;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Take full viewport height */
+            width: 100vw;  /* Take full viewport width */
+            margin: 0;     /* Remove default margin */
         }
 
         form {
