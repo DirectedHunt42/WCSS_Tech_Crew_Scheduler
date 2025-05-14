@@ -83,7 +83,7 @@ renderCalendar(currentMonth, currentYear);
 const currentDateDiv = document.querySelector(`[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
 console.log(currentDateDiv);
 if (currentDateDiv) {
-    currentDateDiv.style.borderBottom = '2px solid lightblue';
+    currentDateDiv.style.borderBottom = '1px solid lightblue';
 }
 
 // Event listeners for navigation buttons
@@ -107,7 +107,7 @@ nextMonthBtn.addEventListener('click', () => {
     }
     renderCalendar(currentMonth, currentYear);
     if (currentDateDiv) {
-        currentDateDiv.style.borderBottom = '2px solid lightblue';
+        currentDateDiv.style.borderBottom = '1px solid lightblue';
     }
 });
 
@@ -115,7 +115,7 @@ prevYearBtn.addEventListener('click', () => {
     currentYear--;
     renderCalendar(currentMonth, currentYear);
     if (currentDateDiv) {
-        currentDateDiv.style.borderBottom = '2px solid lightblue';
+        currentDateDiv.style.borderBottom = '1px solid lightblue';
     }
 });
 
@@ -123,7 +123,7 @@ nextYearBtn.addEventListener('click', () => {
     currentYear++;
     renderCalendar(currentMonth, currentYear);
     if (currentDateDiv) {
-        currentDateDiv.style.borderBottom = '2px solid lightblue';
+        currentDateDiv.style.borderBottom = '1px solid lightblue';
     }
 });
 
@@ -134,7 +134,7 @@ monthYearSelect.addEventListener('click', (event) => {
         dropdownContent.style.display = 'none';
         renderCalendar(currentMonth, currentYear);
         if (currentDateDiv) {
-            currentDateDiv.style.borderBottom = '2px solid lightblue';
+            currentDateDiv.style.borderBottom = '1px solid lightblue';
         }
     }
 });
