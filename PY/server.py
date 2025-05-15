@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import bcrypt
 import sqlite3
+import requests
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -292,6 +293,53 @@ def remove_event():
         return jsonify({'message': 'Event removed successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/validate-and-send-reset-email', methods=['POST'])
+def validate_and_send_reset_email():
+    data = request.json
+    email = data.get('email')
+    username = data.get('username')
+    reset_code = data.get('resetCode')
+
+    if not email or not username or not reset_code:
+        return jsonify({"error": "Email, username, and reset code are required"}), 400
+
+    try:
+        # Connect to the database
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+
+        # Check if the username and email match in the database
+        cursor.execute('SELECT email FROM users WHERE username = ?', (username,))
+        result = cursor.fetchone()
+        conn.close()
+
+        if not result:
+            return jsonify({"error": "Username not found"}), 404
+
+        if result[0] != email:
+            return jsonify({"error": "Email does not match the username"}), 400
+
+        # If validation passes, call email_sender.js to send the email
+        email_service_url = "http://localhost:6420/send-reset-email"
+        email_payload = {
+            "email": email,
+            "username": username,
+            "resetCode": reset_code
+        }
+        email_response = requests.post(email_service_url, json=email_payload)
+
+        if email_response.status_code == 200:
+            return jsonify({"success": True, "message": "Password reset email sent successfully!"}), 200
+        else:
+            return jsonify({"error": "Failed to send email"}), email_response.status_code
+
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return jsonify({"error": "Database error"}), 500
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
