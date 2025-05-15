@@ -23,19 +23,23 @@ app.post('/send-reset-email', (req, res) => {
         from: 'wcsstechcrew@gmail.com', // Sender address
         to: email, // Recipient address
         subject: 'Password Reset Request',
-        text: 
-        `Hi ${username},
-
-        We received a request to reset your password for your account. Your verification code is: ${resetCode}
-
-        This code is valid for 30 minutes. Please enter this code in the application to proceed with resetting your password.
-
-        If you did not request this, please ignore this email and your password will remain unchanged.
-
-        Thank you,
-        The Tech Crew Team
-        
-        Note: This is an automated message, please do not reply to this email.`
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hi ${username},</h2>
+                <p>We received a request to reset your password for your account.</p>
+                <p style="font-size: 18px; font-weight: bold; color:rgb(23, 161, 28);">
+                    Your verification code is: <span>${resetCode}</span>
+                </p>
+                <p>This code is valid for <strong>30 minutes</strong>. Please enter this code in the application to proceed with resetting your password.</p>
+                <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+            </div>
+        `
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
