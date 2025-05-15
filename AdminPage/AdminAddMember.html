@@ -74,6 +74,7 @@
                 const username = document.getElementById('name').value;
                 const job = document.getElementById('job').value;
                 const password = document.getElementById('password').value;
+                const email = document.getElementById('email').value;
 
                 // Send data to the Flask backend
                 try {
@@ -82,7 +83,7 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ username, job, password }),
+                        body: JSON.stringify({ username, job, password, email }),
                     });
 
                     const result = await response.json();
@@ -116,6 +117,9 @@
 
             <label for="job">Job:</label>
             <input type="text" id="job" name="job" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
 
             <div class="button-row">
                 <button type="submit" onclick="window.location.href='AdminMemberManagment.html'">Submit Member</button>

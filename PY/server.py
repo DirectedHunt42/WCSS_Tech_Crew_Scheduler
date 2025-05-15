@@ -149,20 +149,21 @@ def remove_member():
 
 @app.route('/add-member', methods=['POST'])
 def add_member():
-    # Get the username, job, and password from the request
+    # Get the username, job, password, and email from the request
     username = request.json.get('username')
     job = request.json.get('job')
     password = request.json.get('password')
+    email = request.json.get('email')
 
-    if not username or not job or not password:
-        return jsonify({"error": "Username, job, and password are required"}), 400
+    if not username or not job or not password or not email:
+        return jsonify({"error": "Username, job, password, and email are required"}), 400
 
     try:
         # Hash the password
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
-        # Add the member to the MEMBER_LIST_PATH file
+        # Add the member to the MEMBER_LIST_PATH file (excluding email)
         new_member = f"{username}, {job}\n"
         with open(MEMBER_LIST_PATH, 'a') as file:
             file.write(new_member)
@@ -177,19 +178,21 @@ def add_member():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL
         )
         ''')
 
         # Insert the new member into the database
-        cursor.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed_password))
+        cursor.execute('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', 
+                       (username, hashed_password, email))
         conn.commit()
         conn.close()
 
         print(f"Member '{username}' added to the login database successfully!")
         return jsonify({"success": True, "message": "Member added successfully!"}), 200
     except sqlite3.IntegrityError:
-        return jsonify({"error": "Username already exists"}), 400
+        return jsonify({"error": "Username or email already exists"}), 400
     except Exception as e:
         print(f"Error adding member: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
