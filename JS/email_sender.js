@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -17,19 +16,17 @@ const transporter = nodemailer.createTransport({
 
 // Endpoint to send email
 app.post('/send-reset-email', (req, res) => {
-    const { email } = req.body;
-    console.log(`Password reset email requested for: ${email}`);
+    const { email, username, resetCode } = req.body; // Separate email, username, and code
+    console.log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
 
     const mailOptions = {
         from: 'wcsstechcrew@gmail.com', // Sender address
         to: email, // Recipient address
         subject: 'Password Reset Request',
         text: 
-        `Hi,
+        `Hi ${username},
 
-        We received a request to reset your password for your account. Please click the link below to reset your password:
-
-        [Insert Reset Link Here]
+        We received a request to reset your password for your account. Your verification code is: ${resetCode}
 
         If you did not request this, please ignore this email or contact support.
 
