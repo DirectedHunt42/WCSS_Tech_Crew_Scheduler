@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import bcrypt
 import sqlite3
+import json
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -13,6 +14,7 @@ USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInLis
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLogInList.db')
 MEMBER_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/memberList.txt')
 EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
+OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
@@ -285,6 +287,69 @@ def remove_event():
         return jsonify({'message': 'Event removed successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Function to safely read the opt-in requests JSON file
+def read_opt_in_requests():
+    try:
+        with open(OPT_IN_REQUESTS_FILE, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}  # Return an empty dictionary if the file doesn't exist
+    except json.JSONDecodeError:
+        return {}  # Return an empty dictionary if the file is malformed
+
+# Function to safely write to the opt-in requests JSON file
+def write_opt_in_requests(data):
+    try:
+        with open(OPT_IN_REQUESTS_FILE, 'w') as file:
+            json.dump(data, file, indent=4)
+    except Exception as e:
+        print(f"Error writing to opt-in requests file: {e}")
+
+# Endpoint to fetch all opt-in requests for admin
+@app.route('/admin/opt-in-requests', methods=['GET'])
+def get_opt_in_requests():
+    try:
+        opt_in_requests = read_opt_in_requests()
+        return jsonify(opt_in_requests), 200
+    except Exception as e:
+        print(f"Error fetching opt-in requests: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# Endpoint to approve or deny an opt-in request
+@app.route('/admin/update-opt-in', methods=['POST'])
+def update_opt_in_request():
+    data = request.json
+    user_id = data.get('userId')
+    event_name = data.get('eventName')
+    action = data.get('action')  # 'approve' or 'deny'
+
+    if not user_id or not event_name or not action:
+        return jsonify({"error": "Missing userId, eventName, or action"}), 400
+
+    try:
+        opt_in_requests = read_opt_in_requests()
+
+        if user_id in opt_in_requests:
+            # Find the event in the user's opt-in requests
+            for event in opt_in_requests[user_id]:
+                if event['name'] == event_name:
+                    if action == 'approve':
+                        event['status'] = 'approved'
+                    elif action == 'deny':
+                        opt_in_requests[user_id].remove(event)
+                    break
+            else:
+                return jsonify({"error": "Event not found"}), 404
+
+            # Write the updated data back to the file
+            write_opt_in_requests(opt_in_requests)
+            return jsonify({"message": f"Opt-in request {action}d successfully"}), 200
+
+        return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        print(f"Error updating opt-in request: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)

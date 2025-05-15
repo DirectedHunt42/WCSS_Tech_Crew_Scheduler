@@ -23,7 +23,7 @@
                 margin-left: 250px;
             }
         </style>
-        <script src="/JS/authClient.js"defer></script>
+        <script src="/JS/authClient.js" defer></script>
         <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     </head>
     <body>
@@ -54,6 +54,8 @@
                 Event</button>
             <button class="tab-button" data-tab="remove-event" style="flex: 1 1 auto; text-align: center;">Remove
                 Event</button>
+            <button class="tab-button" data-tab="approve-opt-in" style="flex: 1 1 auto; text-align: center;">Approve
+                Opt-in Requests</button>
         </div>
 
         <!-- Tab content -->
@@ -75,8 +77,8 @@
             <ul id="remove-event-list"></ul>
         </div>
         <div id="approve-opt-in" class="tab-content">
-            <h2>Approve Opt-ins</h2>
-            <p>Content for approving opt-ins goes here.</p>
+            <h2>Approve Opt-in Requests</h2>
+            <ul id="approve-opt-in-list"></ul>
         </div>
     </div>
 
@@ -96,6 +98,69 @@
                 document.getElementById(button.dataset.tab).classList.add('active');
             });
         });
+    </script>
+    <script>
+        // Fetch and display all opt-in requests
+        function loadOptInRequests() {
+            console.log('Fetching opt-in requests...');
+            fetch('http://127.0.0.1:6421/admin/opt-in-requests')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Opt-in requests:', data); // Debug log
+                    const requestList = document.getElementById('approve-opt-in-list');
+                    requestList.innerHTML = ''; // Clear the list
+
+                    Object.entries(data).forEach(([userId, events]) => {
+                        events.forEach(event => {
+                            console.log('Processing event:', event); // Debug log
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${event.name} (User: ${userId}, Status: ${event.status})`;
+
+                            if (event.status === 'requested') {
+                                // Approve button
+                                const approveButton = document.createElement('button');
+                                approveButton.textContent = 'Approve';
+                                approveButton.style.marginLeft = '10px';
+                                approveButton.style.border = '1px solid black';
+                                approveButton.style.backgroundColor = '#242424';
+                                approveButton.onclick = () => updateOptIn(userId, event.name, 'approve');
+
+                                // Deny button
+                                const denyButton = document.createElement('button');
+                                denyButton.textContent = 'Deny';
+                                denyButton.style.marginLeft = '10px';
+                                denyButton.style.border = '1px solid black';
+                                denyButton.style.backgroundColor = '#ff4d4d';
+                                denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
+
+                                listItem.appendChild(approveButton);
+                                listItem.appendChild(denyButton);
+                            }
+
+                            requestList.appendChild(listItem);
+                        });
+                    });
+                })
+                .catch(error => console.error('Error loading opt-in requests:', error));
+        }
+
+        // Approve or deny an opt-in request
+        function updateOptIn(userId, eventName, action) {
+            fetch('http://127.0.0.1:6421/admin/update-opt-in', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, eventName, action }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`Opt-in ${action}d successfully!`);
+                        loadOptInRequests(); // Reload the list
+                    } else {
+                        response.text().then(errorText => alert(`Failed to ${action} opt-in: ${errorText}`));
+                    }
+                })
+                .catch(error => console.error(`Error ${action}ing opt-in:`, error));
+        }
     </script>
     <script>
         // Load events into the "Edit Event" section
@@ -132,11 +197,6 @@
                 })
                 .catch(error => console.error('Error fetching event list:', error));
         }
-
-        // Load events when the page loads
-        window.onload = () => {
-            loadEvents();
-        };
     </script>
     <script>
     // Load events into the "Remove Event" section
@@ -187,12 +247,14 @@ function loadRemoveEvents() {
         })
         .catch(error => console.error('Error fetching event list:', error));
 }
-
-        // Load events when the page loads
-        window.onload = () => {
-            loadEvents(); // Load events for "Edit Event"
-            loadRemoveEvents(); // Load events for "Remove Event"
-        };
+    </script>
+    <script>
+        // Load the opt-in requests when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOptInRequests();
+            loadEvents();
+            loadRemoveEvents();
+        });
     </script>
 </body>
 

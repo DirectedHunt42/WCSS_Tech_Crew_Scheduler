@@ -1,0 +1,22 @@
+{
+  "Jhon": [
+    {
+      "name": " Musical Rehersal 1",
+      "status": "approved"
+    },
+    {
+      "name": " Musical Rehersal 4",
+      "status": "approved"
+    }
+  ],
+  "Jack Murray": [
+    {
+      "name": " Musical Rehersal 2",
+      "status": "requested"
+    },
+    {
+      "name": " Musical Rehersal 3",
+      "status": "requested"
+    }
+  ]
+}
