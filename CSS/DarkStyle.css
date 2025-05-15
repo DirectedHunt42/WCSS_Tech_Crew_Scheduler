@@ -271,7 +271,7 @@ a:hover {
 .dates-content {
     display: none; /* Hidden by default */
     position: absolute; /* Absolute position */
-    background-color: #444; /* Dark gray background */
+    background-color: #333; /* Dark gray background */
     padding: 8px; /* Padding for spacing */
     width: 300px; /* Fixed width */
     height: 300px; /* Fixed height */
