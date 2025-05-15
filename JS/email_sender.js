@@ -28,10 +28,14 @@ app.post('/send-reset-email', (req, res) => {
 
         We received a request to reset your password for your account. Your verification code is: ${resetCode}
 
-        If you did not request this, please ignore this email or contact support.
+        This code is valid for 30 minutes. Please enter this code in the application to proceed with resetting your password.
+
+        If you did not request this, please ignore this email and your password will remain unchanged.
 
         Thank you,
-        The Tech Crew Team`
+        The Tech Crew Team
+        
+        Note: This is an automated message, please do not reply to this email.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -51,4 +55,3 @@ app.get("/", (req, res) => {
 app.listen(6420, () => {
     console.log('Server is running on port 6420');
 });
-
