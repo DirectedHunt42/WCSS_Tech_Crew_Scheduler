@@ -60,7 +60,7 @@ function renderCalendar(month, year) {
             month === currentDate.getMonth() &&
             i === currentDate.getDate()
         ) {
-            div.style.borderBottom = '2px solid lightblue';
+            div.style.borderBottom = '1px solid lightblue';
         }
 
         calendarDates.appendChild(div);
