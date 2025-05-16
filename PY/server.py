@@ -340,6 +340,37 @@ def validate_and_send_reset_email():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal server error"}), 500
+    
+@app.route('/api/update-password', methods=['POST'])
+def update_password():
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    new_password = data.get('newPassword')
+
+    if not username or not email or not new_password:
+        return jsonify({"error": "Username, email, and new password are required"}), 400
+
+    try:
+        # Hash the new password
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), salt).decode('utf-8')
+
+        # Update the password in the database
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+        cursor.execute('UPDATE users SET password = ? WHERE username = ? AND email = ?', (hashed_password, username, email))
+        conn.commit()
+        updated_rows = cursor.rowcount
+        conn.close()
+
+        if updated_rows == 0:
+            return jsonify({"error": "User not found or email does not match"}), 404
+
+        return jsonify({"success": True, "message": "Password updated successfully!"}), 200
+    except Exception as e:
+        print(f"Error updating password: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
