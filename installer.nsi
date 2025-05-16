@@ -20,10 +20,7 @@ Section "Install"
   ; Install Python
   ExecWait '"$INSTDIR\python-setup.exe" /quiet InstallAllUsers=1 PrependPath=1'
 
-  ; Install Node.js packages
-  ExecWait 'cmd.exe /C "pushd $INSTDIR\JS && npm install express cors body-parser cookie-parser axios nodemailer && popd"'
-
   ; Install Python packages
-  ExecWait '"$INSTDIR\python.exe" -m pip install flask flask-cors bcrypt'
+  ExecWait '"C:\Program Files\Python313\python.exe" -m pip install flask flask-cors bcrypt'
 
 SectionEnd
