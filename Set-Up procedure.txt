@@ -1,0 +1,9 @@
+Set-Up procedure
+
+Run the .exe to install
+Run in console: npm install express cors body-parser cookie-parser axios nodemailer
+open the folder in VSCode
+install the extension "Live Server" in VSCode
+set the port in the server.js file to 5500
+in file explorer, in the project directory (in program filesx86), right click on the JS folder, run: node server_start.js
+run the live server
