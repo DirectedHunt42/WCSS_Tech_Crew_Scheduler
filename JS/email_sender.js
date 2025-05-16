@@ -30,7 +30,7 @@ app.post('/send-reset-email', (req, res) => {
                 <p style="font-size: 18px; font-weight: bold; color:rgb(23, 161, 28);">
                     Your verification code is: <span>${resetCode}</span>
                 </p>
-                <p>This code is valid for <strong>30 minutes</strong>. Please enter this code in the application to proceed with resetting your password.</p>
+                <p>This code is valid for <strong>10 minutes</strong>. Please enter this code in the application to proceed with resetting your password.</p>
                 <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
                 <p>Thank you,</p>
                 <p style="font-weight: bold;">The Tech Crew Team</p>
