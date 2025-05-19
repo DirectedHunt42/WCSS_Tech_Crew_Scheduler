@@ -9,14 +9,5 @@
       "status": "approved"
     }
   ],
-  "Jack Murray": [
-    {
-      "name": " Musical Rehersal 2",
-      "status": "requested"
-    },
-    {
-      "name": " Musical Rehersal 3",
-      "status": "requested"
-    }
-  ]
+  "Jack Murray": []
 }
