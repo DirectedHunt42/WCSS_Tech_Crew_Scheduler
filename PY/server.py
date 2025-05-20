@@ -5,6 +5,7 @@ import bcrypt
 import sqlite3
 import requests
 import json
+import time
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -301,33 +302,34 @@ def validate_and_send_reset_email():
     data = request.json
     email = data.get('email')
     username = data.get('username')
-    reset_code = data.get('resetCode')
 
-    if not email or not username or not reset_code:
-        return jsonify({"error": "Email, username, and reset code are required"}), 400
+    if not email or not username:
+        return jsonify({"error": "Email and username are required"}), 400
 
     try:
         # Connect to the database
         conn = sqlite3.connect(USER_LOGIN_PATH)
         cursor = conn.cursor()
-
-        # Check if the username and email match in the database
         cursor.execute('SELECT email FROM users WHERE username = ?', (username,))
         result = cursor.fetchone()
         conn.close()
 
         if not result:
             return jsonify({"error": "Username not found"}), 404
-
         if result[0] != email:
             return jsonify({"error": "Email does not match the username"}), 400
 
-        # If validation passes, call email_sender.js to send the email
+        # Generate code and store it with expiry (10 min)
+        code = str(int(time.time() * 1000))[-6:]  # 6-digit code, or use random
+        expires = int(time.time()) + 600  # 10 minutes from now
+        reset_codes[username] = {"code": code, "expires": expires, "email": email}
+
+        # Send the email
         email_service_url = "http://localhost:6420/send-reset-email"
         email_payload = {
             "email": email,
             "username": username,
-            "resetCode": reset_code
+            "resetCode": code
         }
         email_response = requests.post(email_service_url, json=email_payload)
 
@@ -349,16 +351,18 @@ def update_password():
     username = data.get('username')
     email = data.get('email')
     new_password = data.get('newPassword')
+    code = data.get('code')
 
-    if not username or not email or not new_password:
-        return jsonify({"error": "Username, email, and new password are required"}), 400
+    if not username or not email or not new_password or not code:
+        return jsonify({"error": "Username, email, new password, and code are required"}), 400
+
+    entry = reset_codes.get(username)
+    if not entry or entry['code'] != code or int(time.time()) > entry['expires']:
+        return jsonify({"error": "Invalid or expired code"}), 400
 
     try:
-        # Hash the new password
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), salt).decode('utf-8')
-
-        # Update the password in the database
         conn = sqlite3.connect(USER_LOGIN_PATH)
         cursor = conn.cursor()
         cursor.execute('UPDATE users SET password = ? WHERE username = ? AND email = ?', (hashed_password, username, email))
@@ -369,9 +373,12 @@ def update_password():
         if updated_rows == 0:
             return jsonify({"error": "User not found or email does not match"}), 404
 
+        reset_codes.pop(username, None)  # Remove code after successful reset
         return jsonify({"success": True, "message": "Password updated successfully!"}), 200
     except Exception as e:
         print(f"Error updating password: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 # Function to safely read the opt-in requests JSON file
 def read_opt_in_requests():
     try:
@@ -434,6 +441,94 @@ def update_opt_in_request():
     except Exception as e:
         print(f"Error updating opt-in request: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+# In-memory store for reset codes
+reset_codes = {}  # {username: {"code": ..., "expires": ..., "email": ...}}
+
+# Endpoint to request a password reset
+@app.route('/api/request-password-reset', methods=['POST'])
+def request_password_reset():
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+
+    if not username or not email:
+        return jsonify({"error": "Username and email are required"}), 400
+
+    try:
+        # Connect to the database
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+
+        # Check if the user exists
+        cursor.execute('SELECT email FROM users WHERE username = ?', (username,))
+        result = cursor.fetchone()
+        conn.close()
+
+        if not result:
+            return jsonify({"error": "User not found"}), 404
+
+        if result[0] != email:
+            return jsonify({"error": "Email does not match the username"}), 400
+
+        # Generate a reset code and expiration time
+        reset_code = str(bcrypt.gensalt()).split('$')[-1]  # Use a part of the salt as the reset code
+        expires = int(time.time()) + 600  # 10 minutes from now
+
+        # Store the reset code and expiration in memory
+        reset_codes[username] = {"code": reset_code, "expires": expires, "email": email}
+
+        # Send the reset code to the user's email (simulated here as a response)
+        return jsonify({"success": True, "message": "Password reset code sent to email", "resetCode": reset_code}), 200
+    except Exception as e:
+        print(f"Error requesting password reset: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# Endpoint to validate the reset code
+@app.route('/api/validate-reset-code', methods=['POST'])
+def validate_reset_code():
+    data = request.json
+    username = data.get('username')
+    reset_code = data.get('resetCode')
+
+    if not username or not reset_code:
+        return jsonify({"error": "Username and reset code are required"}), 400
+
+    try:
+        # Check if the reset code exists and is not expired
+        if username in reset_codes:
+            code_info = reset_codes[username]
+            if code_info["code"] == reset_code and code_info["expires"] > int(time.time()):
+                return jsonify({"success": True, "message": "Reset code is valid"}), 200
+            else:
+                return jsonify({"error": "Invalid or expired reset code"}), 400
+        else:
+            return jsonify({"error": "Reset code not found"}), 404
+    except Exception as e:
+        print(f"Error validating reset code: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/api/verify-reset-code', methods=['POST'])
+def verify_reset_code():
+    data = request.json
+    username = data.get('username')
+    code = data.get('code')
+
+    if not username or not code:
+        return jsonify({"error": "Username and code are required"}), 400
+
+    entry = reset_codes.get(username)
+    if not entry:
+        return jsonify({"error": "No reset code found for this user"}), 404
+
+    if int(time.time()) > entry['expires']:
+        reset_codes.pop(username, None)
+        return jsonify({"error": "Code expired"}), 400
+
+    if code != entry['code']:
+        return jsonify({"error": "Invalid code"}), 400
+
+    return jsonify({"success": True}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
