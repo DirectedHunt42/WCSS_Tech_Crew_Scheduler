@@ -20,11 +20,19 @@ form {
 /* Button styling */
 button {
     background-color: #ddd; /* Light gray background */
+    border: black 1px solid; /* Black border */
     color: black; /* Black text */
     padding: 10px 15px; /* Padding for button size */
-    border: none; /* No border */
     border-radius: 5px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor on hover */
+}
+
+input {
+    border: black 1px solid; /* Black border */
+}
+
+textarea {
+    border: black 1px solid; /* Black border */
 }
 
 button:hover {
