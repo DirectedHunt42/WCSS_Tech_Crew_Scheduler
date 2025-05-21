@@ -17,24 +17,30 @@ async function checkLoggedInUser(redirectToLogin = true) {
         const response = await fetch('http://127.0.0.1:6422/auth/status', { credentials: 'include' });
         const data = await response.json();
 
-        if (!data.loggedInUser && !data.loggedInAdmin) {
+        if (
+            !data.loggedInUser &&
+            !data.loggedInAdmin &&
+            !window.location.pathname.startsWith("/UserPage/") &&
+            !window.location.pathname.startsWith("/LoginPage/")
+        ) {
+            console.log("No user or admin is logged in. Redirecting to login page...");
             if (redirectToLogin) {
-                window.location.href = "/LoginPage/LogInPage.html";
+            window.location.href = "/LoginPage/LogInPage.html";
             } else {
-                console.log("No user or admin is logged in.");
+            console.log("No user or admin is logged in.");
             }
         } else {
             if (data.loggedInAdmin) {
-                console.log("Admin is logged in. No redirection needed.");
-                return data.loggedInAdmin;
+            console.log("Admin is logged in. No redirection needed.");
+            return data.loggedInAdmin;
             }
 
             if (data.loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
-                console.log("User cannot access admin pages. Redirecting to member page...");
-                window.location.href = "/MemberPage/membersPage.html";
+            console.log("User cannot access admin pages. Redirecting to member page...");
+            window.location.href = "/MemberPage/membersPage.html";
             } else {
-                console.log(`Logged in as: ${data.loggedInUser}`);
-                return data.loggedInUser;
+            console.log(`Logged in as: ${data.loggedInUser}`);
+            return data.loggedInUser;
             }
         }
     } catch (error) {
