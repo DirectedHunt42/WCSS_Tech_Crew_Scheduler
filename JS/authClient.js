@@ -21,7 +21,7 @@ async function checkLoggedInUser(redirectToLogin = true) {
             !data.loggedInUser &&
             !data.loggedInAdmin &&
             !window.location.pathname.startsWith("/UserPage/") &&
-            window.location.pathname.startsWith("/LoginPage/")
+            !window.location.pathname.startsWith("/LoginPage/")
         ) {
             console.log("No user or admin is logged in. Redirecting to login page...");
             if (redirectToLogin) {
