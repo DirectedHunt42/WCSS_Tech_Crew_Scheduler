@@ -187,6 +187,53 @@ app.post('/admin/update-opt-in', (req, res) => {
     }
 });
 
+app.post('/remove_event', (req, res) => {
+    const { id } = req.body;
+    if (!id) {
+        return res.status(400).send('Missing event id');
+    }
+
+    // Remove the event from the event list
+    const eventListPath = path.join(__dirname, '../Resources/eventList.txt');
+    let eventName = null;
+    try {
+        // Read all events
+        const events = fs.readFileSync(eventListPath, 'utf-8').split('\n').filter(line => line.trim() !== '');
+        // Find the event line and its name
+        const eventIndex = events.findIndex(line => line.endsWith(`,${id}`));
+        if (eventIndex === -1) {
+            return res.status(404).send('Event not found');
+        }
+        const eventParts = events[eventIndex].split(',');
+        eventName = eventParts[3].trim(); // Assuming event name is the 4th field (index 3)
+        // Remove the event
+        events.splice(eventIndex, 1);
+        fs.writeFileSync(eventListPath, events.join('\n'));
+    } catch (error) {
+        console.error('Error removing event:', error);
+        return res.status(500).send('Internal server error');
+    }
+
+    // Remove all opt-in requests for this event
+    try {
+        const optInData = readOptInFile();
+        let changed = false;
+        for (const userId in optInData) {
+            const before = optInData[userId].length;
+            optInData[userId] = optInData[userId].filter(event => event.name.trim() !== eventName);
+            if (optInData[userId].length !== before) changed = true;
+        }
+        if (changed) {
+            fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+        }
+    } catch (error) {
+        console.error('Error cleaning up opt-in requests:', error);
+        // Don't fail the whole request if this part fails
+    }
+
+    res.send('Event and related opt-in requests removed successfully');
+});
+
 // Start the server
 app.listen(6421, () => {
     console.log('Server is running on port 6421');
