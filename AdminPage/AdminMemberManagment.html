@@ -21,16 +21,14 @@
         <script>
             // Fetch and display the member list
             function loadMembers() {
-                fetch('/Resources/memberList.txt')
-                    .then(response => response.text())
+                fetch('/api/get-members')
+                    .then(response => response.json())
                     .then(data => {
-                        const members = data.split('\n').filter(member => member.trim() !== '');
                         const memberList = document.getElementById('member-list');
-                        memberList.innerHTML = ''; // Clear the list
-        
-                        members.forEach(member => {
+                        memberList.innerHTML = '';
+                        data.forEach(member => {
                             const listItem = document.createElement('li');
-                            listItem.textContent = member;
+                            listItem.textContent = `${member.username}, ${member.job}`;
         
                             // Create the "Remove" button
                             const removeButton = document.createElement('button');
