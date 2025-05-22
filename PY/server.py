@@ -332,7 +332,15 @@ def update_password():
     code = data.get('code')
 
     if not username or not email or not new_password or not code:
-        return jsonify({"error": "Username, email, new password, and code are required"}), 400
+        if not username:
+            return jsonify({"error": "Username is required"}), 471
+        if not email:
+            return jsonify({"error": "Email is required"}), 472
+        if not new_password:
+            return jsonify({"error": "New password is required"}), 473
+        if not code:
+            return jsonify({"error": "Code is required"}), 474
+        return jsonify({"error": "Username, email, new password, and code are required"}), 470
 
     entry = reset_codes.get(username)
     if not entry or entry['code'] != code or int(time.time()) > entry['expires']:
