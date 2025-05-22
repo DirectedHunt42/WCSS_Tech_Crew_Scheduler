@@ -16,11 +16,15 @@ pythonServer.stdout.on('data', (data) => {
 });
 
 pythonServer.stderr.on('data', (data) => {
-    console.error(`[server.py ERROR]: ${data}`);
+    console.error(`[server.py]: ${data}`);
 });
 
 pythonServer.on('close', (code) => {
     console.log(`[server.py] exited with code ${code}`);
+});
+
+pythonServer.on('error', (error) => {
+    console.error(`[server.py ERROR]: ${error}`);
 });
 
 // Start the Node.js servers
