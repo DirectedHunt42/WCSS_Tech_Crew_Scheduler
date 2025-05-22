@@ -33,8 +33,26 @@ def save_event():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
-    # Format the data as a CSV line
-    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}"
+    # Determine the next event ID
+    try:
+        with open(EVENT_LIST_PATH, 'r') as file:
+            lines = file.readlines()
+            if lines:
+                last_line = lines[-1].strip()
+                last_id_str = last_line.split(',')[-1].strip()
+                try:
+                    last_id = int(last_id_str)
+                except ValueError:
+                    last_id = 0
+            else:
+                last_id = 0
+        next_id = last_id + 1
+    except Exception as e:
+        print(f"Error reading event list for ID: {e}")
+        next_id = 1
+
+    # Format the data as a CSV line with the new ID
+    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
 
     # Write the data to eventList.txt
     try:
@@ -188,22 +206,22 @@ def get_event():
     try:
         with open(EVENT_LIST_FILE, 'r') as file:
             lines = file.readlines()
-            line_index = int(event_id) - 1
-            if line_index < 0 or line_index >= len(lines):
-                return "Event not found", 404
-
-            line = lines[line_index].strip().split(', ')
-            event = {
-                "id": event_id,
-                "date": line[0],
-                "name": line[1],
-                "startTime": line[2],
-                "endTime": line[3],
-                "location": line[4],
-                "TCP": line[5],
-                "voulenteerHours": line[6],
-            }
-            return jsonify(event)
+            for line in lines:
+                parts = [p.strip() for p in line.strip().split(',')]
+                if parts and parts[-1] == event_id:
+                    # Adjust indices as needed for your CSV format
+                    event = {
+                        "id": event_id,
+                        "date": ','.join(parts[0:3]),  # year, month, day
+                        "name": parts[3],
+                        "startTime": parts[4],
+                        "endTime": parts[5],
+                        "location": parts[6],
+                        "TCP": parts[7],
+                        "voulenteerHours": parts[8],
+                    }
+                    return jsonify(event)
+            return "Event not found", 404
     except Exception as e:
         return f"Error reading event list: {str(e)}", 500
 
@@ -217,11 +235,17 @@ def update_event():
         with open(EVENT_LIST_FILE, 'r') as file:
             lines = file.readlines()
 
-        line_index = int(updated_event['id']) - 1
-        if line_index < 0 or line_index >= len(lines):
-            return "Event not found", 404
+        found = False
+        for i, line in enumerate(lines):
+            parts = [p.strip() for p in line.strip().split(',')]
+            if parts and parts[-1] == str(updated_event['id']):
+                # Compose the updated line (adjust indices as needed)
+                lines[i] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
+                found = True
+                break
 
-        lines[line_index] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
+        if not found:
+            return "Event not found", 404
 
         with open(EVENT_LIST_FILE, 'w') as file:
             file.writelines(lines)
