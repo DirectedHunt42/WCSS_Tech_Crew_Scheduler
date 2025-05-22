@@ -336,7 +336,7 @@ def update_password():
 
     entry = reset_codes.get(username)
     if not entry or entry['code'] != code or int(time.time()) > entry['expires']:
-        return jsonify({"error": "Invalid or expired code"}), 400
+        return jsonify({"error": "Invalid or expired code"}), 401
 
     try:
         salt = bcrypt.gensalt()
