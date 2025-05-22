@@ -33,8 +33,26 @@ def save_event():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
-    # Format the data as a CSV line
-    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}"
+    # Determine the next event ID
+    try:
+        with open(EVENT_LIST_PATH, 'r') as file:
+            lines = file.readlines()
+            if lines:
+                last_line = lines[-1].strip()
+                last_id_str = last_line.split(',')[-1].strip()
+                try:
+                    last_id = int(last_id_str)
+                except ValueError:
+                    last_id = 0
+            else:
+                last_id = 0
+        next_id = last_id + 1
+    except Exception as e:
+        print(f"Error reading event list for ID: {e}")
+        next_id = 1
+
+    # Format the data as a CSV line with the new ID
+    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
 
     # Write the data to eventList.txt
     try:
