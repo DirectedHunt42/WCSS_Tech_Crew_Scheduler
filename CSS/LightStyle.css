@@ -1,290 +1,441 @@
 /* General body styling */
 body {
-    background-color: rgb(240, 240, 240); /* Light background for the page */
-    color: black; /* Black text for contrast */
-    display: flex; /* Flexbox layout for the body */
-    font-family: monospace; /* Monospace font for consistency */
+    background-color: rgb(240, 240, 240);
+    /* Light background for the page */
+    color: black;
+    /* Black text for contrast */
+    display: flex;
+    /* Flexbox layout for the body */
+    font-family: monospace;
+    /* Monospace font for consistency */
 }
 
 /* Title styling */
-h1, h2, h3, h4, h5, h6 {
-    color: black; /* Set title text color to black */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: black;
+    /* Set title text color to black */
 }
 
 /* Form styling */
 form {
-    display: flex; /* Flexbox layout for form elements */
-    text-align: left; /* Align text to the left */
+    display: flex;
+    /* Flexbox layout for form elements */
+    text-align: left;
+    /* Align text to the left */
 }
 
 /* Button styling */
 button {
-    background-color: #ddd; /* Light gray background */
-    border: black 1px solid; /* Black border */
-    color: black; /* Black text */
-    padding: 10px 15px; /* Padding for button size */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
+    background-color: #ddd;
+    /* Light gray background */
+    border: black 1px solid;
+    /* Black border */
+    color: black;
+    /* Black text */
+    padding: 10px 15px;
+    /* Padding for button size */
+    border-radius: 5px;
+    /* Rounded corners */
+    cursor: pointer;
+    /* Pointer cursor on hover */
 }
 
 input {
-    border: black 1px solid; /* Black border */
+    border: black 1px solid;
+    /* Black border */
 }
 
 textarea {
-    border: black 1px solid; /* Black border */
+    border: black 1px solid;
+    /* Black border */
 }
 
 button:hover {
-    background-color: #bbb; /* Darker gray on hover */
+    background-color: #bbb;
+    /* Darker gray on hover */
 }
 
 /* Link styling */
 a {
-    color: black; /* Black text for links */
-    text-decoration: none; /* Remove underline */
+    color: black;
+    /* Black text for links */
+    text-decoration: none;
+    /* Remove underline */
 }
 
 a:hover {
-    color: rgb(0, 102, 204); /* Blue color on hover */
-    text-decoration: underline; /* Add underline on hover */
+    color: rgb(0, 102, 204);
+    /* Blue color on hover */
+    text-decoration: underline;
+    /* Add underline on hover */
 }
 
 /* Sidebar styling */
 .sidebar {
-    height: 100vh; /* Full viewport height */
-    width: 250px; /* Fixed width */
-    position: fixed; /* Fixed position on the left */
-    top: 0; /* Start at the top */
-    left: 0; /* Align to the left */
-    background-color: rgb(220,220,220); /* Light gray background */
-    padding-top: 20px; /* Padding at the top */
+    height: 100vh;
+    /* Full viewport height */
+    width: 250px;
+    /* Fixed width */
+    position: fixed;
+    /* Fixed position on the left */
+    top: 0;
+    /* Start at the top */
+    left: 0;
+    /* Align to the left */
+    background-color: rgb(220, 220, 220);
+    /* Light gray background */
+    padding-top: 20px;
+    /* Padding at the top */
 }
 
 /* Sidebar link styling */
 .sidebar a {
-    padding: 10px 15px; /* Padding for clickable area */
-    text-decoration: none; /* Remove underline */
-    font-size: 18px; /* Font size for links */
-    color: black; /* Black text */
-    display: block; /* Block layout for links */
+    padding: 10px 15px;
+    /* Padding for clickable area */
+    text-decoration: none;
+    /* Remove underline */
+    font-size: 18px;
+    /* Font size for links */
+    color: black;
+    /* Black text */
+    display: block;
+    /* Block layout for links */
 }
 
 .sidebar a:hover {
-    background-color: rgb(200,200,200); /* Darker gray background on hover */
+    background-color: rgb(200, 200, 200);
+    /* Darker gray background on hover */
 }
 
 /* Content area styling */
 .content {
-    margin-left: 260px; /* Space for the sidebar */
-    padding: 20px; /* Padding for content */
+    margin-left: 260px;
+    /* Space for the sidebar */
+    padding: 20px;
+    /* Padding for content */
 }
 
 /* Tooltip styling */
 .tooltip {
-    position: relative; /* Position relative for tooltip text */
-    display: inline-block; /* Inline-block layout */
-    margin-bottom: 20px; /* Space below tooltip */
+    position: relative;
+    /* Position relative for tooltip text */
+    display: inline-block;
+    /* Inline-block layout */
+    margin-bottom: 20px;
+    /* Space below tooltip */
 }
 
 .tooltip-icon {
-    background-color: #ffffff; /* White background */
-    border-radius: 50%; /* Circular shape */
-    padding: 5px; /* Padding for size */
-    cursor: help; /* Help cursor */
-    font-size: 12px; /* Font size */
-    margin-left: 5px; /* Space to the left */
+    background-color: #ffffff;
+    /* White background */
+    border-radius: 50%;
+    /* Circular shape */
+    padding: 5px;
+    /* Padding for size */
+    cursor: help;
+    /* Help cursor */
+    font-size: 12px;
+    /* Font size */
+    margin-left: 5px;
+    /* Space to the left */
 }
 
 .tooltip-text {
-    visibility: hidden; /* Hidden by default */
-    width: 200px; /* Fixed width */
-    background-color: #ddd; /* Light gray background */
-    color: black; /* Black text */
-    text-align: center; /* Center text */
-    border-radius: 5px; /* Rounded corners */
-    padding: 10px; /* Padding for size */
-    position: absolute; /* Absolute position */
-    z-index: 1; /* Above other elements */
-    bottom: 125%; /* Position above the icon */
-    left: 50%; /* Center horizontally */
-    margin-left: -100px; /* Offset to center */
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    visibility: hidden;
+    /* Hidden by default */
+    width: 200px;
+    /* Fixed width */
+    background-color: #ddd;
+    /* Light gray background */
+    color: black;
+    /* Black text */
+    text-align: center;
+    /* Center text */
+    border-radius: 5px;
+    /* Rounded corners */
+    padding: 10px;
+    /* Padding for size */
+    position: absolute;
+    /* Absolute position */
+    z-index: 1;
+    /* Above other elements */
+    bottom: 125%;
+    /* Position above the icon */
+    left: 50%;
+    /* Center horizontally */
+    margin-left: -100px;
+    /* Offset to center */
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    /* Subtle shadow */
 }
 
 .tooltip:hover .tooltip-text {
-    visibility: visible; /* Show tooltip on hover */
+    visibility: visible;
+    /* Show tooltip on hover */
 }
 
 /* Tab container styling */
 .tab-container {
-    display: flex; /* Flexbox layout */
-    flex-direction: column; /* Column layout */
-    width: 100%; /* Full width */
-    margin: 20px; /* Margin around container */
+    display: flex;
+    /* Flexbox layout */
+    flex-direction: column;
+    /* Column layout */
+    width: 100%;
+    /* Full width */
+    margin: 20px;
+    /* Margin around container */
 }
 
 /* Tab button styling */
 .tab-buttons {
-    display: flex; /* Flexbox layout */
-    border-bottom: 2px solid #ccc; /* Bottom border */
+    display: flex;
+    /* Flexbox layout */
+    border-bottom: 2px solid #ccc;
+    /* Bottom border */
 }
 
 .tab-buttons button {
-    flex: 1; /* Equal width for buttons */
-    padding: 10px; /* Padding for size */
-    cursor: pointer; /* Pointer cursor */
-    background-color: #ddd; /* Light gray background */
-    border: none; /* No border */
-    outline: none; /* Remove outline */
-    text-align: center; /* Center text */
-    font-size: 16px; /* Font size */
+    flex: 1;
+    /* Equal width for buttons */
+    padding: 10px;
+    /* Padding for size */
+    cursor: pointer;
+    /* Pointer cursor */
+    background-color: #ddd;
+    /* Light gray background */
+    border: none;
+    /* No border */
+    outline: none;
+    /* Remove outline */
+    text-align: center;
+    /* Center text */
+    font-size: 16px;
+    /* Font size */
 }
 
 .tab-buttons button.active {
-    background-color: rgb(240, 240, 240); /* Lighter background for active tab */
-    font-weight: bold; /* Bold text */
+    background-color: rgb(240, 240, 240);
+    /* Lighter background for active tab */
+    font-weight: bold;
+    /* Bold text */
 }
 
 /* Tab content styling */
 .tab-content {
-    display: none; /* Hidden by default */
-    padding: 20px; /* Padding for content */
-    background-color: #ddd; /* Light gray background */
-    border: 1px solid #ccc; /* Border around content */
-    border-top: none; /* Remove top border */
+    display: none;
+    /* Hidden by default */
+    padding: 20px;
+    /* Padding for content */
+    background-color: #ddd;
+    /* Light gray background */
+    border: 1px solid #ccc;
+    /* Border around content */
+    border-top: none;
+    /* Remove top border */
 }
 
 .tab-content.active {
-    display: block; /* Show active tab content */
+    display: block;
+    /* Show active tab content */
 }
 
 /* Calendar container styling */
 .calendar {
-    background-color: #fff; /* White background */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    margin: 50px auto; /* Centered with margin */
+    background-color: #fff;
+    /* White background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+    margin: 50px auto;
+    /* Centered with margin */
 }
 
 /* Calendar navigation buttons */
 .calendar-header button {
-    background-color: transparent; /* Transparent background */
-    border: none; /* No border */
-    font-size: 1.5em; /* Large font size */
-    cursor: pointer; /* Pointer cursor */
-    color: black; /* Black text */
+    background-color: transparent;
+    /* Transparent background */
+    border: none;
+    /* No border */
+    font-size: 1.5em;
+    /* Large font size */
+    cursor: pointer;
+    /* Pointer cursor */
+    color: black;
+    /* Black text */
 }
 
 /* Month-year display styling */
 #month-year {
-    font-size: 1.2em; /* Slightly larger font */
-    font-weight: bold; /* Bold text */
-    color: black; /* Black text */
+    font-size: 1.2em;
+    /* Slightly larger font */
+    font-weight: bold;
+    /* Bold text */
+    color: black;
+    /* Black text */
 }
 
 /* Weekday header styling */
 .calendar-weekdays {
-    background-color: #f0f0f0; /* Light gray background */
-    display: grid; /* Grid layout */
-    grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
-    gap: 0; /* No gap between columns */
+    background-color: #f0f0f0;
+    /* Light gray background */
+    display: grid;
+    /* Grid layout */
+    grid-template-columns: repeat(7, 1fr);
+    /* 7 equal columns */
+    gap: 0;
+    /* No gap between columns */
 }
 
 /* Calendar dates grid layout */
 .calendar-dates {
-    display: grid; /* Grid layout */
-    grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
-    grid-template-rows: repeat(6, 1fr); /* 6 equal rows */
+    display: grid;
+    /* Grid layout */
+    grid-template-columns: repeat(7, 1fr);
+    /* 7 equal columns */
+    grid-template-rows: repeat(6, 1fr);
+    /* 6 equal rows */
 }
 
 /* Weekday and date cell styling */
 .calendar-weekdays div,
 .calendar-dates div {
-    text-align: center; /* Center text */
-    padding: 10px; /* Padding for size */
-    height: 75px; /* Fixed height */
-    display: flex; /* Flexbox layout */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    border-bottom: 1px solid #ccc; /* Bottom border */
-    cursor: pointer; /* Pointer cursor */
-    color: black; /* Black text */
+    text-align: center;
+    /* Center text */
+    padding: 10px;
+    /* Padding for size */
+    height: 75px;
+    /* Fixed height */
+    display: flex;
+    /* Flexbox layout */
+    justify-content: center;
+    /* Center content horizontally */
+    align-items: center;
+    /* Center content vertically */
+    border-bottom: 1px solid #ccc;
+    /* Bottom border */
+    cursor: pointer;
+    /* Pointer cursor */
+    color: black;
+    /* Black text */
 }
 
 /* Bold text for weekday headers */
 .calendar-weekdays div {
-    font-weight: bold; /* Bold text */
+    font-weight: bold;
+    /* Bold text */
 }
 
 /* Hover effect for calendar dates */
 .calendar-dates div:hover {
-    background-color: #e0e0e0; /* Slightly darker background */
+    background-color: #e0e0e0;
+    /* Slightly darker background */
 }
 
 /* Styling for days outside the current month */
 .ghost-day {
-    color: #999 !important; /* Gray text */
-    opacity: 0.7; /* Reduced opacity */
-    pointer-events: none; /* Disable interactions */
+    color: #999 !important;
+    /* Gray text */
+    opacity: 0.7;
+    /* Reduced opacity */
+    pointer-events: none;
+    /* Disable interactions */
 }
 
 /* Calendar header layout */
 .calendar-header {
-    display: grid; /* Grid layout */
-    justify-items: center; /* Center items horizontally */
-    align-items: center; /* Center items vertically */
-    padding: 10px; /* Padding for spacing */
-    gap: 10px; /* Gap between elements */
-    grid-template-columns: auto auto 1fr auto auto; /* Custom column layout */
+    display: grid;
+    /* Grid layout */
+    justify-items: center;
+    /* Center items horizontally */
+    align-items: center;
+    /* Center items vertically */
+    padding: 10px;
+    /* Padding for spacing */
+    gap: 10px;
+    /* Gap between elements */
+    grid-template-columns: auto auto 1fr auto auto;
+    /* Custom column layout */
 }
 
 /* Dropdown menu styling */
 .dropdown {
-    position: relative; /* Relative position for dropdown content */
-    display: inline-block; /* Inline-block layout */
+    position: relative;
+    /* Relative position for dropdown content */
+    display: inline-block;
+    /* Inline-block layout */
 }
 
 .dropdown-content {
-    display: none; /* Hidden by default */
-    position: absolute; /* Absolute position */
-    background-color: #f9f9f9; /* Light background */
-    min-width: 160px; /* Minimum width */
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    z-index: 1; /* Above other elements */
+    display: none;
+    /* Hidden by default */
+    position: absolute;
+    /* Absolute position */
+    background-color: #f9f9f9;
+    /* Light background */
+    min-width: 160px;
+    /* Minimum width */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow */
+    z-index: 1;
+    /* Above other elements */
 }
 
 .dropdown-content div {
-    color: black; /* Black text */
-    padding: 12px 16px; /* Padding for size */
-    text-decoration: none; /* Remove underline */
-    display: block; /* Block layout */
-    cursor: pointer; /* Pointer cursor */
-    overflow: hidden; /* Hide overflow */
+    color: black;
+    /* Black text */
+    padding: 12px 16px;
+    /* Padding for size */
+    text-decoration: none;
+    /* Remove underline */
+    display: block;
+    /* Block layout */
+    cursor: pointer;
+    /* Pointer cursor */
+    overflow: hidden;
+    /* Hide overflow */
 }
 
 .dropdown-content div:hover {
-    background-color: #e0e0e0; /* Slightly darker background on hover */
+    background-color: #e0e0e0;
+    /* Slightly darker background on hover */
 }
 
 /* Dropdown button styling */
 .dropbtn {
-    background-color: #d55; /* Light red background */
-    padding: 16px; /* Padding for size */
-    font-size: 16px; /* Font size */
-    border: none; /* No border */
-    cursor: pointer; /* Pointer cursor */
+    background-color: #d55;
+    /* Light red background */
+    padding: 16px;
+    /* Padding for size */
+    font-size: 16px;
+    /* Font size */
+    border: none;
+    /* No border */
+    cursor: pointer;
+    /* Pointer cursor */
 }
 
 /* Dates content styling */
 .dates-content {
-    display: none; /* Hidden by default */
-    position: absolute; /* Absolute position */
-    background-color: rgb(255, 255, 255); /* White background */
-    padding: 8px; /* Padding for spacing */
-    width: 300px; /* Fixed width */
-    height: 300px; /* Fixed height */
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    z-index: 2; /* Above other elements */
+    display: none;
+    /* Hidden by default */
+    position: absolute;
+    /* Absolute position */
+    background-color: rgb(255, 255, 255);
+    /* White background */
+    padding: 8px;
+    /* Padding for spacing */
+    width: 300px;
+    /* Fixed width */
+    height: 300px;
+    /* Fixed height */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow */
+    z-index: 2;
+    /* Above other elements */
 }
 
 /* Style for the theme switcher toggle */
@@ -292,7 +443,8 @@ a:hover {
     position: fixed;
     top: 10px;
     right: 10px;
-    z-index: 1000; /* Ensure it appears above all other elements */
+    z-index: 1000;
+    /* Ensure it appears above all other elements */
 }
 
 .switch {
@@ -332,10 +484,10 @@ a:hover {
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #bbb;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(10px);
 }

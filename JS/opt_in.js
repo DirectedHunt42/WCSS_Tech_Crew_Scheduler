@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser'); 
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 
@@ -72,7 +72,7 @@ app.post('/opt-in', (req, res) => {
 
 // Endpoint to get opt-in state for a user
 app.get('/opt-in-state', (req, res) => {
-    
+
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
         return res.status(401).send('User is not logged in');
@@ -89,7 +89,7 @@ app.get('/opt-in-state', (req, res) => {
 
 // Endpoint to get opt-in status
 app.get('/opt-in-status', (req, res) => {
-    
+
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
         return res.status(401).send('User is not logged in');

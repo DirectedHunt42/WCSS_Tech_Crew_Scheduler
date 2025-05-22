@@ -1,122 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    label,
+    input,
+    button {
+        margin: 10px;
+    }
+
+    input {
+        width: 200px;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    button {
+        width: 94%;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        width: 300px;
+    }
+
+    h1 {
+        font-size: 3rem;
+        text-align: center;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Admin Login</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-        }
-
-        label, input, button {
-            margin: 10px;
-        }
-
-        input {
-            width: 200px;
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        button {
-            width: 94%;
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        .button-row {
-            display: flex;
-            justify-content: center;
-            width: 300px;
-        }
-
-        h1 {
-            font-size: 3rem;
-            text-align: center;
+        #theme-switcher {
+            position: absolute;
+            top: 0px;
+            right: 0px;
         }
     </style>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WCSS Tech Admin Login</title>
-        <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
-        <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-        <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-        <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
-        <style>
-            #theme-switcher {
-                position: absolute;
-                top: 0px;
-                right: 0px;
-            }
-        </style>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const loginForm = document.getElementById("login-form");
-                const errorMessage = document.getElementById("error-message");
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("login-form");
+            const errorMessage = document.getElementById("error-message");
 
-                // Handle form submission
-                loginForm.addEventListener("submit", async (event) => {
-                    event.preventDefault();
+            // Handle form submission
+            loginForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
 
-                    const username = document.getElementById("username").value;
-                    const password = document.getElementById("password").value;
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
 
-                    try {
-                        const response = await fetch('/api/login', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ username, password, type: 'admin' })
-                        });
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, type: 'admin' })
+                    });
 
-                        const result = await response.json();
+                    const result = await response.json();
 
-                        if (response.ok) {
-                            window.location.href = "/AdminPage/AdminPage.html";
-                        } else {
-                            errorMessage.textContent = result.error || "Login failed";
-                            errorMessage.style.display = "block";
-                        }
-                    } catch (error) {
-                        console.error("Error:", error);
-                        errorMessage.textContent = "An error occurred. Please try again.";
+                    if (response.ok) {
+                        window.location.href = "/AdminPage/AdminPage.html";
+                    } else {
+                        errorMessage.textContent = result.error || "Login failed";
                         errorMessage.style.display = "block";
                     }
-                });
+                } catch (error) {
+                    console.error("Error:", error);
+                    errorMessage.textContent = "An error occurred. Please try again.";
+                    errorMessage.style.display = "block";
+                }
             });
-        </script>
-    </head>
-    <body>
-        <div id="theme-switcher">
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle">
-                <span class="slider"></span>
-            </label>
+        });
+    </script>
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <h1>Admin Login</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
+    <form id="login-form">
+        <!--Admin Username-->
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <!--Admin Password-->
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <!--Submit-->
+        <button type="submit" id="login-button">Log In</button>
+        <!--Back to Log In Button-->
+        <div class="button-row">
+            <button type="button" onclick="window.location.href='/LoginPage/LogInPage.html'">Back to Log In</button>
         </div>
-        <h1>Admin Login</h1>
-        <p id="error-message" style="color: red; display: none;"></p>
-        <form id="login-form">
-            <!--Admin Username-->
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <!--Admin Password-->
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <!--Submit-->
-            <button type="submit" id="login-button">Log In</button>
-            <!--Back to Log In Button-->
-            <div class="button-row">
-                <button type="button" onclick="window.location.href='/LoginPage/LogInPage.html'">Back to Log In</button>
-            </div>
-        </form>
-    </body>
+    </form>
+</body>
+
 </html>
