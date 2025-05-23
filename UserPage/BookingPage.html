@@ -101,6 +101,7 @@
         };
     </script>
     <h1>Booking a Tech Crew</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form action="/submit-booking" method="POST">
         <label for="name">Full Name:</label>
         <input type="text" id="name" name="name" required>
@@ -124,8 +125,8 @@
         <textarea id="notes" name="notes" rows="4"></textarea>
 
         <div class="button-row">
-            <button type="submit">Submit Booking</button>
-            <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
+            <button type="submit" style="background-color: green;">Submit Booking</button>
+            <button type="button" onclick="window.location.href='UserPage.html'" style="background-color: red;">Back to Main Page</button>
         </div>
     </form>
 </body>
