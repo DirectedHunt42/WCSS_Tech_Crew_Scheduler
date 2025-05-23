@@ -145,16 +145,14 @@ calendarDates.addEventListener('click', async (event) => {
 
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Fetch and parse the event list
-    const response = await fetch('/Resources/eventList.txt');
-    const text = await response.text();
-    const events = text.split('\n').map(line => line.split(','));
+    // Fetch and parse the event list from the Flask API (events.db)
+    const response = await fetch('http://127.0.0.1:5500/api/events');
+    const events = await response.json();
 
-    // Filter events for the selected date
+    // Filter events for the selected date (assuming date is stored as "YYYY,MM,DD")
+    const dateString = `${year},${month},${day}`;
     const matchingEvents = events.filter(event =>
-        parseInt(event[0]) === year &&
-        parseInt(event[1]) === month &&
-        parseInt(event[2]) === day
+        event.date === dateString
     );
 
     // Create and display the popup
@@ -166,12 +164,12 @@ calendarDates.addEventListener('click', async (event) => {
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             ${matchingEvents.map(event => `
-            <p>Event Name: ${event[3]}</p>
-            <p>Start Time: ${event[4]}</p>
-            <p>End Time: ${event[5]}</p>
-            <p>Location: ${event[6]}</p>
-            <p>Tech Required: ${event[7]}</p>
-            <p>Volunteer Hours: ${event[8]}</p>
+            <p>Event Name: ${event.name}</p>
+            <p>Start Time: ${event.startTime}</p>
+            <p>End Time: ${event.endTime}</p>
+            <p>Location: ${event.location}</p>
+            <p>Tech Required: ${event.people}</p>
+            <p>Volunteer Hours: ${event.volunteerHours}</p>
             <button class="opt-in-btn" style="${buttonStyle}">Opt In</button>
             `).join('')}
         `;

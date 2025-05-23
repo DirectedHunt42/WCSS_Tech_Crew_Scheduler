@@ -166,34 +166,41 @@
         }
     </script>
     <script>
-        // Load events into the "Edit Event" section
+        // Load events into the "Edit Event" section from events.db via backend API
         function loadEvents() {
-            fetch('../Resources/eventList.txt')
-                .then(response => response.text())
-                .then(data => {
-                    const events = data.split('\n').filter(event => event.trim() !== '');
+            fetch('http://127.0.0.1:5500/api/events')
+                .then(response => response.json())
+                .then(events => {
                     const eventList = document.getElementById('edit-event-list');
                     eventList.innerHTML = ''; // Clear the list
 
                     events.forEach(event => {
-                        const lastCommaIndex = event.lastIndexOf(',');
-                        const trimmedEvent = event.substring(0, lastCommaIndex).trim();
-                        const ID = event.substring(lastCommaIndex + 1).trim();
-
                         const listItem = document.createElement('li');
-                        listItem.textContent = trimmedEvent;
+                        // Display all event info except ID, button goes under all text
+                        listItem.innerHTML = `
+                            <strong>${event.name}</strong><br>
+                            Date: ${event.date}<br>
+                            Location: ${event.location}<br>
+                            Start Time: ${event.startTime}<br>
+                            End Time: ${event.endTime}<br>
+                            People: ${event.people}<br>
+                            Volunteer Hours: ${event.volunteerHours}<br>
+                        `;
 
                         // Create the "Edit Event" button
                         const editButton = document.createElement('button');
                         editButton.textContent = 'Edit Event';
-                        editButton.style.marginLeft = '10px';
+                        editButton.style.marginTop = '8px';
+                        editButton.style.marginBottom = '16px'; // Add margin below
                         editButton.style.border = '1px solid black';
                         editButton.style.backgroundColor = '#242424';
                         editButton.onclick = () => {
-                            const encodedID = encodeURIComponent(ID);
+                            const encodedID = encodeURIComponent(event.id);
                             window.location.href = `AdminEventEditor.html?id=${encodedID}`;
                         };
 
+                        // Place button under all text
+                        listItem.appendChild(document.createElement('br'));
                         listItem.appendChild(editButton);
                         eventList.appendChild(listItem);
                     });
@@ -202,48 +209,55 @@
         }
     </script>
     <script>
-        // Load events into the "Remove Event" section
+        // Load events into the "Remove Event" section from events.db via backend API
         function loadRemoveEvents() {
-            fetch('../Resources/eventList.txt')
-                .then(response => response.text())
-                .then(data => {
-                    const events = data.split('\n').filter(event => event.trim() !== '');
+            fetch('http://127.0.0.1:5500/api/events')
+                .then(response => response.json())
+                .then(events => {
                     const removeEventList = document.getElementById('remove-event-list');
                     removeEventList.innerHTML = ''; // Clear the list
 
                     events.forEach(event => {
-                        const lastCommaIndex = event.lastIndexOf(',');
-                        const trimmedEvent = event.substring(0, lastCommaIndex).trim();
-                        const ID = event.substring(lastCommaIndex + 1).trim();
-
                         const listItem = document.createElement('li');
-                        listItem.textContent = trimmedEvent;
+                        // Display all event info except ID, button goes under all text
+                        listItem.innerHTML = `
+                            <strong>${event.name}</strong><br>
+                            Date: ${event.date}<br>
+                            Location: ${event.location}<br>
+                            Start Time: ${event.startTime}<br>
+                            End Time: ${event.endTime}<br>
+                            People: ${event.people}<br>
+                            Volunteer Hours: ${event.volunteerHours}<br>
+                        `;
 
                         // Create the "Remove" button
                         const removeButton = document.createElement('button');
                         removeButton.textContent = 'Remove';
-                        removeButton.style.marginLeft = '10px';
+                        removeButton.style.marginTop = '8px';
+                        removeButton.style.marginBottom = '16px'; // Add margin below
                         removeButton.style.border = '1px solid black';
                         removeButton.style.backgroundColor = '#ff4d4d';
                         removeButton.onclick = () => {
-                            fetch(`http://127.0.0.1:5500/remove_event`, { // Use the Flask server's URL
+                            fetch('http://127.0.0.1:5500/remove_event', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ id: ID }),
+                            },
+                            body: JSON.stringify({ id: event.id }),
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Event removed successfully!');
+                                    loadRemoveEvents(); // Reload the list
+                                } else {
+                                    alert('Failed to remove event.');
+                                }
                             })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert('Event removed successfully!');
-                                        loadRemoveEvents(); // Reload the list
-                                    } else {
-                                        alert('Failed to remove event.');
-                                    }
-                                })
-                                .catch(error => console.error('Error removing event:', error));
+                            .catch(error => console.error('Error removing event:', error));
                         };
 
+                        // Place button under all text
+                        listItem.appendChild(document.createElement('br'));
                         listItem.appendChild(removeButton);
                         removeEventList.appendChild(listItem);
                     });
