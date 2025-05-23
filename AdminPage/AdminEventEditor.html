@@ -81,6 +81,7 @@
         </label>
     </div>
     <h1>Edit Event</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form id="eventForm">
 
         <label for="eventDate">Event Date:</label>
@@ -130,12 +131,14 @@
 
             } catch (error) {
                 console.error(error);
-                alert('Error loading event data');
+                alert('Error loading event data!');
+                windows.location.href = 'AdminEventList.html'; // Redirect to the event list if there's an error
             }
         }
 
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const errorMessage = document.getElementById('error-message');
 
             const updatedEvent = {
                 id: eventId,
@@ -148,6 +151,12 @@
                 voulenteerHours: document.getElementById('volunteerHours').value, // Correct field name
             };
 
+            if (startTime >= endTime) {
+                errorMessage.textContent = 'Start time must be before end time.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
             try {
                 const response = await fetch('/api/updateEvent', {
                     method: 'POST',
@@ -155,13 +164,15 @@
                     body: JSON.stringify(updatedEvent),
                 });
 
-                if (!response.ok) throw new Error('Failed to save event data');
+                if (!response.ok) {
+                    throw new Error('Failed to save event data');
+                }
 
                 alert('Event updated successfully');
                 window.location.href = 'AdminEventList.html';
             } catch (error) {
                 console.error(error);
-                alert('Error saving event data');
+                alert('Error saving event data!');
             }
         });
 
