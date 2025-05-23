@@ -224,36 +224,40 @@ calendarDates.addEventListener('click', async (event) => {
     const userOptInStatus = await fetchOptInStatus();
 
     // Create and display the popup
+    const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
     if (matchingEvents.length > 0) {
-        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
-            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
-            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+                <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1; margin: 0;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+                <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
-            ${matchingEvents.map(event => {
-                const eventName = event[3];
-                const userEvent = userOptInStatus.find(e => e.name.trim() === eventName.trim());
-                let buttonLabel = 'Opt In';
-                let disabled = '';
-                if (userEvent) {
-                    if (userEvent.status === 'requested') buttonLabel = 'Cancel Request';
-                    else if (userEvent.status === 'denied') buttonLabel = 'Opt-in Again';
-                    else if (userEvent.status === 'approved') {
-                        buttonLabel = 'Opted In';
-                        disabled = 'disabled';
+            <div class="popup-events-list" style="max-height: 300px; overflow-y: auto; width: 100%; box-sizing: border-box;">
+                ${matchingEvents.map(event => {
+                    const eventName = event[3];
+                    const userEvent = userOptInStatus.find(e => e.name.trim() === eventName.trim());
+                    let buttonLabel = 'Opt In';
+                    let disabled = '';
+                    if (userEvent) {
+                        if (userEvent.status === 'requested') buttonLabel = 'Cancel Request';
+                        else if (userEvent.status === 'denied') buttonLabel = 'Opt-in Again';
+                        else if (userEvent.status === 'approved') {
+                            buttonLabel = 'Opted In';
+                            disabled = 'disabled';
+                        }
                     }
-                }
-                return `
-                <p>Event Name: ${event[3]}</p>
-                <p>Start Time: ${event[4]}</p>
-                <p>End Time: ${event[5]}</p>
-                <p>Location: ${event[6]}</p>
-                <p>Tech Required: ${event[7]}</p>
-                <p>Volunteer Hours: ${event[8]}</p>
-                <button class="opt-in-btn" data-event-name="${eventName}" ${disabled} style="${buttonStyle}">${buttonLabel}</button>
-                `;
-            }).join('')}
+                    return `
+                        <div style="border-bottom: 1px solid #333; padding: 8px 0; overflow: hidden;">
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event[3]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Start Time:</strong> ${event[4]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>End Time:</strong> ${event[5]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Location:</strong> ${event[6]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Tech Required:</strong> ${event[7]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Volunteer Hours:</strong> ${event[8]}</p>
+                            <button class="opt-in-btn" data-event-name="${eventName}" ${disabled} style="${buttonStyle}; margin-top: 5px;">${buttonLabel}</button>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
         `;
 
         // Add event listeners to the buttons
@@ -271,22 +275,30 @@ calendarDates.addEventListener('click', async (event) => {
             datesContent.style.display = 'none';
         });
     } else {
-        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
-            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
-            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
-            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative;">
+                <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+                <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             <p>No events for this date.</p>
         `;
-
-        // Add event listener to close button
         const closePopupBtn = datesContent.querySelector('.close-popup-btn');
         closePopupBtn.addEventListener('click', () => {
             datesContent.style.display = 'none';
         });
     }
+
+    // Style the popup for fixed width and scrolling
     datesContent.style.display = 'block';
+    datesContent.style.width = '300px';
+    datesContent.style.maxHeight = '300px';
+    datesContent.style.overflow = 'hidden';
+    datesContent.style.background = '#222';
+    datesContent.style.color = '#fff';
+    datesContent.style.borderRadius = '8px';
+    datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
+    datesContent.style.padding = '16px';
+    datesContent.style.position = 'absolute';
 
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;
