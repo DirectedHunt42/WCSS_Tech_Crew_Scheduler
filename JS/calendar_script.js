@@ -175,6 +175,18 @@ calendarDates.addEventListener('click', (event) => {
             </div>
         `;
 
+        // Style the popup for fixed width and scrolling
+        datesContent.style.display = 'block';
+        datesContent.style.width = '300px';
+        datesContent.style.maxHeight = '300px';
+        datesContent.style.overflow = 'hidden';
+        datesContent.style.background = '#222';
+        datesContent.style.color = '#fff';
+        datesContent.style.borderRadius = '8px';
+        datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
+        datesContent.style.padding = '16px';
+        datesContent.style.position = 'absolute';
+
         // Add event listener to close button
         const closePopupBtn = datesContent.querySelector('.close-popup-btn');
         closePopupBtn.addEventListener('click', () => {
