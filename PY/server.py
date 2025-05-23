@@ -14,7 +14,6 @@ CORS(app, supports_credentials=True)
 EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
-MEMBER_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/memberList.txt')
 EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 
@@ -34,8 +33,26 @@ def save_event():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
-    # Format the data as a CSV line
-    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}"
+    # Determine the next event ID
+    try:
+        with open(EVENT_LIST_PATH, 'r') as file:
+            lines = file.readlines()
+            if lines:
+                last_line = lines[-1].strip()
+                last_id_str = last_line.split(',')[-1].strip()
+                try:
+                    last_id = int(last_id_str)
+                except ValueError:
+                    last_id = 0
+            else:
+                last_id = 0
+        next_id = last_id + 1
+    except Exception as e:
+        print(f"Error reading event list for ID: {e}")
+        next_id = 1
+
+    # Format the data as a CSV line with the new ID
+    event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
 
     # Write the data to eventList.txt
     try:
@@ -104,46 +121,22 @@ def handle_cookies():
 
 @app.route('/remove-member', methods=['POST'])
 def remove_member():
-    # Get the username of the member to remove
     member_to_remove = request.json.get('member', '').strip()
-
     if not member_to_remove:
         return jsonify({"error": "Member name is required"}), 400
 
     try:
-        # Remove the member from the MEMBER_LIST_PATH file
-        with open(MEMBER_LIST_PATH, 'r') as file:
-            members = file.readlines()
-
-        # Filter out the member to remove
-        updated_members = [member for member in members if not member.startswith(f"{member_to_remove},")]
-        if len(members) == len(updated_members):
-            return jsonify({"error": f"Member '{member_to_remove}' not found in the member list"}), 404
-
-        # Write the updated member list back to the file
-        with open(MEMBER_LIST_PATH, 'w') as file:
-            file.writelines(updated_members)
-        print(f"Member '{member_to_remove}' removed from the member list successfully!")
-
-        # Remove the member from the USER_LOGIN_PATH database
+        # Remove the member from the USER_LOGIN_PATH database only
         conn = sqlite3.connect(USER_LOGIN_PATH)
         cursor = conn.cursor()
-
-        # Delete the member from the database
         cursor.execute('DELETE FROM users WHERE username = ?', (member_to_remove,))
         conn.commit()
-
-        # Check if a row was deleted
         if cursor.rowcount == 0:
             conn.close()
             return jsonify({"error": f"Member '{member_to_remove}' not found in the login database"}), 404
-
         conn.close()
-
         print(f"Member '{member_to_remove}' removed from the login database successfully!")
         return jsonify({"success": True, "message": f"Member '{member_to_remove}' removed successfully!"}), 200
-    except FileNotFoundError:
-        return jsonify({"error": "Member list file not found"}), 500
     except sqlite3.Error as e:
         print(f"Database error: {e}")
         return jsonify({"error": "Database error"}), 500
@@ -153,7 +146,6 @@ def remove_member():
 
 @app.route('/add-member', methods=['POST'])
 def add_member():
-    # Get the username, job, password, and email from the request
     username = request.json.get('username')
     job = request.json.get('job')
     password = request.json.get('password')
@@ -163,33 +155,23 @@ def add_member():
         return jsonify({"error": "Username, job, password, and email are required"}), 400
 
     try:
-        # Hash the password
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
-        # Add the member to the MEMBER_LIST_PATH file (excluding email)
-        new_member = f"{username}, {job}\n"
-        with open(MEMBER_LIST_PATH, 'a') as file:
-            file.write(new_member)
-        print(f"Member '{username}' added to the member list successfully!")
-
-        # Add the member to the USER_LOGIN_PATH database
+        # Add the member to the USER_LOGIN_PATH database with job
         conn = sqlite3.connect(USER_LOGIN_PATH)
         cursor = conn.cursor()
-
-        # Create the users table if it doesn't exist
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL
+            email TEXT UNIQUE NOT NULL,
+            job TEXT NOT NULL
         )
         ''')
-
-        # Insert the new member into the database
-        cursor.execute('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', 
-                       (username, hashed_password, email))
+        cursor.execute('INSERT INTO users (username, password, email, job) VALUES (?, ?, ?, ?)', 
+                       (username, hashed_password, email, job))
         conn.commit()
         conn.close()
 
@@ -200,7 +182,21 @@ def add_member():
     except Exception as e:
         print(f"Error adding member: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
-    
+
+@app.route('/api/get-members', methods=['GET'])
+def get_members():
+    try:
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+        cursor.execute('SELECT username, job FROM users')
+        members = cursor.fetchall()
+        conn.close()
+        member_list = [{"username": m[0], "job": m[1]} for m in members]
+        return jsonify(member_list), 200
+    except Exception as e:
+        print(f"Error fetching members: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
 @app.route('/api/getEvent', methods=['GET'])
 def get_event():
     event_id = request.args.get('id')
@@ -210,22 +206,22 @@ def get_event():
     try:
         with open(EVENT_LIST_FILE, 'r') as file:
             lines = file.readlines()
-            line_index = int(event_id) - 1
-            if line_index < 0 or line_index >= len(lines):
-                return "Event not found", 404
-
-            line = lines[line_index].strip().split(', ')
-            event = {
-                "id": event_id,
-                "date": line[0],
-                "name": line[1],
-                "startTime": line[2],
-                "endTime": line[3],
-                "location": line[4],
-                "TCP": line[5],
-                "voulenteerHours": line[6],
-            }
-            return jsonify(event)
+            for line in lines:
+                parts = [p.strip() for p in line.strip().split(',')]
+                if parts and parts[-1] == event_id:
+                    # Adjust indices as needed for your CSV format
+                    event = {
+                        "id": event_id,
+                        "date": ','.join(parts[0:3]),  # year, month, day
+                        "name": parts[3],
+                        "startTime": parts[4],
+                        "endTime": parts[5],
+                        "location": parts[6],
+                        "TCP": parts[7],
+                        "voulenteerHours": parts[8],
+                    }
+                    return jsonify(event)
+            return "Event not found", 404
     except Exception as e:
         return f"Error reading event list: {str(e)}", 500
 
@@ -239,11 +235,17 @@ def update_event():
         with open(EVENT_LIST_FILE, 'r') as file:
             lines = file.readlines()
 
-        line_index = int(updated_event['id']) - 1
-        if line_index < 0 or line_index >= len(lines):
-            return "Event not found", 404
+        found = False
+        for i, line in enumerate(lines):
+            parts = [p.strip() for p in line.strip().split(',')]
+            if parts and parts[-1] == str(updated_event['id']):
+                # Compose the updated line (adjust indices as needed)
+                lines[i] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
+                found = True
+                break
 
-        lines[line_index] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
+        if not found:
+            return "Event not found", 404
 
         with open(EVENT_LIST_FILE, 'w') as file:
             file.writelines(lines)
@@ -344,7 +346,7 @@ def validate_and_send_reset_email():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "Internal server error"}), 500
-    
+
 @app.route('/api/update-password', methods=['POST'])
 def update_password():
     data = request.json
@@ -354,11 +356,19 @@ def update_password():
     code = data.get('code')
 
     if not username or not email or not new_password or not code:
-        return jsonify({"error": "Username, email, new password, and code are required"}), 400
+        if not username:
+            return jsonify({"error": "Username is required"}), 471
+        if not email:
+            return jsonify({"error": "Email is required"}), 472
+        if not new_password:
+            return jsonify({"error": "New password is required"}), 473
+        if not code:
+            return jsonify({"error": "Code is required"}), 474
+        return jsonify({"error": "Username, email, new password, and code are required"}), 470
 
     entry = reset_codes.get(username)
     if not entry or entry['code'] != code or int(time.time()) > entry['expires']:
-        return jsonify({"error": "Invalid or expired code"}), 400
+        return jsonify({"error": "Invalid or expired code"}), 401
 
     try:
         salt = bcrypt.gensalt()

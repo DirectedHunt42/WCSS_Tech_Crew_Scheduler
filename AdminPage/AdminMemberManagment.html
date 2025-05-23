@@ -1,98 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WCSS Tech Admin Member Management</title>
-        <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
-        <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-        <style>
-            body {
-                display: flex;
-                flex-direction: column;
-            }
-            .content {
-                margin-left: 250px;
-                padding: 20px;
-            }
-        </style>
-        <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
-        <script src="/JS/authClient.js"defer></script>
-        <script>
-            // Fetch and display the member list
-            function loadMembers() {
-                fetch('/Resources/memberList.txt')
-                    .then(response => response.text())
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Admin Member Management</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <script src="/JS/authClient.js" defer></script>
+    <script>
+        // Fetch and display the member list
+        function loadMembers() {
+            fetch('/api/get-members')
+                .then(response => response.json())
+                .then(data => {
+                    const memberList = document.getElementById('member-list');
+                    memberList.innerHTML = '';
+                    data.forEach(member => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${member.username}, ${member.job}`;
+
+                        // Create the "Remove" button
+                        const removeButton = document.createElement('button');
+                        removeButton.textContent = 'Remove';
+                        removeButton.style.marginLeft = '10px';
+                        removeButton.onclick = () => removeMember(member);
+
+                        listItem.appendChild(removeButton);
+                        memberList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching member list:', error));
+        }
+
+        // Remove a member
+        function removeMember(member) {
+            const trimmedMember = member.username; // Use the username property directly
+            const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
+            if (confirmRemoval) {
+                fetch('/remove-member', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ member: trimmedMember }), // Send only the username
+                })
+                    .then(response => response.json())
                     .then(data => {
-                        const members = data.split('\n').filter(member => member.trim() !== '');
-                        const memberList = document.getElementById('member-list');
-                        memberList.innerHTML = ''; // Clear the list
-        
-                        members.forEach(member => {
-                            const listItem = document.createElement('li');
-                            listItem.textContent = member;
-        
-                            // Create the "Remove" button
-                            const removeButton = document.createElement('button');
-                            removeButton.textContent = 'Remove';
-                            removeButton.style.marginLeft = '10px';
-                            removeButton.onclick = () => removeMember(member);
-        
-                            listItem.appendChild(removeButton);
-                            memberList.appendChild(listItem);
-                        });
+                        if (data.success) {
+                            alert(data.message);
+                            location.reload();
+                        } else {
+                            alert(`Error: ${data.error}`);
+                        }
                     })
-                    .catch(error => console.error('Error fetching member list:', error));
+                    .catch(error => console.error('Error:', error));
             }
-        
-            // Remove a member
-            function removeMember(member) {
-                const trimmedMember = member.split(',')[0].trim(); // Extract username and trim whitespace
-                const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
-                if (confirmRemoval) {
-                    fetch('/remove-member', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ member: trimmedMember }), // Send only the username
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(data.message);
-                                location.reload();
-                            } else {
-                                alert(`Error: ${data.error}`);
-                            }
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-            }
-        
-            // Load members when the page loads
-            window.onload = loadMembers;
-        </script>
-    </head>
-    <body>
-        <div id="theme-switcher">
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="sidebar">
-            <a href="AdminPage.html">Admin Main</a>
-            <a href="AdminEventList.html">Event Management</a>
-            <a href="AdminMemberManagment.html">Member Management</a>
-            <a href="/UserPage/UserPage.html">UserPage</a>
-            <a href="/MemberPage/membersPage.html">MemberPage</a>
-            <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
-        </div>
-        <div class="content">
-            <h1>Member Management</h1>
-            <ul id="member-list"></ul>
-            <button onclick="window.location.href='AdminAddMember.html'">Add Member</button>
-        </div>
-    </body>
+        }
+
+        // Load members when the page loads
+        window.onload = loadMembers;
+    </script>
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="sidebar">
+        <a href="AdminPage.html">Admin Main</a>
+        <a href="AdminEventList.html">Event Management</a>
+        <a href="AdminMemberManagment.html">Member Management</a>
+        <a href="/UserPage/UserPage.html">UserPage</a>
+        <a href="/MemberPage/membersPage.html">MemberPage</a>
+        <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
+    </div>
+    <div class="content">
+        <h1>Member Management</h1>
+        <ul id="member-list"></ul>
+        <button onclick="window.location.href='AdminAddMember.html'">Add Member</button>
+    </div>
+</body>
+
 </html>

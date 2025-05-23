@@ -22,19 +22,24 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0; /* Remove default margin for full centering */
+            margin: 0;
+            /* Remove default margin for full centering */
             box-sizing: border-box;
             font-family: monospace;
-            overflow-x: hidden; /* Prevent horizontal overflow */
+            overflow-x: hidden;
+            /* Prevent horizontal overflow */
         }
 
         .content {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Take full viewport height */
-            width: 100vw;  /* Take full viewport width */
-            margin: 0;     /* Remove default margin */
+            height: 100vh;
+            /* Take full viewport height */
+            width: 100vw;
+            /* Take full viewport width */
+            margin: 0;
+            /* Remove default margin */
         }
 
         form {
@@ -217,7 +222,8 @@
     <div class="content">
         <form onsubmit="submitForm(event)">
             <label for="date">Date (MM-DD-YYYY):</label>
-            <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}" title="Please enter the date in the format MM-DD-YYYY">
+            <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}"
+                title="Please enter the date in the format MM-DD-YYYY">
 
             <label for="EventName">Event Name:</label>
             <input type="text" id="EventName" name="EventName" required>

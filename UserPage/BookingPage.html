@@ -1,106 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>WCSS Book a Tech Crew</title>
-        <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
-        <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-        <style>
-            h1 {
-                margin-top: 200px;
-                font-size: 3rem;
-                text-align: center;
-            }
 
-            body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 20px;
-                box-sizing: border-box;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Book a Tech Crew</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        h1 {
+            margin-top: 200px;
+            font-size: 3rem;
+            text-align: center;
+        }
 
-            form {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 10px;
-            }
-            
-            label {
-                display: block;
-                margin-bottom: 10px;
-            }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+        }
 
-            input, select, textarea {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 20px;
-                border-radius: 5px;
-                border: 1px solid #ccc;
-            }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
 
-            button {
-                width: 94%;
-                padding: 10px;
-                font-size: 12px;
-            }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
 
-            .button-row {
-                display: flex;
-                justify-content: space-between;
-                width: 300px;
-                margin-bottom: 20px;
-            }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-            .button-row button {
-                width: 48%;
-            }
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
 
-            input[type="date"]:hover, input[type="time"]:hover {
-                cursor: pointer;
-            }
-        </style>
-        <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-        <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
-    </head>
-    <body>
-        <div id="theme-switcher">
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle">
-                <span class="slider"></span>
-            </label>
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <h1>Booking a Tech Crew</h1>
+    <form action="/submit-booking" method="POST">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="date">Booking Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="time">Booking Time:</label>
+        <input type="time" id="time" name="time" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" rows="4" required>
+
+        <label for="equipment">Equipment Needed: (Please List)</label>
+        <textarea id="equipment" name="equipment" rows="4"></textarea>
+
+        <label for="notes">Additional Notes:</label>
+        <textarea id="notes" name="notes" rows="4"></textarea>
+
+        <div class="button-row">
+            <button type="submit">Submit Booking</button>
+            <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
         </div>
-        <h1>Booking a Tech Crew</h1>
-        <form action="/submit-booking" method="POST">
-            <label for="name">Full Name:</label>
-            <input type="text" id="name" name="name" required>
+    </form>
+</body>
 
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="email" required>
-
-            <label for="date">Booking Date:</label>
-            <input type="date" id="date" name="date" required>
-
-            <label for="time">Booking Time:</label>
-            <input type="time" id="time" name="time" required>
-
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" rows="4" required>
-
-            <label for="equipment">Equipment Needed: (Please List)</label>
-            <textarea id="equipment" name="equipment" rows="4"></textarea>
-
-            <label for="notes">Additional Notes:</label>
-            <textarea id="notes" name="notes" rows="4"></textarea>
-
-            <div class="button-row">
-                <button type="submit">Submit Booking</button>
-                <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
-            </div>
-        </form>
-    </body>
 </html>

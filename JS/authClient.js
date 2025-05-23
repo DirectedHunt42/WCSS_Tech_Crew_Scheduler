@@ -25,22 +25,22 @@ async function checkLoggedInUser(redirectToLogin = true) {
         ) {
             console.log("No user or admin is logged in. Redirecting to login page...");
             if (redirectToLogin) {
-            window.location.href = "/LoginPage/LogInPage.html";
+                window.location.href = "/LoginPage/LogInPage.html";
             } else {
-            console.log("No user or admin is logged in.");
+                console.log("No user or admin is logged in.");
             }
         } else {
             if (data.loggedInAdmin) {
-            console.log("Admin is logged in. No redirection needed.");
-            return data.loggedInAdmin;
+                console.log("Admin is logged in. No redirection needed.");
+                return data.loggedInAdmin;
             }
 
             if (data.loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
-            console.log("User cannot access admin pages. Redirecting to member page...");
-            window.location.href = "/MemberPage/membersPage.html";
+                console.log("User cannot access admin pages. Redirecting to member page...");
+                window.location.href = "/MemberPage/membersPage.html";
             } else {
-            console.log(`Logged in as: ${data.loggedInUser}`);
-            return data.loggedInUser;
+                console.log(`Logged in as: ${data.loggedInUser}`);
+                return data.loggedInUser;
             }
         }
     } catch (error) {
