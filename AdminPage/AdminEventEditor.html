@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Admin Editor</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
         h1 {
@@ -21,8 +22,6 @@
             height: 100vh;
             margin: 20px;
             box-sizing: border-box;
-            background-color: rgb(20, 20, 20);
-            color: white;
             font-family: monospace;
         }
 
@@ -71,9 +70,16 @@
         }
     </style>
     <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
 </head>
 
 <body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
     <h1>Edit Event</h1>
     <form id="eventForm">
 
@@ -98,7 +104,7 @@
         <label for="volunteerHours">Volunteer Hours:</label>
         <input type="text" id="volunteerHours" name="volunteerHours" required>
 
-        <button type="submit">Save Changes</button>
+        <button type="submit" style="background-color: green">Save Changes</button>
     </form>
 
     <script>
