@@ -125,27 +125,7 @@
             z-index: 999;
         }
     </style>
-    <script>
-        // Function to switch stylesheets based on the user's preference
-        function applyTheme() {
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            const linkElement = document.querySelector('link[rel="stylesheet"]');
-
-            if (darkModeMediaQuery.matches) {
-                // If the user prefers dark mode, load the dark stylesheet
-                linkElement.href = '/CSS/DarkStyle.css';
-            } else {
-                // If the user prefers light mode, load the light stylesheet
-                linkElement.href = '/CSS/LightStyle.css';
-            }
-        }
-
-        // Apply the theme on page load
-        applyTheme();
-
-        // Listen for changes in the user's color scheme preference
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-    </script>
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
 </head>
 
 <body>
@@ -155,6 +135,9 @@
             <span class="slider"></span>
         </label>
     </div>
+
+    <h1>Admin Booking</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
 
     <script>
         // Function to get query parameters from the URL
@@ -250,5 +233,4 @@
         </form>
     </div>
 </body>
-
 </html>

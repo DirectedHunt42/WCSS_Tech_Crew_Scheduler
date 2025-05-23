@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Admin Editor</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
         h1 {
@@ -21,8 +22,6 @@
             height: 100vh;
             margin: 20px;
             box-sizing: border-box;
-            background-color: rgb(20, 20, 20);
-            color: white;
             font-family: monospace;
         }
 
@@ -71,23 +70,31 @@
         }
     </style>
     <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
 </head>
 
 <body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
     <h1>Edit Event</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form id="eventForm">
 
         <label for="eventDate">Event Date:</label>
-        <input type="text" id="eventDate" name="eventDate" required>
+        <input type="date" id="eventDate" name="eventDate" required>
 
         <label for="eventName">Event Name:</label>
         <input type="text" id="eventName" name="eventName" required>
 
         <label for="eventStartTime">Start Time:</label>
-        <input type="text" id="eventStartTime" name="eventStartTime" required>
+        <input type="time" id="eventStartTime" name="eventStartTime" required>
 
         <label for="eventEndTime">End Time:</label>
-        <input type="text" id="eventEndTime" name="eventEndTime" required>
+        <input type="time" id="eventEndTime" name="eventEndTime" required>
 
         <label for="eventLocation">Location:</label>
         <input type="text" id="eventLocation" name="eventLocation" required>
@@ -98,7 +105,10 @@
         <label for="volunteerHours">Volunteer Hours:</label>
         <input type="text" id="volunteerHours" name="volunteerHours" required>
 
-        <button type="submit">Save Changes</button>
+        <div class="button-row">
+            <button type="submit" style="background-color: green">Save Changes</button>
+            <button type="button" style="background-color: red" onclick="window.location.href='AdminEventList.html'">Cancel</button>
+        </div>
     </form>
 
     <script>
@@ -121,12 +131,14 @@
 
             } catch (error) {
                 console.error(error);
-                alert('Error loading event data');
+                alert('Error loading event data!');
+                windows.location.href = 'AdminEventList.html'; // Redirect to the event list if there's an error
             }
         }
 
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const errorMessage = document.getElementById('error-message');
 
             const updatedEvent = {
                 id: eventId,
@@ -139,6 +151,12 @@
                 voulenteerHours: document.getElementById('volunteerHours').value, // Correct field name
             };
 
+            if (startTime >= endTime) {
+                errorMessage.textContent = 'Start time must be before end time.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
             try {
                 const response = await fetch('/api/updateEvent', {
                     method: 'POST',
@@ -146,13 +164,15 @@
                     body: JSON.stringify(updatedEvent),
                 });
 
-                if (!response.ok) throw new Error('Failed to save event data');
+                if (!response.ok) {
+                    throw new Error('Failed to save event data');
+                }
 
                 alert('Event updated successfully');
                 window.location.href = 'AdminEventList.html';
             } catch (error) {
                 console.error(error);
-                alert('Error saving event data');
+                alert('Error saving event data!');
             }
         });
 
