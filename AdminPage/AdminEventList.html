@@ -224,7 +224,7 @@
                         removeButton.textContent = 'Remove';
                         removeButton.style.marginLeft = '10px';
                         removeButton.style.border = '1px solid black';
-                        removeButton.style.backgroundColor = '#ff4d4d';
+                        removeButton.style.backgroundColor = 'red';
                         removeButton.onclick = () => {
                             fetch(`http://127.0.0.1:5500/remove_event`, { // Use the Flask server's URL
                                 method: 'POST',
