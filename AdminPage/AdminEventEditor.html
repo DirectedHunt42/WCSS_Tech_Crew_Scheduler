@@ -84,16 +84,16 @@
     <form id="eventForm">
 
         <label for="eventDate">Event Date:</label>
-        <input type="text" id="eventDate" name="eventDate" required>
+        <input type="date" id="eventDate" name="eventDate" required>
 
         <label for="eventName">Event Name:</label>
         <input type="text" id="eventName" name="eventName" required>
 
         <label for="eventStartTime">Start Time:</label>
-        <input type="text" id="eventStartTime" name="eventStartTime" required>
+        <input type="time" id="eventStartTime" name="eventStartTime" required>
 
         <label for="eventEndTime">End Time:</label>
-        <input type="text" id="eventEndTime" name="eventEndTime" required>
+        <input type="time" id="eventEndTime" name="eventEndTime" required>
 
         <label for="eventLocation">Location:</label>
         <input type="text" id="eventLocation" name="eventLocation" required>
@@ -104,7 +104,10 @@
         <label for="volunteerHours">Volunteer Hours:</label>
         <input type="text" id="volunteerHours" name="volunteerHours" required>
 
-        <button type="submit" style="background-color: green">Save Changes</button>
+        <div class="button-row">
+            <button type="submit" style="background-color: green">Save Changes</button>
+            <button type="button" style="background-color: red" onclick="window.location.href='AdminEventList.html'">Cancel</button>
+        </div>
     </form>
 
     <script>
