@@ -5,12 +5,12 @@
       "status": "approved"
     },
     {
-      "name": " Musical Rehersal 2",
-      "status": "denied"
-    },
-    {
       "name": " Musical Rehersal 3",
       "status": "approved"
+    },
+    {
+      "name": " testing",
+      "status": "denied"
     }
   ],
   "Jack Murray": []

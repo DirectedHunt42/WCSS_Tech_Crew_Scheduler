@@ -38,31 +38,10 @@
     <div class="content">
         <h1>Upcoming Events</h1>
         <script>
-            async function optIn(eventName) {
-                try {
-                    const response = await fetch('http://127.0.0.1:6421/opt-in', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include', // Include cookies in the request
-                        body: JSON.stringify({ eventName })
-                    });
-
-                    if (response.ok) {
-                        alert('Opt-in request sent successfully!');
-                    } else {
-                        const errorText = await response.text();
-                        alert(`Failed to send opt-in request: ${errorText}`);
-                    }
-                } catch (error) {
-                    console.error('Error during opt-in:', error);
-                    alert('Failed to send opt-in request. Please try again.');
-                }
-            }
-
             async function fetchOptInStatus() {
                 try {
                     const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
-                        credentials: 'include', // Include cookies in the request
+                        credentials: 'include'
                     });
                     if (response.ok) {
                         return await response.json();
@@ -77,36 +56,48 @@
             }
 
             async function toggleOptIn(eventName, button) {
-                const isCanceling = button.textContent === 'Cancel Request';
+                let endpoint = '/opt-in';
+                let successMsg = 'Opt-in request sent successfully!';
+                let failMsg = 'Failed to send opt-in request: ';
+                let nextLabel = 'Cancel Request';
+                let revertLabel = 'Opt into event';
+
+                if (button.textContent === 'Cancel Request') {
+                    endpoint = '/cancel-opt-in';
+                    successMsg = 'Opt-in request canceled successfully!';
+                    failMsg = 'Failed to cancel opt-in request: ';
+                    nextLabel = 'Opt into event';
+                    revertLabel = 'Cancel Request';
+                } else if (button.textContent === 'Opt-in Again') {
+                    endpoint = '/opt-in-again';
+                    successMsg = 'Opt-in request submitted again!';
+                    failMsg = 'Failed to opt-in again: ';
+                    nextLabel = 'Cancel Request';
+                    revertLabel = 'Opt-in Again';
+                }
 
                 try {
-                    const endpoint = isCanceling ? '/cancel-opt-in' : '/opt-in';
                     const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include', // Include cookies in the request
+                        credentials: 'include',
                         body: JSON.stringify({ eventName }),
                     });
 
                     if (response.ok) {
-                        if (isCanceling) {
-                            button.textContent = 'Opt into event';
-                            button.disabled = false;
-                            alert('Opt-in request canceled successfully!');
-                        } else {
-                            button.textContent = 'Cancel Request';
-                            button.disabled = false;
-                            alert('Opt-in request sent successfully!');
-                        }
+                        button.textContent = nextLabel;
+                        button.disabled = false;
+                        alert(successMsg);
                     } else {
                         const errorText = await response.text();
-                        alert(`Failed to process request: ${errorText}`);
+                        button.textContent = revertLabel;
+                        button.disabled = false;
+                        alert(failMsg + errorText);
                     }
                 } catch (error) {
-                    console.error('Error during opt-in toggle:', error);
-                    alert('Failed to process request. Please try again.');
-                } finally {
-                    button.disabled = false; // Ensure the button is re-enabled after the request
+                    button.textContent = revertLabel;
+                    button.disabled = false;
+                    alert(failMsg + 'Please try again.');
                 }
             }
 
@@ -116,6 +107,7 @@
                     const optInStatus = await fetchOptInStatus();
                     const lines = data.split('\n');
                     lines.forEach(line => {
+                        if (!line.trim()) return;
                         const eventContainer = document.createElement('div');
                         eventContainer.style.display = 'flex';
                         eventContainer.style.alignItems = 'center';
@@ -126,8 +118,8 @@
                         contactInfo.style.marginRight = '10px';
 
                         const optInButton = document.createElement('button');
-                        const eventName = line.split(',')[3]; 
-                        const userEvent = optInStatus.find(event => event.name === eventName);
+                        const eventName = line.split(',')[3];
+                        const userEvent = optInStatus.find(event => event.name.trim() === eventName.trim());
 
                         if (userEvent) {
                             if (userEvent.status === 'requested') {
@@ -135,13 +127,14 @@
                             } else if (userEvent.status === 'approved') {
                                 optInButton.textContent = 'Opted In';
                                 optInButton.disabled = true;
+                            } else if (userEvent.status === 'denied') {
+                                optInButton.textContent = 'Opt-in Again';
                             }
                         } else {
                             optInButton.textContent = 'Opt into event';
                         }
 
                         optInButton.addEventListener('click', async () => {
-                            optInButton.disabled = true; // Prevent multiple clicks
                             await toggleOptIn(eventName, optInButton);
                         });
 
@@ -151,76 +144,9 @@
                     });
                 })
                 .catch(error => console.error('Error fetching events:', error));
-
-            function loadOptInRequests() {
-                console.log('Fetching opt-in requests...');
-                fetch('http://127.0.0.1:6421/admin/opt-in-requests')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Opt-in requests:', data); // Debug log
-                        const requestList = document.getElementById('approve-opt-in-list');
-                        requestList.innerHTML = ''; // Clear the list
-
-                        Object.entries(data).forEach(([userId, events]) => {
-                            events.forEach(event => {
-                                console.log('Processing event:', event); // Debug log
-                                const listItem = document.createElement('li');
-                                listItem.textContent = `${event.name} (User: ${userId}, Status: ${event.status})`;
-
-                                if (event.status === 'requested') {
-                                    // Approve button
-                                    const approveButton = document.createElement('button');
-                                    approveButton.textContent = 'Approve';
-                                    approveButton.onclick = () => updateOptIn(userId, event.name, 'approve');
-
-                                    // Deny button
-                                    const denyButton = document.createElement('button');
-                                    denyButton.textContent = 'Deny';
-                                    denyButton.style.marginLeft = '10px';
-                                    denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
-
-                                    listItem.appendChild(approveButton);
-                                    listItem.appendChild(denyButton);
-                                } else if (event.status === 'denied') {
-                                    // Opt-in again button
-                                    const optInAgainButton = document.createElement('button');
-                                    optInAgainButton.textContent = 'Opt-in Again';
-                                    optInAgainButton.style.marginLeft = '10px';
-                                    optInAgainButton.onclick = () => optInAgain(userId, event.name);
-
-                                    listItem.appendChild(optInAgainButton);
-                                }
-
-                                requestList.appendChild(listItem);
-                            });
-                        });
-                    })
-                    .catch(error => console.error('Error loading opt-in requests:', error));
-            }
-
-            // Function to handle "Opt-in Again"
-            function optInAgain(userId, eventName) {
-                fetch('http://127.0.0.1:6421/opt-in', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ eventName }),
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Opt-in request submitted again!');
-                            loadOptInRequests(); // Reload the list
-                        } else {
-                            response.text().then(errorText => alert(`Failed to opt-in again: ${errorText}`));
-                        }
-                    })
-                    .catch(error => console.error('Error opting in again:', error));
-            }
         </script>
-        <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+        <script src="/JS/authClient.js"></script>
         <script src="/JS/themeHandler.js"></script>
     </div>
 </body>
-</head>
-
 </html>
-

@@ -57,7 +57,7 @@ app.post('/opt-in', (req, res) => {
             optInData[userId] = [];
         }
 
-        const existingOptIn = optInData[userId].find(event => event.name === eventName);
+        const existingOptIn = optInData[userId].find(event => event.name.trim() === eventName.trim());
         if (!existingOptIn) {
             optInData[userId].push({ name: eventName, status: 'requested' });
         }
@@ -138,7 +138,7 @@ app.post('/cancel-opt-in', (req, res) => {
     const optInData = JSON.parse(fs.readFileSync(optInFile, 'utf-8'));
 
     if (optInData[userId]) {
-        optInData[userId] = optInData[userId].filter(event => event.name !== eventName);
+        optInData[userId] = optInData[userId].filter(event => event.name.trim() !== eventName.trim());
         fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
         return res.send('Opt-in request canceled successfully');
     }
@@ -176,7 +176,7 @@ app.post('/admin/update-opt-in', (req, res) => {
                     event.status = 'denied'; // Mark the request as denied
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-                return res.send(`Opt-in ${action}d successfully`);
+                return res.send(`Opt-in ${event.status} successfully`);
             }
         }
 
@@ -220,7 +220,8 @@ app.post('/remove_event', (req, res) => {
         let changed = false;
         for (const userId in optInData) {
             const before = optInData[userId].length;
-            optInData[userId] = optInData[userId].filter(event => event.name.trim() !== eventName);
+            // Trim both event.name and eventName for comparison
+            optInData[userId] = optInData[userId].filter(event => event.name.trim() !== eventName.trim());
             if (optInData[userId].length !== before) changed = true;
         }
         if (changed) {
@@ -232,6 +233,36 @@ app.post('/remove_event', (req, res) => {
     }
 
     res.send('Event and related opt-in requests removed successfully');
+});
+
+app.post('/opt-in-again', (req, res) => {
+    const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
+    if (!userId) {
+        return res.status(401).send('User is not logged in');
+    }
+
+    const { eventName } = req.body;
+    if (!eventName) {
+        return res.status(400).send('Missing eventName');
+    }
+
+    try {
+        const optInData = readOptInFile();
+        if (!optInData[userId]) {
+            optInData[userId] = [];
+        }
+        let event = optInData[userId].find(event => event.name.trim() === eventName.trim());
+        if (event) {
+            event.status = 'requested';
+        } else {
+            optInData[userId].push({ name: eventName, status: 'requested' });
+        }
+        fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+        res.send('Opt-in status set to requested');
+    } catch (error) {
+        console.error('Error updating opt-in status to requested:', error);
+        res.status(500).send('Internal server error');
+    }
 });
 
 // Start the server

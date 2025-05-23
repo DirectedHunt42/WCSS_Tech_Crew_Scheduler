@@ -138,6 +138,69 @@ document.addEventListener('click', (event) => {
     }
 });
 
+// Helper to get user's opt-in status for all events
+async function fetchOptInStatus() {
+    try {
+        const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (e) {
+        console.error('Error fetching opt-in status:', e);
+    }
+    return [];
+}
+
+// Handles opt-in, cancel, and opt-in again
+async function toggleOptIn(eventName, button) {
+    const isCanceling = button.textContent === 'Cancel Request';
+    const isOptInAgain = button.textContent === 'Opt-in Again';
+    let endpoint = '/opt-in';
+    let successMsg = 'Opt-in request sent successfully!';
+    let failMsg = 'Failed to send opt-in request: ';
+    let nextLabel = 'Cancel Request';
+    let revertLabel = 'Opt In';
+
+    if (isCanceling) {
+        endpoint = '/cancel-opt-in';
+        successMsg = 'Opt-in request canceled successfully!';
+        failMsg = 'Failed to cancel opt-in request: ';
+        nextLabel = 'Opt In';
+        revertLabel = 'Cancel Request';
+    } else if (isOptInAgain) {
+        endpoint = '/opt-in-again';
+        successMsg = 'Opt-in request submitted again!';
+        failMsg = 'Failed to opt-in again: ';
+        nextLabel = 'Cancel Request';
+        revertLabel = 'Opt-in Again';
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ eventName }),
+        });
+
+        if (response.ok) {
+            button.textContent = nextLabel;
+            button.disabled = false;
+            alert(successMsg);
+        } else {
+            const errorText = await response.text();
+            button.textContent = revertLabel;
+            button.disabled = false;
+            alert(failMsg + errorText);
+        }
+    } catch (error) {
+        button.textContent = revertLabel;
+        button.disabled = false;
+        alert(failMsg + 'Please try again.');
+    }
+}
 
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
@@ -157,6 +220,9 @@ calendarDates.addEventListener('click', async (event) => {
         parseInt(event[2]) === day
     );
 
+    // Fetch user's opt-in status
+    const userOptInStatus = await fetchOptInStatus();
+
     // Create and display the popup
     if (matchingEvents.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
@@ -165,24 +231,37 @@ calendarDates.addEventListener('click', async (event) => {
             <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
-            ${matchingEvents.map(event => `
-            <p>Event Name: ${event[3]}</p>
-            <p>Start Time: ${event[4]}</p>
-            <p>End Time: ${event[5]}</p>
-            <p>Location: ${event[6]}</p>
-            <p>Tech Required: ${event[7]}</p>
-            <p>Volunteer Hours: ${event[8]}</p>
-            <button class="opt-in-btn" style="${buttonStyle}">Opt In</button>
-            `).join('')}
+            ${matchingEvents.map(event => {
+                const eventName = event[3];
+                const userEvent = userOptInStatus.find(e => e.name.trim() === eventName.trim());
+                let buttonLabel = 'Opt In';
+                let disabled = '';
+                if (userEvent) {
+                    if (userEvent.status === 'requested') buttonLabel = 'Cancel Request';
+                    else if (userEvent.status === 'denied') buttonLabel = 'Opt-in Again';
+                    else if (userEvent.status === 'approved') {
+                        buttonLabel = 'Opted In';
+                        disabled = 'disabled';
+                    }
+                }
+                return `
+                <p>Event Name: ${event[3]}</p>
+                <p>Start Time: ${event[4]}</p>
+                <p>End Time: ${event[5]}</p>
+                <p>Location: ${event[6]}</p>
+                <p>Tech Required: ${event[7]}</p>
+                <p>Volunteer Hours: ${event[8]}</p>
+                <button class="opt-in-btn" data-event-name="${eventName}" ${disabled} style="${buttonStyle}">${buttonLabel}</button>
+                `;
+            }).join('')}
         `;
 
         // Add event listeners to the buttons
         const optInButtons = datesContent.querySelectorAll('.opt-in-btn');
-        optInButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                alert('Opt in request sent');
-                button.disabled = true; // Disable the button
-                button.textContent = 'Request Sent'; // Update button text
+        optInButtons.forEach((button, idx) => {
+            const eventName = button.getAttribute('data-event-name');
+            button.addEventListener('click', async () => {
+                await toggleOptIn(eventName, button);
             });
         });
 
