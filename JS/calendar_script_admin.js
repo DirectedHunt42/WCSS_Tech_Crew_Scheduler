@@ -13,7 +13,7 @@ const dropdownContent = document.querySelector('.dropdown-content');
 const dropbtn = document.querySelector('.dropbtn');
 
 const datesContent = document.querySelector('.dates-content');
-const buttonStyle = "background-color: #444; color: white; padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
+const buttonStyle = "padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
@@ -179,8 +179,6 @@ calendarDates.addEventListener('click', (event) => {
         datesContent.style.width = '300px';
         datesContent.style.maxHeight = '300px';
         datesContent.style.overflow = 'hidden';
-        datesContent.style.background = '#222';
-        datesContent.style.color = '#fff';
         datesContent.style.borderRadius = '8px';
         datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
         datesContent.style.padding = '16px';
