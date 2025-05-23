@@ -79,6 +79,27 @@
             <span class="slider"></span>
         </label>
     </div>
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Get the selected date from the URL and format it to YYYY-MM-DD
+        const selectedDate = getQueryParam('date');
+        const formattedDate = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : '';
+
+        // Autofill the date input field if a date is provided
+        window.onload = function () {
+            if (formattedDate) {
+                const dateInput = document.getElementById('date');
+                if (dateInput) {
+                    dateInput.value = formattedDate;
+                }
+            }
+        };
+    </script>
     <h1>Booking a Tech Crew</h1>
     <p id="error-message" style="color: red; display: none;"></p>
     <form action="/submit-booking" method="POST">
