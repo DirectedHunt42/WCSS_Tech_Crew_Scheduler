@@ -16,6 +16,7 @@ USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInLis
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
 EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
+EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db')
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
@@ -34,21 +35,34 @@ def save_event():
     end_time = request.form.get('Etime')
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
-
-    # --- Add this validation ---
-    if start_time and end_time:
-        try:
-            start_hour, start_minute = map(int, start_time.split(':'))
-            end_hour, end_minute = map(int, end_time.split(':'))
-            start = start_hour * 60 + start_minute
-            end = end_hour * 60 + end_minute
-            if end <= start:
-                # Return a 400 error and a message
-                return "End time must be after start time", 400
-        except Exception as e:
-            return "Invalid time format", 400
-    # --- End validation ---
-    else:
+    try:
+        # Connect to the events database
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        # Create the events table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT NOT NULL,
+                name TEXT NOT NULL,
+                location TEXT NOT NULL,
+                start_time TEXT NOT NULL,
+                end_time TEXT NOT NULL,
+                people TEXT,
+                volunteer_hours TEXT
+            )
+        ''')
+        # Insert the new event
+        cursor.execute('''
+            INSERT INTO events (date, name, location, start_time, end_time, people, volunteer_hours)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (date, event_name, location, start_time, end_time, people, volunteer_hours))
+        conn.commit()
+        conn.close()
+        print("Event saved to database successfully!")
+    except Exception as e:
+        print(f"Error saving event to database: {e}")
+        return "Internal Server Error", 500
 
         # Determine the next event ID
         try:
@@ -221,26 +235,31 @@ def get_event():
         return "Event ID is required", 400
 
     try:
-        with open(EVENT_LIST_FILE, 'r') as file:
-            lines = file.readlines()
-            for line in lines:
-                parts = [p.strip() for p in line.strip().split(',')]
-                if parts and parts[-1] == event_id:
-                    # Adjust indices as needed for your CSV format
-                    event = {
-                        "id": event_id,
-                        "date": ','.join(parts[0:3]),  # year, month, day
-                        "name": parts[3],
-                        "startTime": parts[4],
-                        "endTime": parts[5],
-                        "location": parts[6],
-                        "TCP": parts[7],
-                        "voulenteerHours": parts[8],
-                    }
-                    return jsonify(event)
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT id, date, name, start_time, end_time, location, people, volunteer_hours
+            FROM events WHERE id = ?
+        ''', (event_id,))
+        row = cursor.fetchone()
+        conn.close()
+
+        if row:
+            event = {
+                "id": row[0],
+                "date": row[1],
+                "name": row[2],
+                "startTime": row[3],
+                "endTime": row[4],
+                "location": row[5],
+                "TCP": row[6],
+                "voulenteerHours": row[7],
+            }
+            return jsonify(event)
+        else:
             return "Event not found", 404
     except Exception as e:
-        return f"Error reading event list: {str(e)}", 500
+        return f"Error reading event: {str(e)}", 500
 
 @app.route('/api/updateEvent', methods=['POST'])
 def update_event():
@@ -249,27 +268,32 @@ def update_event():
         return "Invalid event data", 400
 
     try:
-        with open(EVENT_LIST_FILE, 'r') as file:
-            lines = file.readlines()
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE events
+            SET date = ?, name = ?, start_time = ?, end_time = ?, location = ?, people = ?, volunteer_hours = ?
+            WHERE id = ?
+        ''', (
+            updated_event['date'],
+            updated_event['name'],
+            updated_event['startTime'],
+            updated_event['endTime'],
+            updated_event['location'],
+            updated_event['TCP'],
+            updated_event['voulenteerHours'],
+            updated_event['id']
+        ))
+        conn.commit()
+        updated_rows = cursor.rowcount
+        conn.close()
 
-        found = False
-        for i, line in enumerate(lines):
-            parts = [p.strip() for p in line.strip().split(',')]
-            if parts and parts[-1] == str(updated_event['id']):
-                # Compose the updated line (adjust indices as needed)
-                lines[i] = f"{updated_event['date'].replace('-', ',')}, {updated_event['name']}, {updated_event['startTime']}, {updated_event['endTime']}, {updated_event['location']}, {updated_event['TCP']}, {updated_event['voulenteerHours']}, {updated_event['id']}\n"
-                found = True
-                break
-
-        if not found:
+        if updated_rows == 0:
             return "Event not found", 404
-
-        with open(EVENT_LIST_FILE, 'w') as file:
-            file.writelines(lines)
 
         return "Event updated successfully", 200
     except Exception as e:
-        return f"Error updating event list: {str(e)}", 500
+        return f"Error updating event: {str(e)}", 500
 
 @app.route('/api/signout', methods=['POST'])
 def sign_out():
@@ -287,33 +311,24 @@ def page_not_found(e):
 @app.route('/remove_event', methods=['POST'])
 def remove_event():
     try:
-        # Get the event ID from the request
         data = request.get_json()
-        event_id = str(data.get('id')).strip()  # Ensure the ID is a string and stripped of whitespace
-
+        event_id = str(data.get('id')).strip()
         if not event_id:
             return jsonify({'error': 'Event ID is required'}), 400
 
-        # Read the current events from the file
-        with open(EVENT_LIST_PATH, 'r') as file:
-            events = file.readlines()
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM events WHERE id = ?', (event_id,))
+        conn.commit()
+        deleted = cursor.rowcount
+        conn.close()
 
-        # Filter out the event with the matching ID
-        updated_events = [
-            event for event in events
-            if event.strip().split(',')[-1].strip() != event_id
-        ]
-
-        # Check if any event was removed
-        if len(events) == len(updated_events):
+        if deleted == 0:
             return jsonify({'error': f'Event with ID {event_id} not found'}), 404
-
-        # Write the updated events back to the file
-        with open(EVENT_LIST_PATH, 'w') as file:
-            file.writelines(updated_events)
 
         return jsonify({'message': 'Event removed successfully'}), 200
     except Exception as e:
+        print(f"Error removing event: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/validate-and-send-reset-email', methods=['POST'])
@@ -556,6 +571,69 @@ def verify_reset_code():
         return jsonify({"error": "Invalid code"}), 400
 
     return jsonify({"success": True}), 200
+
+@app.route('/api/events', methods=['GET'])
+def get_all_events():
+    try:
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        # Pull all relevant columns
+        cursor.execute('SELECT id, name, date, location, start_time, end_time, people, volunteer_hours FROM events')
+        events = cursor.fetchall()
+        conn.close()
+        event_list = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "date": row[2],
+                "location": row[3],
+                "startTime": row[4],
+                "endTime": row[5],
+                "people": row[6],
+                "volunteerHours": row[7]
+            }
+            for row in events
+        ]
+        return jsonify(event_list), 200
+    except Exception as e:
+        print(f"Error fetching events: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/api/events-by-date', methods=['GET'])
+def get_events_by_date():
+    date = request.args.get('date')  # Expecting format: YYYY-MM-DD
+    if not date:
+        return jsonify([])
+
+    try:
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        # Convert 'YYYY-MM-DD' to 'YYYY,MM,DD'
+        db_date = date.replace('-', ',')
+        cursor.execute('''
+            SELECT id, name, date, location, start_time, end_time, people, volunteer_hours
+            FROM events
+            WHERE date = ?
+        ''', (db_date,))
+        rows = cursor.fetchall()
+        conn.close()
+        events = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "date": row[2],
+                "location": row[3],
+                "startTime": row[4],
+                "endTime": row[5],
+                "people": row[6],
+                "volunteerHours": row[7]
+            }
+            for row in rows
+        ]
+        return jsonify(events)
+    except Exception as e:
+        print(f"Error fetching events by date: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)

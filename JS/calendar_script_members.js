@@ -206,26 +206,25 @@ calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
     if (!selectedDate) return;
 
+    // Parse year, month, day for both branches
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Fetch and parse the event list
-    const response = await fetch('/Resources/eventList.txt');
-    const text = await response.text();
-    const events = text.split('\n').map(line => line.split(','));
+    // Convert to backend format: YYYY,MM,DD (no leading zeros)
+    const backendDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    console.log('Selected date:', backendDate);
 
-    // Filter events for the selected date
-    const matchingEvents = events.filter(event =>
-        parseInt(event[0]) === year &&
-        parseInt(event[1]) === month &&
-        parseInt(event[2]) === day
-    );
+    // Fetch events for the selected date from the new API
+    const response = await fetch(`/api/events-by-date?date=${backendDate}`);
+    const events = await response.json();
+
+    console.log('Events for selected date:', events);
 
     // Fetch user's opt-in status
     const userOptInStatus = await fetchOptInStatus();
 
     // Create and display the popup
-    const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
-    if (matchingEvents.length > 0) {
+    if (events.length > 0) {
+        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
                 <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1; margin: 0;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
@@ -258,6 +257,15 @@ calendarDates.addEventListener('click', async (event) => {
                     `;
                 }).join('')}
             </div>
+            ${events.map(event => `
+            <p>Event Name: ${event.name}</p>
+            <p>Start Time: ${event.startTime}</p>
+            <p>End Time: ${event.endTime}</p> 
+            <p>Location: ${event.location}</p>
+            <p>Tech Required: ${event.people}</p>
+            <p>Volunteer Hours: ${event.volunteerHours}</p>
+            <button class="opt-in-btn" style="${buttonStyle}">Opt In</button>
+            `).join('')}
         `;
 
         // Add event listeners to the buttons
