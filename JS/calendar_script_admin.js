@@ -207,8 +207,6 @@ calendarDates.addEventListener('click', (event) => {
         const redirectButton = document.createElement('button');
         redirectButton.id = 'redirect-button';
         redirectButton.textContent = 'Book Event';
-        redirectButton.style.backgroundColor = 'green'; // Green background
-        redirectButton.style.color = '#fff'; // Optional: white text for contrast
         redirectButton.style.fontSize = '12px'; // Make the button smaller
         redirectButton.style.marginTop = '10px';
         dateContent.style.textAlign = 'center'; // Center the button
@@ -228,7 +226,3 @@ document.addEventListener('click', (event) => {
     }
     datesContent.style.display = 'none';
 });
-
-
-
-

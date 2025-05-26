@@ -107,7 +107,7 @@
 
         <div class="button-row">
             <button type="submit" style="background-color: green">Save Changes</button>
-            <button type="button" style="background-color: red" onclick="window.location.href='AdminEventList.html'">Cancel</button>
+            <button type="button" style="background-color: red" onclick="history.back()">Cancel</button>
         </div>
     </form>
 
@@ -169,7 +169,7 @@
                 }
 
                 alert('Event updated successfully');
-                window.location.href = 'AdminEventList.html';
+                window.location.href = 'AdminEventList.html#edit-event';
             } catch (error) {
                 console.error(error);
                 alert('Error saving event data!');
@@ -179,5 +179,4 @@
         loadEvent();
     </script>
 </body>
-
 </html>
