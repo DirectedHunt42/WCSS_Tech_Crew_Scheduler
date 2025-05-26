@@ -81,7 +81,7 @@ def save_event():
             return "Internal Server Error", 500
 
         # Redirect back to the form page
-        return redirect('/AdminPage/AdminPage.html')
+        return redirect(request.referrer or '/')
 
 @app.route('/api/login', methods=['POST'])
 def login():
