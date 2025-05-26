@@ -578,8 +578,7 @@ def get_events_by_date():
         conn = sqlite3.connect(EVENTS_DB_PATH)
         cursor = conn.cursor()
         # Convert 'YYYY-MM-DD' to 'YYYY,MM,DD'
-        date_parts = date.split('-')
-        db_date = f"{date_parts[0]},{int(date_parts[1])},{int(date_parts[2])}"
+        db_date = date.replace('-', ',')
         cursor.execute('''
             SELECT id, name, date, location, start_time, end_time, people, volunteer_hours
             FROM events
@@ -603,7 +602,7 @@ def get_events_by_date():
         return jsonify(events)
     except Exception as e:
         print(f"Error fetching events by date: {e}")
-        return jsonify([])
+        return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)

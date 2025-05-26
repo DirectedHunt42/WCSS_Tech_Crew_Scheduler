@@ -147,7 +147,8 @@ calendarDates.addEventListener('click', async (event) => {
     const [year, month, day] = selectedDate.split('-').map(Number);
 
     // Convert to backend format: YYYY,MM,DD (no leading zeros)
-    const backendDate = `${year},${month},${day}`;
+    const backendDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    console.log('Selected date:', backendDate);
 
     // Fetch events for the selected date from the new API
     const response = await fetch(`/api/events-by-date?date=${backendDate}`);
