@@ -224,13 +224,42 @@
             <textarea id="people" name="people" rows="4"></textarea>
 
             <label for="VolHours">Volunteer Hours:</label>
-            <textarea id="VolHours" name="VolHours" rows="4"></textarea>
+            <input type="text" id="VolHours" name="VolHours" required>>
 
             <div class="button-row">
                 <button type="submit" style="background-color: green;">Submit Event</button>
-                <button type="button" onclick="window.location.href='AdminPage.html'" style="background-color: red;">Back to Admin Page</button>
+                <button type="button" onclick="window.location.href='AdminPage.html'"
+                    style="background-color: red;">Cancel</button>
             </div>
         </form>
     </div>
+    <script>
+        function calculateVolunteerHours() {
+            const startInput = document.getElementById('Stime');
+            const endInput = document.getElementById('Etime');
+            const volHoursInput = document.getElementById('VolHours');            
+
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                // If end time is less than start time, assume it's the next day
+                if (end < start) {
+                    end.setDate(end.getDate() + 1);
+                }
+
+                let diffMs = end - start;
+                let diffHrs = diffMs / (1000 * 60 * 60);
+                volHoursInput.value = diffHrs.toFixed(2);
+            }
+        }
+
+        document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
+        document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
+    </script>
 </body>
+
 </html>
