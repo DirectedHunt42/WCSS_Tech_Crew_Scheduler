@@ -208,6 +208,16 @@ calendarDates.addEventListener('click', async (event) => {
     }
     datesContent.style.display = 'block';
 
+   // Style the popup for fixed width and scrolling
+    datesContent.style.display = 'block';
+    datesContent.style.width = '300px';
+    datesContent.style.maxHeight = '300px';
+    datesContent.style.overflow = 'hidden';
+    datesContent.style.borderRadius = '8px';
+    datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
+    datesContent.style.padding = '16px';
+    datesContent.style.position = 'absolute';
+
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;
     const popupHeight = datesContent.offsetHeight;
