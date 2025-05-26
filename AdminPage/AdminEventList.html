@@ -259,6 +259,17 @@
             loadRemoveEvents();
         });
     </script>
+    <script>
+    // Activate tab based on URL fragment (e.g., #edit-event)
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.substring(1); // Get the hash without '#'
+        if (hash) {
+            const targetButton = document.querySelector(`.tab-button[data-tab="${hash}"]`);
+            if (targetButton) {
+                targetButton.click(); // Simulate click to activate the tab
+            }
+        }
+    });
+</script>
 </body>
-
 </html>
