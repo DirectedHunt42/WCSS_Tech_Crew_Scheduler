@@ -568,5 +568,42 @@ def get_all_events():
         print(f"Error fetching events: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+@app.route('/api/events-by-date', methods=['GET'])
+def get_events_by_date():
+    date = request.args.get('date')  # Expecting format: YYYY-MM-DD
+    if not date:
+        return jsonify([])
+
+    try:
+        conn = sqlite3.connect(EVENTS_DB_PATH)
+        cursor = conn.cursor()
+        # Convert 'YYYY-MM-DD' to 'YYYY,MM,DD'
+        date_parts = date.split('-')
+        db_date = f"{date_parts[0]},{int(date_parts[1])},{int(date_parts[2])}"
+        cursor.execute('''
+            SELECT id, name, date, location, start_time, end_time, people, volunteer_hours
+            FROM events
+            WHERE date = ?
+        ''', (db_date,))
+        rows = cursor.fetchall()
+        conn.close()
+        events = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "date": row[2],
+                "location": row[3],
+                "startTime": row[4],
+                "endTime": row[5],
+                "people": row[6],
+                "volunteerHours": row[7]
+            }
+            for row in rows
+        ]
+        return jsonify(events)
+    except Exception as e:
+        print(f"Error fetching events by date: {e}")
+        return jsonify([])
+
 if __name__ == '__main__':
     app.run(debug=True, port=5500)

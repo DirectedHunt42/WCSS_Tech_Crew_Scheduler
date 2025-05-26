@@ -143,30 +143,30 @@ calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
     if (!selectedDate) return;
 
+    // Parse year, month, day for both branches
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Fetch and parse the event list from the Flask API (events.db)
-    const response = await fetch('http://127.0.0.1:5500/api/events');
+    // Convert to backend format: YYYY,MM,DD (no leading zeros)
+    const backendDate = `${year},${month},${day}`;
+
+    // Fetch events for the selected date from the new API
+    const response = await fetch(`/api/events-by-date?date=${backendDate}`);
     const events = await response.json();
 
-    // Filter events for the selected date (assuming date is stored as "YYYY,MM,DD")
-    const dateString = `${year},${month},${day}`;
-    const matchingEvents = events.filter(event =>
-        event.date === dateString
-    );
+    console.log('Events for selected date:', events);
 
     // Create and display the popup
-    if (matchingEvents.length > 0) {
+    if (events.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
             <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
-            ${matchingEvents.map(event => `
+            ${events.map(event => `
             <p>Event Name: ${event.name}</p>
             <p>Start Time: ${event.startTime}</p>
-            <p>End Time: ${event.endTime}</p>
+            <p>End Time: ${event.endTime}</p> 
             <p>Location: ${event.location}</p>
             <p>Tech Required: ${event.people}</p>
             <p>Volunteer Hours: ${event.volunteerHours}</p>
