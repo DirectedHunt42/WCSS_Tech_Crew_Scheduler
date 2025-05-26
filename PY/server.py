@@ -26,6 +26,8 @@ def serve_static_files(filename):
 @app.route('/save-event', methods=['POST'])
 def save_event():
     # Get form data
+    user_name = request.form.get('name')
+    email = request.form.get('email')
     date = request.form.get('date').replace('-', ',')
     event_name = request.form.get('EventName')
     location = request.form.get('Location')
@@ -33,7 +35,6 @@ def save_event():
     end_time = request.form.get('Etime')
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
-
     try:
         # Connect to the events database
         conn = sqlite3.connect(EVENTS_DB_PATH)
@@ -63,8 +64,38 @@ def save_event():
         print(f"Error saving event to database: {e}")
         return "Internal Server Error", 500
 
-    # Redirect back to the form page
-    return redirect('/AdminPage/AdminPage.html')
+        # Determine the next event ID
+        try:
+            with open(EVENT_LIST_PATH, 'r') as file:
+                lines = file.readlines()
+                if lines:
+                    last_line = lines[-1].strip()
+                    last_id_str = last_line.split(',')[-1].strip()
+                    try:
+                        last_id = int(last_id_str)
+                    except ValueError:
+                        last_id = 0
+                else:
+                    last_id = 0
+            next_id = last_id + 1
+        except Exception as e:
+            print(f"Error reading event list for ID: {e}")
+            next_id = 1
+
+        # Format the data as a CSV line with the new ID
+        event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
+
+        # Write the data to eventList.txt
+        try:
+            with open(EVENT_LIST_PATH, 'a') as file:
+                file.write(event_data)
+            print("Event saved successfully!")
+        except Exception as e:
+            print(f"Error saving event: {e}")
+            return "Internal Server Error", 500
+
+        # Redirect back to the form page
+        return redirect(request.referrer or '/')
 
 @app.route('/api/login', methods=['POST'])
 def login():

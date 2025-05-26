@@ -79,7 +79,54 @@
             <span class="slider"></span>
         </label>
     </div>
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Get the selected date from the URL and format it to YYYY-MM-DD
+        const selectedDate = getQueryParam('date');
+        const formattedDate = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : '';
+
+        // Autofill the date input field if a date is provided
+        window.onload = function () {
+            if (formattedDate) {
+                const dateInput = document.getElementById('date');
+                if (dateInput) {
+                    dateInput.value = formattedDate;
+                }
+            }
+        };
+
+        // Function to handle form submission via AJAX
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(event.target);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5500/save-event', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Show the popup on success
+                    document.querySelector('.popup').style.display = 'block';
+                    document.querySelector('.overlay').style.display = 'block';
+                } else {
+                    alert('Failed to save the event. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
     <h1>Booking a Tech Crew</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form action="/submit-booking" method="POST">
         <label for="name">Full Name:</label>
         <input type="text" id="name" name="name" required>
@@ -90,23 +137,55 @@
         <label for="date">Booking Date:</label>
         <input type="date" id="date" name="date" required>
 
-        <label for="time">Booking Time:</label>
-        <input type="time" id="time" name="time" required>
+        <label for="Stime">Start Time:</label>
+        <input type="time" id="Stime" name="Stime" required>
+
+        <label for="Etime">End Time:</label>
+        <input type="time" id="Etime" name="Etime" required>
 
         <label for="location">Location:</label>
         <input type="text" id="location" name="location" rows="4" required>
 
-        <label for="equipment">Equipment Needed: (Please List)</label>
-        <textarea id="equipment" name="equipment" rows="4"></textarea>
+        <label for="people">Types Of People Needed: (Please List)</label>
+        <textarea id="people" name="people" rows="4"></textarea>
 
-        <label for="notes">Additional Notes:</label>
-        <textarea id="notes" name="notes" rows="4"></textarea>
+        <label for="VolHours">Volunteer Hours:</label>
+        <input type="text" id="VolHours" name="VolHours" required>
 
         <div class="button-row">
-            <button type="submit">Submit Booking</button>
-            <button type="button" onclick="window.location.href='UserPage.html'">Back to Main Page</button>
+            <button type="submit" style="background-color: green;">Submit Booking</button>
+
+            <button type="button" onclick="history.back()" style="background-color: red;">Cancel</button>
+
         </div>
     </form>
+    <script>
+        function calculateVolunteerHours() {
+            const startInput = document.getElementById('Stime');
+            const endInput = document.getElementById('Etime');
+            const volHoursInput = document.getElementById('VolHours');
+
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                // If end time is less than start time, assume it's the next day
+                if (end < start) {
+                    end.setDate(end.getDate() + 1);
+                }
+
+                let diffMs = end - start;
+                let diffHrs = diffMs / (1000 * 60 * 60);
+                volHoursInput.value = diffHrs.toFixed(2);
+            }
+        }
+
+        document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
+        document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
+    </script>
 </body>
 
 </html>

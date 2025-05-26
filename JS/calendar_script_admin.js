@@ -13,6 +13,7 @@ const dropdownContent = document.querySelector('.dropdown-content');
 const dropbtn = document.querySelector('.dropbtn');
 
 const datesContent = document.querySelector('.dates-content');
+const buttonStyle = "padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
@@ -160,10 +161,34 @@ calendarDates.addEventListener('click', (event) => {
         event.stopPropagation(); // Prevent the click event from bubbling up to the document
 
         const date = new Date(selectedDate);
+        const [year, month, day] = selectedDate.split('-').map(Number);
+
         console.log("date clicked was " + date);
         const dateContent = document.getElementById('dates-content');
-        const thisSelectedDate = document.getElementById('current-date');
-        thisSelectedDate.textContent = date.toLocaleDateString();
+
+        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
+        datesContent.innerHTML = `
+            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
+            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+            </div>
+        `;
+
+        // Style the popup for fixed width and scrolling
+        datesContent.style.display = 'block';
+        datesContent.style.width = '300px';
+        datesContent.style.maxHeight = '300px';
+        datesContent.style.overflow = 'hidden';
+        datesContent.style.borderRadius = '8px';
+        datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
+        datesContent.style.padding = '16px';
+        datesContent.style.position = 'absolute';
+
+        // Add event listener to close button
+        const closePopupBtn = datesContent.querySelector('.close-popup-btn');
+        closePopupBtn.addEventListener('click', () => {
+            datesContent.style.display = 'none';
+        });
 
         dateContent.style.display = 'block';
 
@@ -173,7 +198,7 @@ calendarDates.addEventListener('click', (event) => {
         dateContent.style.left = rect.left + 'px';
 
         // Adjust the size of the popup
-        dateContent.style.width = '200px';
+        dateContent.style.width = '300px';
         dateContent.style.height = '125px';
         dateContent.style.padding = '10px';
         dateContent.style.boxSizing = 'border-box';
@@ -182,17 +207,16 @@ calendarDates.addEventListener('click', (event) => {
         const redirectButton = document.createElement('button');
         redirectButton.id = 'redirect-button';
         redirectButton.textContent = 'Book Event';
-        redirectButton.style.backgroundColor = '#222'; // Darker background
-        redirectButton.style.color = '#fff'; // Optional: white text for contrast
         redirectButton.style.fontSize = '12px'; // Make the button smaller
+        redirectButton.style.marginTop = '10px';
+        dateContent.style.textAlign = 'center'; // Center the button
+
         redirectButton.addEventListener('click', () => {
             window.location.href = `AdminEventBooking.html?date=${encodeURIComponent(selectedDate)}`;
         });
 
-        // Clear previous content and append the button
-        dateContent.innerHTML = '';
-        dateContent.appendChild(thisSelectedDate);
-        dateContent.appendChild(redirectButton);
+        // Append the button to the popup
+        datesContent.appendChild(redirectButton);
     }
 });
 
@@ -202,7 +226,3 @@ document.addEventListener('click', (event) => {
     }
     datesContent.style.display = 'none';
 });
-
-
-
-

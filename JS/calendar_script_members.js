@@ -13,7 +13,7 @@ const dropdownContent = document.querySelector('.dropdown-content');
 const dropbtn = document.querySelector('.dropbtn');
 
 const datesContent = document.querySelector('.dates-content');
-const buttonStyle = "background-color: #444; color: white; padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
+const buttonStyle = "padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
@@ -138,6 +138,69 @@ document.addEventListener('click', (event) => {
     }
 });
 
+// Helper to get user's opt-in status for all events
+async function fetchOptInStatus() {
+    try {
+        const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            return await response.json();
+        }
+    } catch (e) {
+        console.error('Error fetching opt-in status:', e);
+    }
+    return [];
+}
+
+// Handles opt-in, cancel, and opt-in again
+async function toggleOptIn(eventName, button) {
+    const isCanceling = button.textContent === 'Cancel Request';
+    const isOptInAgain = button.textContent === 'Opt-in Again';
+    let endpoint = '/opt-in';
+    let successMsg = 'Opt-in request sent successfully!';
+    let failMsg = 'Failed to send opt-in request: ';
+    let nextLabel = 'Cancel Request';
+    let revertLabel = 'Opt In';
+
+    if (isCanceling) {
+        endpoint = '/cancel-opt-in';
+        successMsg = 'Opt-in request canceled successfully!';
+        failMsg = 'Failed to cancel opt-in request: ';
+        nextLabel = 'Opt In';
+        revertLabel = 'Cancel Request';
+    } else if (isOptInAgain) {
+        endpoint = '/opt-in-again';
+        successMsg = 'Opt-in request submitted again!';
+        failMsg = 'Failed to opt-in again: ';
+        nextLabel = 'Cancel Request';
+        revertLabel = 'Opt-in Again';
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ eventName }),
+        });
+
+        if (response.ok) {
+            button.textContent = nextLabel;
+            button.disabled = false;
+            alert(successMsg);
+        } else {
+            const errorText = await response.text();
+            button.textContent = revertLabel;
+            button.disabled = false;
+            alert(failMsg + errorText);
+        }
+    } catch (error) {
+        button.textContent = revertLabel;
+        button.disabled = false;
+        alert(failMsg + 'Please try again.');
+    }
+}
 
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
@@ -156,13 +219,43 @@ calendarDates.addEventListener('click', async (event) => {
 
     console.log('Events for selected date:', events);
 
+    // Fetch user's opt-in status
+    const userOptInStatus = await fetchOptInStatus();
+
     // Create and display the popup
     if (events.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
-            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
-            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+                <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1; margin: 0;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+                <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+            </div>
+            <div class="popup-events-list" style="max-height: 300px; overflow-y: auto; width: 100%; box-sizing: border-box;">
+                ${matchingEvents.map(event => {
+                    const eventName = event[3];
+                    const userEvent = userOptInStatus.find(e => e.name.trim() === eventName.trim());
+                    let buttonLabel = 'Opt In';
+                    let disabled = '';
+                    if (userEvent) {
+                        if (userEvent.status === 'requested') buttonLabel = 'Cancel Request';
+                        else if (userEvent.status === 'denied') buttonLabel = 'Opt-in Again';
+                        else if (userEvent.status === 'approved') {
+                            buttonLabel = 'Opted In';
+                            disabled = 'disabled';
+                        }
+                    }
+                    return `
+                        <div style="border-bottom: 1px solid #333; padding: 8px 0; overflow: hidden;">
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event[3]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Start Time:</strong> ${event[4]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>End Time:</strong> ${event[5]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Location:</strong> ${event[6]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Tech Required:</strong> ${event[7]}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word;"><strong>Volunteer Hours:</strong> ${event[8]}</p>
+                            <button class="opt-in-btn" data-event-name="${eventName}" ${disabled} style="${buttonStyle}; margin-top: 5px;">${buttonLabel}</button>
+                        </div>
+                    `;
+                }).join('')}
             </div>
             ${events.map(event => `
             <p>Event Name: ${event.name}</p>
@@ -177,11 +270,10 @@ calendarDates.addEventListener('click', async (event) => {
 
         // Add event listeners to the buttons
         const optInButtons = datesContent.querySelectorAll('.opt-in-btn');
-        optInButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                alert('Opt in request sent');
-                button.disabled = true; // Disable the button
-                button.textContent = 'Request Sent'; // Update button text
+        optInButtons.forEach((button, idx) => {
+            const eventName = button.getAttribute('data-event-name');
+            button.addEventListener('click', async () => {
+                await toggleOptIn(eventName, button);
             });
         });
 
@@ -191,22 +283,28 @@ calendarDates.addEventListener('click', async (event) => {
             datesContent.style.display = 'none';
         });
     } else {
-        const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
-            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
-            <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
-            <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
+            <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative;">
+                <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
+                <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             <p>No events for this date.</p>
         `;
-
-        // Add event listener to close button
         const closePopupBtn = datesContent.querySelector('.close-popup-btn');
         closePopupBtn.addEventListener('click', () => {
             datesContent.style.display = 'none';
         });
     }
+
+    // Style the popup for fixed width and scrolling
     datesContent.style.display = 'block';
+    datesContent.style.width = '300px';
+    datesContent.style.maxHeight = '300px';
+    datesContent.style.overflow = 'hidden';
+    datesContent.style.borderRadius = '8px';
+    datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
+    datesContent.style.padding = '16px';
+    datesContent.style.position = 'absolute';
 
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;

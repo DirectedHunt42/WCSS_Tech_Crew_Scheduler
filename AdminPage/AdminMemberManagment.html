@@ -31,11 +31,14 @@
                     data.forEach(member => {
                         const listItem = document.createElement('li');
                         listItem.textContent = `${member.username}, ${member.job}`;
+                        listItem.style.fontSize = '15px';
 
                         // Create the "Remove" button
                         const removeButton = document.createElement('button');
                         removeButton.textContent = 'Remove';
+                        removeButton.style.marginTop = '10px';
                         removeButton.style.marginLeft = '10px';
+                        removeButton.style.backgroundColor = 'red';
                         removeButton.onclick = () => removeMember(member);
 
                         listItem.appendChild(removeButton);

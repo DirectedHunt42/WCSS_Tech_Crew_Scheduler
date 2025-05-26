@@ -236,7 +236,7 @@
                         removeButton.style.marginTop = '8px';
                         removeButton.style.marginBottom = '16px'; // Add margin below
                         removeButton.style.border = '1px solid black';
-                        removeButton.style.backgroundColor = '#ff4d4d';
+                        removeButton.style.backgroundColor = 'red';
                         removeButton.onclick = () => {
                             fetch('http://127.0.0.1:5500/remove_event', {
                                 method: 'POST',
@@ -273,6 +273,17 @@
             loadRemoveEvents();
         });
     </script>
+    <script>
+    // Activate tab based on URL fragment (e.g., #edit-event)
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.substring(1); // Get the hash without '#'
+        if (hash) {
+            const targetButton = document.querySelector(`.tab-button[data-tab="${hash}"]`);
+            if (targetButton) {
+                targetButton.click(); // Simulate click to activate the tab
+            }
+        }
+    });
+</script>
 </body>
-
 </html>

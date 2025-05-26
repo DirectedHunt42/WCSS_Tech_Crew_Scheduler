@@ -125,27 +125,7 @@
             z-index: 999;
         }
     </style>
-    <script>
-        // Function to switch stylesheets based on the user's preference
-        function applyTheme() {
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            const linkElement = document.querySelector('link[rel="stylesheet"]');
-
-            if (darkModeMediaQuery.matches) {
-                // If the user prefers dark mode, load the dark stylesheet
-                linkElement.href = '/CSS/DarkStyle.css';
-            } else {
-                // If the user prefers light mode, load the light stylesheet
-                linkElement.href = '/CSS/LightStyle.css';
-            }
-        }
-
-        // Apply the theme on page load
-        applyTheme();
-
-        // Listen for changes in the user's color scheme preference
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-    </script>
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
 </head>
 
 <body>
@@ -155,6 +135,9 @@
             <span class="slider"></span>
         </label>
     </div>
+
+    <h1>Admin Booking</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
 
     <script>
         // Function to get query parameters from the URL
@@ -241,14 +224,43 @@
             <textarea id="people" name="people" rows="4"></textarea>
 
             <label for="VolHours">Volunteer Hours:</label>
-            <textarea id="VolHours" name="VolHours" rows="4"></textarea>
+            <input type="text" id="VolHours" name="VolHours" required>>
 
             <div class="button-row">
-                <button type="submit">Submit Event</button>
-                <button type="button" onclick="window.location.href='AdminPage.html'">Back to Admin Page</button>
+                <button type="submit" style="background-color: green;">Submit Event</button>
+
+                <button type="button" onclick="history.back()" style="background-color: red;">Cancel</button>
+
             </div>
         </form>
     </div>
+    <script>
+        function calculateVolunteerHours() {
+            const startInput = document.getElementById('Stime');
+            const endInput = document.getElementById('Etime');
+            const volHoursInput = document.getElementById('VolHours');            
+
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                // If end time is less than start time, assume it's the next day
+                if (end < start) {
+                    end.setDate(end.getDate() + 1);
+                }
+
+                let diffMs = end - start;
+                let diffHrs = diffMs / (1000 * 60 * 60);
+                volHoursInput.value = diffHrs.toFixed(2);
+            }
+        }
+
+        document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
+        document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
+    </script>
 </body>
 
 </html>
