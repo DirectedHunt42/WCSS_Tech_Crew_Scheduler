@@ -11,13 +11,25 @@
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
+            display: grid;
+            align-items: left;
+            justify-content: top;
             text-align: left;
         }
-        
+
+        #member-event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 0;
+            margin: 0;
+        }
+
+        #member-event-list li {
+            max-width: 225px;
+            width: 100%;
+            margin: 0 auto;
+        }
     </style>
 </head>
 
@@ -120,7 +132,6 @@
 
                     events.forEach(event => {
                         const listItem = document.createElement('li');
-                        listItem.style.background = '#181818';
                         listItem.style.border = '1px solid #333';
                         listItem.style.borderRadius = '8px';
                         listItem.style.marginBottom = '18px';
@@ -129,21 +140,19 @@
                         listItem.style.transition = 'background 0.2s';
 
                         listItem.innerHTML = `
-                            <strong>${event.name}</strong><br>
-                            Date: ${event.date}<br>
-                            Location: ${event.location}<br>
-                            Start Time: ${event.startTime}<br>
-                            End Time: ${event.endTime}<br>
-                            People: ${event.people}<br>
-                            Volunteer Hours: ${event.volunteerHours}<br>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
                         `;
 
                         // Create the opt-in button
                         const optInButton = document.createElement('button');
-                        optInButton.style.marginTop = '8px';
-                        optInButton.style.marginBottom = '16px';
+                        optInButton.style.marginTop = '5px';
+                        optInButton.style.marginBottom = '10px';
                         optInButton.style.border = '1px solid black';
-                        optInButton.style.backgroundColor = '#242424';
 
                         const userEvent = optInStatus.find(e => e.name === event.name);
 
@@ -180,4 +189,5 @@
         <script src="/JS/themeHandler.js"></script>
     </div>
 </body>
+
 </html>
