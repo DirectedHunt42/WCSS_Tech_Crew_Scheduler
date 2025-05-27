@@ -121,13 +121,15 @@
                             People: ${event.people}<br>
                             Volunteer Hours: ${event.volunteer_hours}<br>
                         `;
+                        li.style.marginBottom = '16px'; // Add space between events
 
                         // Push Event button
                         const pushBtn = document.createElement('button');
-                        pushBtn.textContent = 'Push Event';
+                        pushBtn.textContent = 'Approve Event';
                         pushBtn.style.marginRight = '8px';
                         pushBtn.style.border = '1px solid black';
-                        pushBtn.style.backgroundColor = '#242424';
+                        pushBtn.style.backgroundColor = 'green';
+                        pushBtn.style.marginTop = '8px';
                         pushBtn.onclick = () => {
                             fetch('http://127.0.0.1:5500/api/push-event-request', {
                                 method: 'POST',
@@ -160,7 +162,7 @@
                         const denyBtn = document.createElement('button');
                         denyBtn.textContent = 'Deny Event';
                         denyBtn.style.border = '1px solid black';
-                        denyBtn.style.backgroundColor = '#ff4d4d';
+                        denyBtn.style.backgroundColor = 'red';
                         denyBtn.onclick = () => {
                             if (confirm('Are you sure you want to deny this event request?')) {
                                 fetch('http://127.0.0.1:5500/api/deny-event-request', {
@@ -212,7 +214,7 @@
                                 approveButton.textContent = 'Approve';
                                 approveButton.style.marginLeft = '10px';
                                 approveButton.style.border = '1px solid black';
-                                approveButton.style.backgroundColor = '#242424';
+                                approveButton.style.backgroundColor = 'green';
                                 approveButton.onclick = () => updateOptIn(userId, event.name, 'approve');
 
                                 // Deny button
@@ -220,7 +222,7 @@
                                 denyButton.textContent = 'Deny';
                                 denyButton.style.marginLeft = '10px';
                                 denyButton.style.border = '1px solid black';
-                                denyButton.style.backgroundColor = '#ff4d4d';
+                                denyButton.style.backgroundColor = 'red';
                                 denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
 
                                 listItem.appendChild(approveButton);
