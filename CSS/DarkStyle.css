@@ -481,3 +481,29 @@ input:checked+.slider {
 input:checked+.slider:before {
     transform: translateX(10px);
 }
+
+:root {
+    --popup-scrollbar-thumb: #888;
+    --popup-scrollbar-track: #222;
+}
+body.dark-theme {
+    --popup-scrollbar-thumb: #888;
+    --popup-scrollbar-track: #222;
+}
+
+.popup-events-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--popup-scrollbar-thumb) var(--popup-scrollbar-track);
+    padding-right: 18px;
+}
+.popup-events-list::-webkit-scrollbar {
+    width: 7px;
+}
+.popup-events-list::-webkit-scrollbar-thumb {
+    background: var(--popup-scrollbar-thumb);
+    border-radius: 6px;
+}
+.popup-events-list::-webkit-scrollbar-track {
+    background: var(--popup-scrollbar-track);
+    border-radius: 6px;
+}
