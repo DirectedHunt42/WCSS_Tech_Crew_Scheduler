@@ -17,6 +17,7 @@ ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLo
 EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db')
+EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventRequests.db')
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
@@ -634,6 +635,55 @@ def get_events_by_date():
     except Exception as e:
         print(f"Error fetching events by date: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/submit-booking', methods=['POST'])
+def submit_booking():
+    # Get form data
+    user_name = request.form.get('name')
+    email = request.form.get('email')
+    date = request.form.get('date')
+    start_time = request.form.get('Stime')
+    end_time = request.form.get('Etime')
+    location = request.form.get('location')
+    people = request.form.get('people')
+    volunteer_hours = request.form.get('VolHours')
+
+    try:
+        # Connect to the eventRequests database
+        conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor = conn.cursor()
+        # Create the event_requests table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS event_requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                date TEXT NOT NULL,
+                start_time TEXT NOT NULL,
+                end_time TEXT NOT NULL,
+                location TEXT NOT NULL,
+                people TEXT,
+                volunteer_hours TEXT
+            )
+        ''')
+        # Insert the new event request
+        cursor.execute('''
+            INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (user_name, email, date, start_time, end_time, location, people, volunteer_hours))
+        conn.commit()
+        conn.close()
+        print("Event request saved to eventRequests.db successfully!")
+        # Show a popup and redirect
+        return '''
+            <script>
+                alert("Event saved successfully!");
+                window.location.href = "/UserPage/UserPage.html";
+            </script>
+        '''
+    except Exception as e:
+        print(f"Error saving event request: {e}")
+        return "Internal Server Error", 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
