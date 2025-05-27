@@ -685,5 +685,84 @@ def submit_booking():
         print(f"Error saving event request: {e}")
         return "Internal Server Error", 500
 
+@app.route('/api/event-requests', methods=['GET'])
+def api_event_requests():
+    try:
+        conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, name, email, date, start_time, end_time, location, people, volunteer_hours FROM event_requests')
+        rows = cursor.fetchall()
+        conn.close()
+        requests = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "email": row[2],
+                "date": row[3],
+                "start_time": row[4],
+                "end_time": row[5],
+                "location": row[6],
+                "people": row[7],
+                "volunteer_hours": row[8]
+            }
+            for row in rows
+        ]
+        return jsonify(requests), 200
+    except Exception as e:
+        print(f"Error fetching event requests: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/api/push-event-request', methods=['POST'])
+def api_push_event_request():
+    data = request.json
+    req_id = data.get('id')
+    if not req_id:
+        return jsonify({"error": "Missing event request ID"}), 400
+    try:
+        # Get the event request
+        conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('SELECT name, email, date, start_time, end_time, location, people, volunteer_hours FROM event_requests WHERE id = ?', (req_id,))
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return jsonify({"error": "Event request not found"}), 404
+
+        # Insert into main events table
+        conn2 = sqlite3.connect(EVENTS_DB_PATH)
+        cursor2 = conn2.cursor()
+        cursor2.execute('''
+            INSERT INTO events (name, date, location, start_time, end_time, people, volunteer_hours)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (row[0], row[2], row[5], row[3], row[4], row[6], row[7]))
+        conn2.commit()
+        conn2.close()
+
+        # Remove from event_requests
+        cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Event pushed successfully"}), 200
+    except Exception as e:
+        print(f"Error pushing event request: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/api/deny-event-request', methods=['POST'])
+def api_deny_event_request():
+    data = request.json
+    req_id = data.get('id')
+    if not req_id:
+        return jsonify({"error": "Missing event request ID"}), 400
+    try:
+        conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Event request denied"}), 200
+    except Exception as e:
+        print(f"Error denying event request: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, port=5500)

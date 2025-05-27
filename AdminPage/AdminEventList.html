@@ -69,7 +69,7 @@
         </div>
         <div id="approve-event" class="tab-content">
             <h2>Approve Event</h2>
-            <p>Content for approving events goes here.</p>
+            <ul id="approve-event-list"></ul>
         </div>
         <div id="edit-event" class="tab-content">
             <h2>Edit Event</h2>
@@ -101,8 +101,97 @@
                 document.getElementById(button.dataset.tab).classList.add('active');
             });
         });
-    </script>
-    <script>
+
+        // --- Approve Event Requests Logic ---
+        function loadApproveEventRequests() {
+            fetch('http://127.0.0.1:5500/api/event-requests')
+                .then(response => response.json())
+                .then(requests => {
+                    const list = document.getElementById('approve-event-list');
+                    list.innerHTML = '';
+                    requests.forEach(event => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <strong>${event.name}</strong><br>
+                            Email: ${event.email}<br>
+                            Date: ${event.date}<br>
+                            Location: ${event.location}<br>
+                            Start Time: ${event.start_time}<br>
+                            End Time: ${event.end_time}<br>
+                            People: ${event.people}<br>
+                            Volunteer Hours: ${event.volunteer_hours}<br>
+                        `;
+                        li.style.marginBottom = '16px'; // Add space between events
+
+                        // Push Event button
+                        const pushBtn = document.createElement('button');
+                        pushBtn.textContent = 'Approve Event';
+                        pushBtn.style.marginRight = '8px';
+                        pushBtn.style.border = '1px solid black';
+                        pushBtn.style.backgroundColor = 'green';
+                        pushBtn.style.marginTop = '8px';
+                        pushBtn.onclick = () => {
+                            fetch('http://127.0.0.1:5500/api/push-event-request', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: event.id })
+                            })
+                            .then(res => {
+                                if (res.ok) {
+                                    alert('Event pushed to main event list!');
+                                    loadApproveEventRequests();
+                                    loadEvents();
+                                    loadRemoveEvents();
+                                } else {
+                                    res.text().then(t => alert('Failed to push event: ' + t));
+                                }
+                            });
+                        };
+
+                        // Edit Event button
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = 'Edit Event';
+                        editBtn.style.marginRight = '8px';
+                        editBtn.style.border = '1px solid black';
+                        editBtn.style.backgroundColor = '#242424';
+                        editBtn.onclick = () => {
+                            window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
+                        };
+
+                        // Deny Event button
+                        const denyBtn = document.createElement('button');
+                        denyBtn.textContent = 'Deny Event';
+                        denyBtn.style.border = '1px solid black';
+                        denyBtn.style.backgroundColor = 'red';
+                        denyBtn.onclick = () => {
+                            if (confirm('Are you sure you want to deny this event request?')) {
+                                fetch('http://127.0.0.1:5500/api/deny-event-request', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ id: event.id })
+                                })
+                                .then(res => {
+                                    if (res.ok) {
+                                        alert('Event request denied.');
+                                        loadApproveEventRequests();
+                                    } else {
+                                        res.text().then(t => alert('Failed to deny event: ' + t));
+                                    }
+                                });
+                            }
+                        };
+
+                        li.appendChild(pushBtn);
+                        li.appendChild(editBtn);
+                        li.appendChild(denyBtn);
+                        list.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading event requests:', error);
+                });
+        }
+
         // Fetch and display all opt-in requests
         function loadOptInRequests() {
             console.log('Fetching opt-in requests...');
@@ -125,7 +214,7 @@
                                 approveButton.textContent = 'Approve';
                                 approveButton.style.marginLeft = '10px';
                                 approveButton.style.border = '1px solid black';
-                                approveButton.style.backgroundColor = '#242424';
+                                approveButton.style.backgroundColor = 'green';
                                 approveButton.onclick = () => updateOptIn(userId, event.name, 'approve');
 
                                 // Deny button
@@ -133,7 +222,7 @@
                                 denyButton.textContent = 'Deny';
                                 denyButton.style.marginLeft = '10px';
                                 denyButton.style.border = '1px solid black';
-                                denyButton.style.backgroundColor = '#ff4d4d';
+                                denyButton.style.backgroundColor = 'red';
                                 denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
 
                                 listItem.appendChild(approveButton);
@@ -271,6 +360,7 @@
             loadOptInRequests();
             loadEvents();
             loadRemoveEvents();
+            loadApproveEventRequests(); // <-- Add this line
         });
     </script>
     <script>
