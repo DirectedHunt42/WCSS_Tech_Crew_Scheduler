@@ -164,15 +164,17 @@ calendarDates.addEventListener('click', async (event) => {
             <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
-            ${events.map(event => `
-            <p>Event Name: ${event.name}</p>
-            <p>Start Time: ${event.startTime}</p>
-            <p>End Time: ${event.endTime}</p> 
-            <p>Location: ${event.location}</p>
-            <p>Tech Required: ${event.people}</p>
-            <p>Volunteer Hours: ${event.volunteerHours}</p>
-            <button class="opt-in-btn" style="${buttonStyle}">Opt In</button>
-            `).join('')}
+            <div class="popup-events-list" style="max-height: 220px; overflow-y: auto;">
+                ${events.map(event => `
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
+                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
+                    <button class="opt-in-btn" style="${buttonStyle}; margin-bottom: 10px; margin-top: 5px;">Opt In</button>
+                `).join('')}
+            </div>
         `;
 
         // Add event listeners to the buttons
@@ -208,7 +210,7 @@ calendarDates.addEventListener('click', async (event) => {
     }
     datesContent.style.display = 'block';
 
-   // Style the popup for fixed width and scrolling
+    // Style the popup for fixed width and scrolling
     datesContent.style.display = 'block';
     datesContent.style.width = '300px';
     datesContent.style.maxHeight = '300px';
