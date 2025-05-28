@@ -11,10 +11,8 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 # Define the path to the .txt files
-EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
-EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db')
 EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventRequests.db')
@@ -24,7 +22,7 @@ EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/e
 def serve_static_files(filename):
     return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), filename)
 
-@app.route('/save-event', methods=['POST'])
+@app.route('/api/save-event', methods=['POST'])
 def save_event():
     # Get form data
     user_name = request.form.get('name')
@@ -61,42 +59,10 @@ def save_event():
         conn.commit()
         conn.close()
         print("Event saved to database successfully!")
+        return f"Event saved successfully!", 200
     except Exception as e:
         print(f"Error saving event to database: {e}")
-        return "Internal Server Error", 500
-
-        # Determine the next event ID
-        try:
-            with open(EVENT_LIST_PATH, 'r') as file:
-                lines = file.readlines()
-                if lines:
-                    last_line = lines[-1].strip()
-                    last_id_str = last_line.split(',')[-1].strip()
-                    try:
-                        last_id = int(last_id_str)
-                    except ValueError:
-                        last_id = 0
-                else:
-                    last_id = 0
-            next_id = last_id + 1
-        except Exception as e:
-            print(f"Error reading event list for ID: {e}")
-            next_id = 1
-
-        # Format the data as a CSV line with the new ID
-        event_data = f"\n{date}, {event_name}, {location}, {start_time}, {end_time}, {people}, {volunteer_hours}, {next_id}"
-
-        # Write the data to eventList.txt
-        try:
-            with open(EVENT_LIST_PATH, 'a') as file:
-                file.write(event_data)
-            print("Event saved successfully!")
-        except Exception as e:
-            print(f"Error saving event: {e}")
-            return "Internal Server Error", 500
-
-        # Redirect back to the form page
-        return redirect(request.referrer or '/')
+        return f"Internal Server Error: {e}", 500
 
 @app.route('/api/login', methods=['POST'])
 def login():

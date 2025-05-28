@@ -167,15 +167,15 @@
             const formData = new FormData(event.target);
 
             try {
-                const response = await fetch('http://127.0.0.1:5500/save-event', {
+                const response = await fetch('/api/save-event', {
                     method: 'POST',
                     body: formData
                 });
 
                 if (response.ok) {
                     // Show the popup on success
-                    document.querySelector('.popup').style.display = 'block';
-                    document.querySelector('.overlay').style.display = 'block';
+                    alert('Event saved successfully!');
+                    window.location.href = 'AdminEventList.html#edit-event'; // Redirect to AdminEventList.html
                 } else {
                     alert('Failed to save the event. Please try again.');
                 }
@@ -195,12 +195,6 @@
             window.location.href = 'AdminPage.html';
         }
     </script>
-
-    <div class="overlay"></div>
-    <div class="popup">
-        <p>Event saved successfully!</p>
-        <button onclick="closePopup()">OK</button>
-    </div>
 
     <div class="content">
         <form onsubmit="submitForm(event)">
@@ -262,5 +256,4 @@
         document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
     </script>
 </body>
-
 </html>
