@@ -11,10 +11,8 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 # Define the path to the .txt files
-EVENT_LIST_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
-EVENT_LIST_FILE = os.path.join(os.path.dirname(__file__), '../Resources/eventList.txt')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db')
 EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventRequests.db')
