@@ -13,7 +13,7 @@ const dropdownContent = document.querySelector('.dropdown-content');
 const dropbtn = document.querySelector('.dropbtn');
 
 const datesContent = document.querySelector('.dates-content');
-const buttonStyle = "padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
+const buttonStyle = "padding: 4px 8px; border-radius: 5px; cursor: pointer;";
 
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
