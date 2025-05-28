@@ -138,6 +138,68 @@ document.addEventListener('click', (event) => {
     }
 });
 
+async function fetchOptInStatus() {
+    try {
+        const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+            credentials: 'include'
+        });
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error('Failed to fetch opt-in status');
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching opt-in status:', error);
+        return [];
+    }
+}
+
+async function toggleOptIn(eventName, button) {
+    let endpoint = '/opt-in';
+    let successMsg = 'Opt-in request sent successfully!';
+    let failMsg = 'Failed to send opt-in request: ';
+    let nextLabel = 'Cancel Request';
+    let revertLabel = 'Opt in';
+
+    if (button.textContent === 'Cancel Request') {
+        endpoint = '/cancel-opt-in';
+        successMsg = 'Opt-in request canceled successfully!';
+        failMsg = 'Failed to cancel opt-in request: ';
+        nextLabel = 'Opt in';
+        revertLabel = 'Cancel Request';
+    } else if (button.textContent === 'Opt in Again') {
+        endpoint = '/opt-in-again';
+        successMsg = 'Opt-in request submitted again!';
+        failMsg = 'Failed to opt-in again: ';
+        nextLabel = 'Cancel Request';
+        revertLabel = 'Opt in Again';
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ eventName }),
+        });
+
+        if (response.ok) {
+            button.textContent = nextLabel;
+            button.disabled = false;
+            alert(successMsg);
+        } else {
+            const errorText = await response.text();
+            button.textContent = revertLabel;
+            button.disabled = false;
+            alert(failMsg + errorText);
+        }
+    } catch (error) {
+        button.textContent = revertLabel;
+        button.disabled = false;
+        alert(failMsg + 'Please try again.');
+    }
+}
 
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
@@ -154,7 +216,8 @@ calendarDates.addEventListener('click', async (event) => {
     const response = await fetch(`/api/events-by-date?date=${backendDate}`);
     const events = await response.json();
 
-    console.log('Events for selected date:', events);
+    // Fetch opt-in status for the user
+    const optInStatus = await fetchOptInStatus();
 
     // Create and display the popup
     if (events.length > 0) {
@@ -165,25 +228,45 @@ calendarDates.addEventListener('click', async (event) => {
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
             </div>
             <div class="popup-events-list" style="max-height: 220px; overflow-y: auto;">
-                ${events.map(event => `
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
-                    <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
-                    <button class="opt-in-btn" style="${buttonStyle}; margin-bottom: 10px; margin-top: 5px;">Opt In</button>
-                `).join('')}
+                ${events.map((event, idx) => {
+                    return `
+                        <div class="calendar-event-block" data-idx="${idx}">
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
+                            <button class="opt-in-btn" style="${buttonStyle}; margin-bottom: 10px; margin-top: 5px;"></button>
+                        </div>
+                    `;
+                }).join('')}
             </div>
         `;
 
-        // Add event listeners to the buttons
-        const optInButtons = datesContent.querySelectorAll('.opt-in-btn');
-        optInButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                alert('Opt in request sent');
-                button.disabled = true; // Disable the button
-                button.textContent = 'Request Sent'; // Update button text
+        // Set up opt-in buttons
+        const eventBlocks = datesContent.querySelectorAll('.calendar-event-block');
+        eventBlocks.forEach((block, idx) => {
+            const event = events[idx];
+            const button = block.querySelector('.opt-in-btn');
+            const userEvent = optInStatus.find(e => e.name === event.name);
+
+            if (userEvent) {
+                if (userEvent.status === 'requested') {
+                    button.textContent = 'Cancel Request';
+                } else if (userEvent.status === 'approved') {
+                    button.textContent = 'Opted In';
+                    button.disabled = true;
+                } else if (userEvent.status === 'denied') {
+                    button.textContent = 'Opt-in Again';
+                }
+            } else {
+                button.textContent = 'Opt in';
+            }
+
+            button.addEventListener('click', async () => {
+                button.disabled = true;
+                await toggleOptIn(event.name, button);
             });
         });
 
@@ -211,10 +294,9 @@ calendarDates.addEventListener('click', async (event) => {
     datesContent.style.display = 'block';
 
     // Style the popup for fixed width and scrolling
-    datesContent.style.display = 'block';
     datesContent.style.width = '300px';
     datesContent.style.maxHeight = '300px';
-    datesContent.style.overflowY = 'auto'; // <-- Enable vertical scrolling
+    datesContent.style.overflowY = 'auto';
     datesContent.style.borderRadius = '8px';
     datesContent.style.boxShadow = '0 2px 12px rgba(0,0,0,0.5)';
     datesContent.style.padding = '16px';

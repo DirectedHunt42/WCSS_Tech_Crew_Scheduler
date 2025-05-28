@@ -168,6 +168,17 @@ def remove_member():
             return jsonify({"error": f"Member '{member_to_remove}' not found in the login database"}), 404
         conn.close()
         print(f"Member '{member_to_remove}' removed from the login database successfully!")
+
+        # Remove the member's data from optInRequests.json
+        try:
+            opt_in_requests = read_opt_in_requests()
+            if member_to_remove in opt_in_requests:
+                del opt_in_requests[member_to_remove]
+                write_opt_in_requests(opt_in_requests)
+                print(f"Removed '{member_to_remove}' from optInRequests.json")
+        except Exception as e:
+            print(f"Error removing member from optInRequests.json: {e}")
+
         return jsonify({"success": True, "message": f"Member '{member_to_remove}' removed successfully!"}), 200
     except sqlite3.Error as e:
         print(f"Database error: {e}")
