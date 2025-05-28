@@ -167,7 +167,7 @@
             const formData = new FormData(event.target);
 
             try {
-                const response = await fetch('http://127.0.0.1:5500/save-event', {
+                const response = await fetch('/api/save-event', {
                     method: 'POST',
                     body: formData
                 });
@@ -262,5 +262,4 @@
         document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
     </script>
 </body>
-
 </html>
