@@ -172,9 +172,11 @@
                 let start = new Date(0, 0, 0, startHour, startMinute, 0);
                 let end = new Date(0, 0, 0, endHour, endMinute, 0);
 
-                // If end time is less than start time, assume it's the next day
+                // If end time is less than start time, throw error
                 if (end < start) {
-                    end.setDate(end.getDate() + 1);
+                    alert("End time must be after start time.");
+                    Etime.value = '';
+                    return;
                 }
 
                 let diffMs = end - start;
