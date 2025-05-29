@@ -288,26 +288,37 @@ def page_not_found(e):
 
 @app.route('/remove_event', methods=['POST'])
 def remove_event():
-    try:
-        data = request.get_json()
-        event_id = str(data.get('id')).strip()
-        if not event_id:
-            return jsonify({'error': 'Event ID is required'}), 400
+    event_id = request.json.get('id')
+    if not event_id:
+        return jsonify({"error": "Event ID is required"}), 400
 
+    try:
+        # Remove the event from the events database
         conn = sqlite3.connect(EVENTS_DB_PATH)
         cursor = conn.cursor()
         cursor.execute('DELETE FROM events WHERE id = ?', (event_id,))
         conn.commit()
-        deleted = cursor.rowcount
         conn.close()
 
-        if deleted == 0:
-            return jsonify({'error': f'Event with ID {event_id} not found'}), 404
+        # Remove the event from all users' optInRequests.json
+        try:
+            opt_in_requests = read_opt_in_requests()
+            changed = False
+            for user, events in opt_in_requests.items():
+                # Remove any event with matching id or name
+                new_events = [e for e in events if str(e.get('id')) != str(event_id) and e.get('name') != request.json.get('name')]
+                if len(new_events) != len(events):
+                    opt_in_requests[user] = new_events
+                    changed = True
+            if changed:
+                write_opt_in_requests(opt_in_requests)
+        except Exception as e:
+            print(f"Error removing event from optInRequests.json: {e}")
 
-        return jsonify({'message': 'Event removed successfully'}), 200
+        return jsonify({"success": True, "message": "Event removed successfully!"}), 200
     except Exception as e:
         print(f"Error removing event: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/validate-and-send-reset-email', methods=['POST'])
 def validate_and_send_reset_email():
