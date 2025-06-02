@@ -735,7 +735,7 @@ def api_push_event_request():
         email_payload = {
             "name": row[0],
             "email": row[1],
-            "accepted": "true"
+            "accepted": True
         }
         email_response = requests.post(email_service_url, json=email_payload)
 
@@ -766,7 +766,7 @@ def api_deny_event_request():
         email_payload = {
             "name": row[0],
             "email": row[1],
-            "accepted": "false"
+            "accepted": False
         }
         email_response = requests.post(email_service_url, json=email_payload)
 
