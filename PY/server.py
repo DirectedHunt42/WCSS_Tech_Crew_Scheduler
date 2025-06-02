@@ -773,7 +773,7 @@ def api_deny_event_request():
         if email_response.status_code == 200:
             return jsonify({"success": True, "message": "Email update sent successfully!"}), 200
         else:
-            return jsonify({"error": "Failed to send email"}), email_response.status_code
+            return jsonify({"error": "Failed to send email", "status": email_response.status_code}), email_response.status_code
     except Exception as e:
         print(f"Error denying event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
