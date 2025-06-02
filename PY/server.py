@@ -730,7 +730,19 @@ def api_push_event_request():
         cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
         conn.commit()
         conn.close()
-        return jsonify({"message": "Event pushed successfully"}), 200
+        # Send the email
+        email_service_url = "http://localhost:6420/send-update-email"
+        email_payload = {
+            "name": row[0],
+            "email": row[1],
+            "accepted": True
+        }
+        email_response = requests.post(email_service_url, json=email_payload)
+
+        if email_response.status_code == 200:
+            return jsonify({"success": True, "message": "Email update sent successfully!"}), 200
+        else:
+            return jsonify({"error": "Failed to send email"}), email_response.status_code
     except Exception as e:
         print(f"Error pushing event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
@@ -744,10 +756,24 @@ def api_deny_event_request():
     try:
         conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
         cursor = conn.cursor()
+        cursor.execute('SELECT name, email, date, start_time, end_time, location, people, volunteer_hours FROM event_requests WHERE id = ?', (req_id,))
+        row = cursor.fetchone()
         cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
         conn.commit()
         conn.close()
-        return jsonify({"message": "Event request denied"}), 200
+        # Send the email
+        email_service_url = "http://localhost:6420/send-update-email"
+        email_payload = {
+            "name": row[0],
+            "email": row[1],
+            "accepted": False
+        }
+        email_response = requests.post(email_service_url, json=email_payload)
+
+        if email_response.status_code == 200:
+            return jsonify({"success": True, "message": "Email update sent successfully!"}), 200
+        else:
+            return jsonify({"error": "Failed to send email", "status": email_response.status_code}), email_response.status_code
     except Exception as e:
         print(f"Error denying event request: {e}")
         return jsonify({"error": "Internal server error"}), 500

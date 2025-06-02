@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail', // Email provider
     auth: {
         user: 'wcsstechcrew@gmail.com',
-        pass: 'qoxjficgrvakjiju'
+        pass: 'iaqkmfajivdmzflb'
     }
 });
 
@@ -41,6 +41,61 @@ app.post('/send-reset-email', (req, res) => {
             </div>
         `
     };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error sending email');
+        }
+        res.send('Email sent successfully');
+    });
+});
+
+app.post('/send-update-email', (req, res) => {
+    const {email, name, accepted} = req.body; // Separate email, name, and accepted status
+    console.log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
+
+    const mailOptions = {};
+
+    if (accepted === true) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Event Approved';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${email},</h2>
+                <p>This is an update regarding your event request <strong>${name}</strong>.</p>
+                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else if (accepted === false) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Event Rejected';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${email},</h2>
+                <p>This is an update regarding your event request <strong>${name}</strong>.</p>
+                <p>We regret to inform you that your request has been <span style="color: red; font-weight: bold;">rejected</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else {
+        return res.status(400).send('Invalid request data');
+    }
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
