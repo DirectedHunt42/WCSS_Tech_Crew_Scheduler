@@ -65,13 +65,13 @@ app.post('/send-update-email', (req, res) => {
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
                 <p>This is an update regarding your event request <strong>${name}</strong>.</p>
-                <p>We are pleased to inform you that your request has been <strong>accepted</strong>.</p>
-                    <p>Thank you,</p>
-                    <p style="font-weight: bold;">The Tech Crew Team</p>
-                    <hr>
-                    <p style="font-size: 12px; color: #888;">
-                        Note: This is an automated message, please do not reply to this email.
-                    </p>
+                <p>We are pleased to inform you that your request has been <span style="color: green;">approved</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
                 </div>
             </div>
         `;
@@ -83,13 +83,13 @@ app.post('/send-update-email', (req, res) => {
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
                 <p>This is an update regarding your event request <strong>${name}</strong>.</p>
-                <p>We regret to inform you that your request has been <strong>rejected</strong>.</p>
+                <p>We regret to inform you that your request has been <span style="color: red;">rejected</span>.</p>
                 <p>Thank you,</p>
                 <p style="font-weight: bold;">The Tech Crew Team</p>
                 <hr>
                 <p style="font-size: 12px; color: #888;">
-                        Note: This is an automated message, please do not reply to this email.
-                    </p>
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
                 </div>
             </div>
         `;
