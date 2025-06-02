@@ -730,7 +730,19 @@ def api_push_event_request():
         cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
         conn.commit()
         conn.close()
-        return jsonify({"message": "Event pushed successfully"}), 200
+        # Send the email
+        email_service_url = "http://localhost:6420/send-update-email"
+        email_payload = {
+            "name": row[0],
+            "email": row[1],
+            "accepted": "true"
+        }
+        email_response = requests.post(email_service_url, json=email_payload)
+
+        if email_response.status_code == 200:
+            return jsonify({"success": True, "message": "Email update sent successfully!"}), 200
+        else:
+            return jsonify({"error": "Failed to send email"}), email_response.status_code
     except Exception as e:
         print(f"Error pushing event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
