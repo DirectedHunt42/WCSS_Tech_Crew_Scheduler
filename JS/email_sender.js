@@ -65,7 +65,7 @@ app.post('/send-update-email', (req, res) => {
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
                 <p>This is an update regarding your event request <strong>${name}</strong>.</p>
-                <p>We are pleased to inform you that your request has been <span style="color: green;">approved</span>.</p>
+                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
                 <p>Thank you,</p>
                 <p style="font-weight: bold;">The Tech Crew Team</p>
                 <hr>
@@ -83,7 +83,7 @@ app.post('/send-update-email', (req, res) => {
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
                 <p>This is an update regarding your event request <strong>${name}</strong>.</p>
-                <p>We regret to inform you that your request has been <span style="color: red;">rejected</span>.</p>
+                <p>We regret to inform you that your request has been <span style="color: red; font-weight: bold;">rejected</span>.</p>
                 <p>Thank you,</p>
                 <p style="font-weight: bold;">The Tech Crew Team</p>
                 <hr>
