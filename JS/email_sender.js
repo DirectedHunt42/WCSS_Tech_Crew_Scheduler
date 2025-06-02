@@ -60,7 +60,7 @@ app.post('/send-update-email', (req, res) => {
     if (accepted === true) {
         mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
         mailOptions.to = email; // Recipient address
-        mailOptions.subject = 'Event Request Update';
+        mailOptions.subject = 'Event Approved';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
@@ -78,7 +78,7 @@ app.post('/send-update-email', (req, res) => {
     } else if (accepted === false) {
         mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
         mailOptions.to = email; // Recipient address
-        mailOptions.subject = 'Password Reset Request';
+        mailOptions.subject = 'Event Rejected';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
                 <h2>Hello ${email},</h2>
