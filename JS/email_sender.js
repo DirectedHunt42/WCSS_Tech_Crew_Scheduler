@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail', // Email provider
     auth: {
         user: 'wcsstechcrew@gmail.com',
-        pass: 'qoxjficgrvakjiju'
+        pass: 'iaqkmfajivdmzflb'
     }
 });
 
@@ -96,7 +96,7 @@ app.post('/send-update-email', (req, res) => {
     } else {
         return res.status(400).send('Invalid request data');
     }
-    
+
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error(error);
