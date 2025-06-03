@@ -597,13 +597,19 @@ def get_events_by_date():
     try:
         conn = sqlite3.connect(EVENTS_DB_PATH)
         cursor = conn.cursor()
-        # Convert 'YYYY-MM-DD' to 'YYYY,MM,DD'
-        db_date = date.replace('-', ',')
         cursor.execute('''
             SELECT id, name, date, location, start_time, end_time, people, volunteer_hours
             FROM events
             WHERE date = ?
-        ''', (db_date,))
+        ''', (date,))
+        if cursor.rowcount == 0:
+            # Convert 'YYYY-MM-DD' to 'YYYY,MM,DD'
+            db_date = date.replace('-', ',')
+            cursor.execute('''
+                SELECT id, name, date, location, start_time, end_time, people, volunteer_hours
+                FROM events
+                WHERE date = ?
+            ''', (db_date,))
         rows = cursor.fetchall()
         conn.close()
         events = [
