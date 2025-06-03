@@ -503,17 +503,21 @@ body.light-theme {
     scrollbar-color: var(--popup-scrollbar-thumb) var(--popup-scrollbar-track);
     padding-right: 18px;
 }
+
 .popup-events-list::-webkit-scrollbar {
     width: 7px;
 }
+
 .popup-events-list::-webkit-scrollbar-thumb {
     background: var(--popup-scrollbar-thumb);
     border-radius: 6px;
 }
+
 .popup-events-list::-webkit-scrollbar-track {
     background: var(--popup-scrollbar-track);
     border-radius: 6px;
 }
+
 .comments-title,
 .comment-block {
     color: #222;
