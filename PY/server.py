@@ -288,6 +288,7 @@ def page_not_found(e):
 
 @app.route('/remove_event', methods=['POST'])
 def remove_event():
+    confi
     event_id = request.json.get('id')
     if not event_id:
         return jsonify({"error": "Event ID is required"}), 400
@@ -671,7 +672,7 @@ def submit_booking():
         # Show a popup and redirect
         return '''
             <script>
-                alert("Event saved successfully!");
+                alert("Event request sent to admin!");
                 window.location.href = "/UserPage/UserPage.html";
             </script>
         '''
