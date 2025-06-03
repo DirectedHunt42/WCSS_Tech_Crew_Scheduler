@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const response = await fetch('http://127.0.0.1:6422/auth/status', { credentials: 'include' });
+        const response = await fetch('/auth/status', { credentials: 'include' });
         const data = await response.json();
 
         if (
@@ -143,7 +143,7 @@ if (loginForm) {
         const password = document.getElementById("password").value;
 
         try {
-            const response = await fetch('http://127.0.0.1:6422/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -164,7 +164,7 @@ if (loginForm) {
 
 async function logout() {
     try {
-        const response = await fetch('http://127.0.0.1:6422/logout', {
+        const response = await fetch('/logout', {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
         });

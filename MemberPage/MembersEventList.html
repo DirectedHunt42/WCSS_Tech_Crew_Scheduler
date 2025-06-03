@@ -54,7 +54,7 @@
         <script>
             async function fetchOptInStatus() {
                 try {
-                    const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+                    const response = await fetch('/opt-in-status', {
                         credentials: 'include'
                     });
                     if (response.ok) {
@@ -91,7 +91,7 @@
                 }
 
                 try {
-                    const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+                    const response = await fetch(`${endpoint}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -115,7 +115,7 @@
                 }
             }
 
-            fetch('http://127.0.0.1:5500/api/events')
+            fetch('/api/events')
                 .then(response => response.json())
                 .then(async events => {
                     const optInStatus = await fetchOptInStatus();
@@ -190,5 +190,4 @@
         <script src="/JS/themeHandler.js"></script>
     </div>
 </body>
-
 </html>

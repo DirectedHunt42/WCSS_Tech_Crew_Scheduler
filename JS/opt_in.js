@@ -7,7 +7,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors({
-    origin: 'http://127.0.0.1:5500', // Frontend origin
+    origin: true, // Allow requests from any origin
     credentials: true, // Allow cookies to be sent with requests
     methods: ['GET', 'POST', 'OPTIONS'], // Allow specific HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
