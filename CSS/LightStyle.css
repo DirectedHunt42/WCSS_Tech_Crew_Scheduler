@@ -514,3 +514,7 @@ body.light-theme {
     background: var(--popup-scrollbar-track);
     border-radius: 6px;
 }
+.comments-title,
+.comment-block {
+    color: #222;
+}

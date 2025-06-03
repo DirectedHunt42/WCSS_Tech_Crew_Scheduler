@@ -6,6 +6,8 @@ import sqlite3
 import requests
 import json
 import time
+import pytz
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -16,6 +18,35 @@ ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLo
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
 EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db')
 EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventRequests.db')
+ANNOUNCEMENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/announcements.db')
+
+# Create tables if not exist
+def init_announcements_db():
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS announcements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            author TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            announcement_id INTEGER NOT NULL,
+            commenter TEXT NOT NULL,
+            comment TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (announcement_id) REFERENCES announcements(id)
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_announcements_db()
 
 # Serve static files (HTML, CSS, JS, etc.)
 @app.route('/<path:filename>')
@@ -751,6 +782,101 @@ def api_deny_event_request():
     except Exception as e:
         print(f"Error denying event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/api/announcements', methods=['GET'])
+def get_announcements():
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT id, title, content, author, created_at FROM announcements ORDER BY created_at DESC')
+    announcements = [
+        {
+            "id": row[0],
+            "title": row[1],
+            "content": row[2],
+            "author": row[3],
+            "created_at": to_est(row[4]) if row[4] else None
+        }
+        for row in c.fetchall()
+    ]
+    conn.close()
+    return jsonify(announcements), 200
+
+@app.route('/api/announcements/<int:announcement_id>/comments', methods=['GET'])
+def get_comments(announcement_id):
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT commenter, comment, created_at FROM comments WHERE announcement_id = ? ORDER BY created_at ASC', (announcement_id,))
+    comments = [
+        {
+            "commenter": row[0],
+            "comment": row[1],
+            "created_at": to_est(row[2]) if row[2] else None
+        }
+        for row in c.fetchall()
+    ]
+    conn.close()
+    return jsonify(comments), 200
+
+@app.route('/api/announcements/<int:announcement_id>/comments', methods=['POST'])
+def post_comment(announcement_id):
+    data = request.json
+    commenter = data.get('commenter')
+    comment = data.get('comment')
+    if not commenter or not comment:
+        return jsonify({"error": "Missing commenter or comment"}), 400
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('INSERT INTO comments (announcement_id, commenter, comment) VALUES (?, ?, ?)', (announcement_id, commenter, comment))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+# (Admins can POST to /api/announcements to create new announcements on a different page)
+@app.route('/api/announcements', methods=['POST'])
+def create_announcement():
+    data = request.json
+    title = data.get('title')
+    content = data.get('content')
+    author = data.get('author')
+    if not title or not content or not author:
+        return jsonify({"error": "Missing fields"}), 400
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('INSERT INTO announcements (title, content, author) VALUES (?, ?, ?)', (title, content, author))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+@app.route('/api/announcements/<int:announcement_id>', methods=['DELETE'])
+def delete_announcement(announcement_id):
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('DELETE FROM announcements WHERE id = ?', (announcement_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+@app.route('/api/announcements/<int:announcement_id>/comments', methods=['DELETE'])
+def delete_comment(announcement_id):
+    data = request.get_json()
+    created_at = data.get('created_at')
+    if not created_at:
+        return jsonify({"error": "Missing created_at"}), 400
+    conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
+    c = conn.cursor()
+    c.execute('DELETE FROM comments WHERE announcement_id = ? AND created_at = ?', (announcement_id, created_at))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True}), 200
+
+def to_est(dt_str):
+    # dt_str is in format 'YYYY-MM-DD HH:MM:SS' (SQLite default)
+    utc = pytz.utc
+    est = pytz.timezone('US/Eastern')
+    dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
+    dt_utc = utc.localize(dt)
+    dt_est = dt_utc.astimezone(est)
+    return dt_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5500)
