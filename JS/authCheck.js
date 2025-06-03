@@ -50,7 +50,7 @@ app.post('/api/login', async (req, res) => {
 
     try {
         // Forward the login request to the Python login API
-        const pythonResponse = await axios.post('http://127.0.0.1:5500/api/login', {
+        const pythonResponse = await axios.post('/api/login', {
             username,
             password,
             type
