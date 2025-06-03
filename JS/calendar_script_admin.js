@@ -173,7 +173,7 @@ calendarDates.addEventListener('click', async (event) => {
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; border-radius: 5px;">
             <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
-                        <button class="book-event-btn" style="margin-bottom: 10px; padding: 8px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;" onClick="window.location.href='AdminEventBooking.html'">Add Event</button>
+            <button class="book-event-btn" style="margin-bottom: 10px; padding: 8px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;" onClick="window.location.href='AdminEventBooking.html?date=${backendDate}'">Add Event</button>
             </div>
             <div class="popup-events-list" style="max-height: 220px; overflow-y: auto;">
                 ${events.map((event, idx) => {
@@ -202,7 +202,7 @@ calendarDates.addEventListener('click', async (event) => {
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
             <h1 style="font-size: 1.3em; font-family: monospace; text-align: center; grid-column: 1 / -1;">${dayOfWeek}, ${months[month - 1]} ${day}</h1>
             <button class="close-popup-btn" style="position: absolute; right: 0; top: 0; ${buttonStyle}">&times;</button>
-            <button class="book-event-btn" style="margin-bottom: 10px; padding: 8px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;" onClick="window.location.href='AdminEventBooking.html'">Add Event</button>
+            <button class="book-event-btn" style="margin-bottom: 10px; padding: 8px; background-color: green; color: white; border: none; border-radius: 5px; cursor: pointer;" onClick="window.location.href='AdminEventBooking.html?date=${backendDate}'">Add Event</button>
             </div>
             <p>No events for this date.</p>
         `;
