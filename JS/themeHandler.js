@@ -16,29 +16,39 @@ function setCookie(name, value, days) {
 function applyTheme() {
     const linkElement = document.querySelector('link[rel="stylesheet"]');
     const themeCookie = getCookie('theme');
+    const body = document.body;
 
+    let theme;
     if (themeCookie) {
-        // Apply the theme from the cookie
-        linkElement.href = themeCookie === 'light' ? '/CSS/LightStyle.css' : '/CSS/DarkStyle.css';
-        document.getElementById('theme-toggle').checked = themeCookie === 'light' ? false : true;
+        theme = themeCookie;
+        linkElement.href = theme === 'light' ? '/CSS/LightStyle.css' : '/CSS/DarkStyle.css';
+        document.getElementById('theme-toggle').checked = theme === 'light' ? false : true;
     } else {
-        // Default to browser preference if no cookie exists
         const lightModeMediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-        const defaultTheme = lightModeMediaQuery.matches ? 'light' : 'dark';
-        linkElement.href = defaultTheme === 'light' ? '/CSS/LightStyle.css' : '/CSS/DarkStyle.css';
-        setCookie('theme', defaultTheme, 30); // Save the default theme in a cookie for 30 days
-        document.getElementById('theme-toggle').checked = defaultTheme === 'light' ? false : true;
+        theme = lightModeMediaQuery.matches ? 'light' : 'dark';
+        linkElement.href = theme === 'light' ? '/CSS/LightStyle.css' : '/CSS/DarkStyle.css';
+        setCookie('theme', theme, 30);
+        document.getElementById('theme-toggle').checked = theme === 'light' ? false : true;
     }
+
+    // Set body class for theme
+    body.classList.remove('lightStyle', 'darkStyle');
+    body.classList.add(theme === 'light' ? 'lightStyle' : 'darkStyle');
 }
 
 // Function to toggle between dark and light themes and update the cookie
 function toggleTheme() {
     const linkElement = document.querySelector('link[rel="stylesheet"]');
+    const body = document.body;
     const currentTheme = linkElement.href.includes('DarkStyle.css') ? 'dark' : 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
     linkElement.href = newTheme === 'light' ? '/CSS/LightStyle.css' : '/CSS/DarkStyle.css';
-    setCookie('theme', newTheme, 30); // Update the theme cookie
+    setCookie('theme', newTheme, 30);
+
+    // Set body class for theme
+    body.classList.remove('lightStyle', 'darkStyle');
+    body.classList.add(newTheme === 'light' ? 'lightStyle' : 'darkStyle');
 }
 
 // Add event listener to the toggle switch
