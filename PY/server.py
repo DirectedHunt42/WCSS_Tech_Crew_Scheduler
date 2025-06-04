@@ -12,7 +12,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# Define the path to the .txt files
+# Define the path to the .db and .json files
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/logInList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
