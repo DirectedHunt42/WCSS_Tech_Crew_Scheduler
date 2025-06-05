@@ -165,6 +165,7 @@ calendarDates.addEventListener('click', async (event) => {
 
     // Fetch events for the selected date from the new API
     const apiBase = window.location.origin;
+    console.log('API Base:', apiBase);
     const response = await fetch(`${apiBase}/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
     if (!response.ok) {
         alert('Failed to fetch events for this date.');
