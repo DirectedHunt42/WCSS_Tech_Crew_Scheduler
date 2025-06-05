@@ -164,7 +164,11 @@ calendarDates.addEventListener('click', async (event) => {
     console.log('Selected date:', backendDate);
 
     // Fetch events for the selected date from the new API
-    const response = await fetch(`/api/events-by-date?date=${backendDate}`);
+    const response = await fetch('http://127.0.0.1:5500/api/events-by-date?date=' + backendDate, { credentials: 'include' });
+    if (!response.ok) {
+        alert('Failed to fetch events for this date.');
+        return;
+    }
     const events = await response.json();
 
     // Create and display the popup
