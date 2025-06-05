@@ -910,5 +910,5 @@ def to_est(dt_str):
     dt_est = dt_utc.astimezone(est)
     return dt_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5500)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5500, debug=True)
