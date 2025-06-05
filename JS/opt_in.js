@@ -265,6 +265,29 @@ app.post('/opt-in-again', (req, res) => {
     }
 });
 
+app.get('/approve-opt-out', (req, res) => {
+    const { token } = req.query;
+    if (!token) return res.status(400).send('Missing token');
+
+    try {
+        const [username, eventName] = Buffer.from(token, 'base64').toString().split('|');
+        if (!username || !eventName) return res.status(400).send('Invalid token');
+
+        const optInData = readOptInFile();
+        if (optInData[username]) {
+            const event = optInData[username].find(event => event.name.trim() === eventName.trim());
+            if (event) {
+                event.status = 'opted_out';
+                fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+                return res.send(`<h2>Success!</h2><p>${username} has been opted out of <b>${eventName}</b>.</p>`);
+            }
+        }
+        res.status(404).send('Opt-in request not found');
+    } catch (err) {
+        res.status(400).send('Invalid token');
+    }
+});
+
 // Start the server
 app.listen(6421, () => {
     console.log('Server is running on port 6421');

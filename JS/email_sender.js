@@ -2,7 +2,11 @@ const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
 const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
 
 // Configure Nodemailer
@@ -106,6 +110,50 @@ app.post('/send-update-email', (req, res) => {
     });
 });
 
+app.post('/opt-out-request', (req, res) => {
+    const { username, eventName, userEmail } = req.body;
+    if (!username || !eventName || !userEmail) {
+        return res.status(400).send('Missing data');
+    }
+
+    // Generate a unique token (for demo, use a simple base64, but use a secure random string in production)
+    const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
+    // Store the token and request info somewhere persistent (e.g., a file or DB) for real security
+
+    // The link the admin will click
+    const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
+
+    const mailOptions = {
+        from: 'wcsstechcrew@gmail.com',
+        to: 'jbour10@ocdsb.ca',  // change to real admin email 
+        subject: `Opt-Out Request: ${username} for ${eventName}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Opt-Out Request</h2>
+                <p><b>User:</b> ${username} (${userEmail})</p>
+                <p><b>Event:</b> ${eventName}</p>
+                <p>
+                    <a href="${approveLink}" style="display:inline-block;padding:10px 18px;background:#1976d2;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
+                        Click here to approve opt-out
+                    </a>
+                </p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+            </div>
+        `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error sending email');
+        }
+        res.send('Opt-out email sent to admin');
+    });
+});
+
 app.get("/", (req, res) => {
     res.send("Welcome to the email sender service!");
 });
@@ -114,3 +162,4 @@ app.get("/", (req, res) => {
 app.listen(6420, () => {
     console.log('Server is running on port 6420');
 });
+
