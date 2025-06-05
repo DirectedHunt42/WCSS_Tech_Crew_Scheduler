@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const path = require('path');
+const apiBase = window.location.origin;
 
 // Correct relative paths to the server files
 const servers = [
