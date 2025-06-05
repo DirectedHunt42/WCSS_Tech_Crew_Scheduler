@@ -163,7 +163,7 @@ calendarDates.addEventListener('click', async (event) => {
     console.log('Selected date:', backendDate);
 
     // Fetch events for the selected date from the new API
-    const response = await fetch('http://127.0.0.1:5500/api/events-by-date?date=' + backendDate, { credentials: 'include' });
+    const response = await fetch('http://TechCrewWebsite.local:5500/api/events-by-date?date=' + backendDate, { credentials: 'include' });
     if (!response.ok) {
         alert('Failed to fetch events for this date.');
         return;
