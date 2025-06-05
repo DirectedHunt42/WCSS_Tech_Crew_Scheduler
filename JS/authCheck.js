@@ -45,12 +45,13 @@ app.post('/login', (req, res) => {
     }
 });
 
+const PYTHON_API_URL = 'http://127.0.0.1:5500/api/login'; // Always use localhost for backend-to-backend
+
 app.post('/api/login', async (req, res) => {
     const { username, password, type } = req.body;
 
     try {
-        // Forward the login request to the Python login API
-        const pythonResponse = await axios.post('/api/login', {
+        const pythonResponse = await axios.post(PYTHON_API_URL, {
             username,
             password,
             type
