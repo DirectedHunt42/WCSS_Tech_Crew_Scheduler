@@ -3,7 +3,6 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const axios = require('axios');
 const cors = require('cors');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 
 app.use(cors({
@@ -45,14 +44,6 @@ app.post('/login', (req, res) => {
         res.status(400).send({ message: 'Invalid login credentials' });
     }
 });
-
-// Replace with your Pi's current IP and port
-const PI_API_URL = 'http://10.191.28.44:5500'; // <-- update this IP as needed
-
-app.use('/api', createProxyMiddleware({
-    target: PI_API_URL,
-    changeOrigin: true,
-}));
 
 app.get('/auth/status', (req, res) => {
     const loggedInUser = req.cookies.loggedInUser || null;
