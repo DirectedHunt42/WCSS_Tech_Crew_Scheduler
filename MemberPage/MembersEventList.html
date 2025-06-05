@@ -11,24 +11,67 @@
         body {
             margin: 0;
             padding: 0;
-            display: grid;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
             align-items: left;
-            justify-content: top;
-            text-align: left;
+            margin-left: 230px;
         }
 
         #member-event-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            padding: 0;
-            margin: 0;
+            gap: 30px;
+            margin: 0 auto;
+            justify-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         #member-event-list li {
-            max-width: 225px;
+            max-width: 200px;
             width: 100%;
-            margin: 0 auto;
+            margin: 0;
+        }
+
+        .sidebar {
+            width: 220px;
+        }
+
+        #opt-out-mode-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 244px;
+            z-index: 1000;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: background 0.2s;
+        }
+
+        #opt-out-mode-btn.opt-out-active {
+            background: #d32f2f;
+        }
+
+        .opt-out-candidate {
+            outline: 3px solid #d32f2f !important;
+            cursor: pointer !important;
+            background: #fff3f3 !important;
+            color: black !important;
         }
     </style>
 </head>
@@ -54,7 +97,7 @@
         <script>
             async function fetchOptInStatus() {
                 try {
-                    const response = await fetch('/opt-in-status', {
+                    const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
                         credentials: 'include'
                     });
                     if (response.ok) {
@@ -91,7 +134,7 @@
                 }
 
                 try {
-                    const response = await fetch(`${endpoint}`, {
+                    const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -142,6 +185,7 @@
 
                         listItem.innerHTML = `
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
+                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Date:</strong> ${event.date}</p>
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
@@ -186,8 +230,175 @@
                 })
                 .catch(error => console.error('Error fetching events:', error));
         </script>
-        <script src="/JS/authClient.js"></script>
-        <script src="/JS/themeHandler.js"></script>
     </div>
+    <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
+
+    <script>
+        let optOutMode = false;
+
+        // Store references to event list items and their event names
+        let eventListItems = [];
+
+        function enableOptOutMode(optInStatus) {
+            optOutMode = true;
+            document.getElementById('opt-out-mode-btn').classList.add('opt-out-active');
+            // Highlight all approved events
+            eventListItems.forEach(({ li, event }) => {
+                const userEvent = optInStatus.find(e =>
+                    e.name.trim().toLowerCase() === event.name.trim().toLowerCase()
+                );
+                if (userEvent && userEvent.status === 'approved') {
+                    li.classList.add('opt-out-candidate');
+                    li.title = "Click to request opt-out of this event";
+                    li.addEventListener('click', li._optOutHandler = async function handler(e) {
+                        // Prevent multiple triggers
+                        e.stopPropagation();
+                        if (!confirm(`Send opt-out request for "${event.name}"?`)) return;
+
+                        // Remove highlight from all other boxes before sending the request
+                        eventListItems.forEach(({ li: otherLi }) => {
+                            otherLi.classList.remove('opt-out-candidate');
+                            // otherLi.title = "";
+                            if (otherLi._optOutHandler) {
+                                otherLi.removeEventListener('click', otherLi._optOutHandler);
+                                delete otherLi._optOutHandler;
+                            }
+                        });
+
+                        // Now send the opt-out request
+                        try {
+                            const username = document.cookie.split('; ').find(row => row.startsWith('loggedInUser='))?.split('=')[1]
+                                || document.cookie.split('; ').find(row => row.startsWith('loggedInAdmin='))?.split('=')[1]
+                                || '';
+
+                            console.log('Opt-out request:', { eventName: event.name, username});
+
+                            const res = await fetch('http://127.0.0.1:6420/opt-out-request', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    eventName: event.name,
+                                    username: username,
+                                })
+                            });
+                            if (res.ok) {
+                                alert('Opt-out request sent to admin!');
+                            } else {
+                                alert('Failed to send opt-out request.');
+                            }
+                        } catch (err) {
+                            alert('Network error sending opt-out request.');
+                        }
+                        disableOptOutMode();
+                    });
+                }
+            });
+        }
+
+        function disableOptOutMode() {
+            optOutMode = false;
+            document.getElementById('opt-out-mode-btn').classList.remove('opt-out-active');
+            eventListItems.forEach(({ li }) => {
+                li.classList.remove('opt-out-candidate');
+                li.title = "";
+                if (li._optOutHandler) {
+                    li.removeEventListener('click', li._optOutHandler);
+                    delete li._optOutHandler;
+                }
+            });
+        }
+
+        document.getElementById('opt-out-mode-btn').addEventListener('click', async function () {
+            if (optOutMode) {
+                disableOptOutMode();
+            } else {
+                // Fetch latest opt-in status to highlight only currently approved events
+                const optInStatus = await fetchOptInStatus();
+                enableOptOutMode(optInStatus);
+            }
+        });
+
+        fetch('/api/events')
+            .then(response => response.json())
+            .then(async events => {
+                const optInStatus = await fetchOptInStatus();
+                const contentDiv = document.querySelector('.content');
+
+                // Remove old event containers if any
+                const oldList = document.getElementById('member-event-list');
+                if (oldList) oldList.remove();
+
+                // Create a new list
+                const eventList = document.createElement('ul');
+                eventList.id = 'member-event-list';
+                eventList.style.listStyle = 'none';
+                eventList.style.padding = '0';
+
+                // Reset eventListItems
+                eventListItems = [];
+
+                events.forEach(event => {
+                    const listItem = document.createElement('li');
+                    listItem.style.border = '1px solid #333';
+                    listItem.style.borderRadius = '8px';
+                    listItem.style.marginBottom = '18px';
+                    listItem.style.padding = '16px 18px 10px 18px';
+                    listItem.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    listItem.style.transition = 'background 0.2s';
+
+                    listItem.innerHTML = `
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Date:</strong> ${event.date}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
+                        <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
+                    `;
+
+                    // Create the opt-in button
+                    const optInButton = document.createElement('button');
+                    optInButton.style.marginTop = '5px';
+                    optInButton.style.marginBottom = '10px';
+                    optInButton.style.border = '1px solid black';
+
+                    const userEvent = optInStatus.find(e =>
+                        e.name.trim().toLowerCase() === event.name.trim().toLowerCase()
+                    );
+
+                    if (userEvent) {
+                        if (userEvent.status === 'requested') {
+                            optInButton.textContent = 'Cancel Request';
+                        } else if (userEvent.status === 'approved') {
+                            optInButton.textContent = 'Opted In';
+                            optInButton.disabled = true;
+                        } else if (userEvent.status === 'denied') {
+                            optInButton.textContent = 'Opt-in Again';
+                        }
+                    } else {
+                        optInButton.textContent = 'Opt into event';
+                    }
+
+                    optInButton.addEventListener('click', async () => {
+                        optInButton.disabled = true; // Prevent multiple clicks
+                        await toggleOptIn(event.name, optInButton);
+                    });
+
+                    listItem.appendChild(document.createElement('br'));
+                    listItem.appendChild(optInButton);
+                    eventList.appendChild(listItem);
+
+                    // Store reference for opt-out mode
+                    eventListItems.push({ li: listItem, event });
+                });
+
+                contentDiv.appendChild(eventList);
+            })
+            .catch(error => console.error('Error fetching events:', error));
+    </script>
 </body>
+<script src="/JS/authClient.js"></script>
+<script src="/JS/themeHandler.js"></script>
+
 </html>
