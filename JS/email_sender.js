@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose(); 
 const app = express();
 
 app.use(cors({
@@ -111,46 +114,68 @@ app.post('/send-update-email', (req, res) => {
 });
 
 app.post('/opt-out-request', (req, res) => {
-    const { username, eventName, userEmail } = req.body;
-    if (!username || !eventName || !userEmail) {
-        return res.status(400).send('Missing data');
-    }
+    const { username, eventName } = req.body;
+    console.log('Received opt-out request:', { username, eventName });
 
-    // Generate a unique token (for demo, use a simple base64, but use a secure random string in production)
-    const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
-    // Store the token and request info somewhere persistent (e.g., a file or DB) for real security
+    const dbPath = path.join(__dirname, '../Resources/loginList.db');
+    console.log('Opening DB at:', dbPath);
 
-    // The link the admin will click
-    const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
-
-    const mailOptions = {
-        from: 'wcsstechcrew@gmail.com',
-        to: 'jbour10@ocdsb.ca',  // change to real admin email 
-        subject: `Opt-Out Request: ${username} for ${eventName}`,
-        html: `
-            <div style="font-family: Arial, sans-serif; color: #333;">
-                <h2>Opt-Out Request</h2>
-                <p><b>User:</b> ${username} (${userEmail})</p>
-                <p><b>Event:</b> ${eventName}</p>
-                <p>
-                    <a href="${approveLink}" style="display:inline-block;padding:10px 18px;background:#1976d2;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
-                        Click here to approve opt-out
-                    </a>
-                </p>
-                <hr>
-                <p style="font-size: 12px; color: #888;">
-                    Note: This is an automated message, please do not reply to this email.
-                </p>
-            </div>
-        `
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).send('Error sending email');
+    const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
+        if (err) {
+            console.error('Failed to open login.db:', err);
+            return res.status(500).send('Database error');
         }
-        res.send('Opt-out email sent to admin');
+    });
+
+    db.get('SELECT email FROM users WHERE username = ?', [username], (err, row) => {
+        if (err) {
+            console.error('DB error:', err);
+            db.close();
+            return res.status(500).send('Database error');
+        }
+        if (!row) {
+            db.close();
+            return res.status(404).send('User not found');
+        }
+        const userEmail = row.email;
+
+    console.log('Received opt-out request:', { username, eventName, userEmail });
+
+        // Generate a unique token (for demo, use a simple base64, but use a secure random string in production)
+        const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
+        // The link the admin will click
+        const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
+
+        const mailOptions = {
+            from: 'wcsstechcrew@gmail.com',
+            to: 'jbour10@ocdsb.ca',  // change to real admin email 
+            subject: `Opt-Out Request: ${username} for ${eventName}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <h2>Opt-Out Request</h2>
+                    <p><b>User:</b> ${username} (${userEmail})</p>
+                    <p><b>Event:</b> ${eventName}</p>
+                    <p>
+                        <a href="${approveLink}" style="display:inline-block;padding:10px 18px;background:#1976d2;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
+                            Click here to approve opt-out
+                        </a>
+                    </p>
+                    <hr>
+                    <p style="font-size: 12px; color: #888;">
+                        Note: This is an automated message, please do not reply to this email.
+                    </p>
+                </div>
+            `
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            db.close();
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Error sending email');
+            }
+            res.send('Opt-out email sent to admin');
+        });
     });
 });
 
