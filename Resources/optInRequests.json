@@ -1,17 +1,17 @@
 {
-    "Jhon": [
-        {
-            "name": "Jack Murray",
-            "status": "approved"
-        },
-        {
-            "name": "Testing",
-            "status": "approved"
-        },
-        {
-            "name": "Testing 2",
-            "status": "approved"
-        }
-    ],
-    "Jack Murray": []
+  "Jhon": [
+    {
+      "name": "Jack Murray",
+      "status": "opted_out"
+    },
+    {
+      "name": "Testing",
+      "status": "approved"
+    },
+    {
+      "name": "Testing 2",
+      "status": "approved"
+    }
+  ],
+  "Jack Murray": []
 }
