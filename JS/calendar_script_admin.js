@@ -97,7 +97,7 @@ prevMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
     if (currentDateDiv) {
         currentDateDiv.style.borderBottom = '1px solid lightblue';
-    }
+    }API
 });
 
 nextMonthBtn.addEventListener('click', () => {

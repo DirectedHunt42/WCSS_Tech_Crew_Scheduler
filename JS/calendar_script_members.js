@@ -140,7 +140,8 @@ document.addEventListener('click', (event) => {
 
 async function fetchOptInStatus() {
     try {
-        const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+        const apiBase = window.location.origin;
+        const response = await fetch(`${apiBase}:6421/opt-in-status`, {
             credentials: 'include'
         });
         if (response.ok) {
@@ -177,7 +178,8 @@ async function toggleOptIn(eventName, button) {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+        const apiBase = window.location.origin;
+        const response = await fetch(`${apiBase}:6421${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
