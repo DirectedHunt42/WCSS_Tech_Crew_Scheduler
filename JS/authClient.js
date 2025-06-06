@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
         const apiBase = window.location.origin;
+        console.log(`Checking login status at ${apiBase}:6422/auth/status`);
         const response = await fetch(`${apiBase}:6422/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
