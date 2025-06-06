@@ -126,10 +126,13 @@
                 document.getElementById('error-message').style.display = 'block';
             }
         }
+
+        // Attach the submit event to the form
+        document.getElementById('booking-form').addEventListener('submit', submitForm);
     </script>
     <h1>Booking a Tech Crew</h1>
     <p id="error-message" style="color: red; display: none;"></p>
-    <form action="/submit-booking" method="POST">
+    <form id="booking-form">
         <label for="name">Event Name:</label>
         <input type="text" id="name" name="name" required>
 
