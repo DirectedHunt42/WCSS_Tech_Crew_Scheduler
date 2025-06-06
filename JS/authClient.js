@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const response = await fetch(`${apiBase}:5500/auth/status`, { credentials: 'include' });
+        const response = await fetch(`${apiBase}:6422/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
