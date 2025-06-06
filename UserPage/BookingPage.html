@@ -107,7 +107,8 @@
             const formData = new FormData(event.target);
 
             try {
-                const response = await fetch('/save-event', {
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}:5500/api/save-event`, {
                     method: 'POST',
                     body: formData
                 });
@@ -121,7 +122,8 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                errorMessage.textContent = 'An error occurred while submitting the form. Please try again.';
+                document.getElementById('error-message').style.display = 'block';
             }
         }
     </script>
