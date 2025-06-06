@@ -108,7 +108,7 @@
 
             try {
                 const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/api/save-event`, {
+                const response = await fetch(`${apiBase}:5500/submit_booking`, {
                     method: 'POST',
                     body: formData
                 });
