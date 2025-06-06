@@ -1,5 +1,3 @@
-const apiBase = window.location.origin;
-
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
         // Use this on the login pages to bypass login if the user or admin is already logged in
@@ -16,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
+        const apiBase = window.location.origin;
         const response = await fetch(`${apiBase}:6422/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
@@ -146,6 +145,7 @@ if (loginForm) {
         const password = document.getElementById("password").value;
 
         try {
+            const apiBase = window.location.origin;
             const response = await fetch(`${apiBase}:5500/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -167,6 +167,7 @@ if (loginForm) {
 
 async function logout() {
     try {
+        const apiBase = window.location.origin;
         const response = await fetch(`${apiBase}:5500/logout`, {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
@@ -185,6 +186,7 @@ async function logout() {
 
 async function signOut() {
     try {
+        const apiBase = window.location.origin;
         const response = await fetch(`${apiBase}:5500/api/signout`, {
             method: 'POST',
             credentials: 'include', // Include cookies in the request
