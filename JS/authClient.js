@@ -1,3 +1,5 @@
+const apiBase = window.location.origin;
+
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
         // Use this on the login pages to bypass login if the user or admin is already logged in
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const response = await fetch('/auth/status', { credentials: 'include' });
+        const response = await fetch(`${apiBase}:5500/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
@@ -50,6 +52,7 @@ async function checkLoggedInUser(redirectToLogin = true) {
 
 // Function to bypass login if the user or admin is already logged in
 function bypassLoginIfLoggedIn() {
+    const apiBase = window.location.origin;
     const loggedInUser = getCookie('loggedInUser');
     const loggedInAdmin = getCookie('loggedInAdmin');
 
@@ -143,7 +146,7 @@ if (loginForm) {
         const password = document.getElementById("password").value;
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch(`${apiBase}:5500/api/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -164,7 +167,7 @@ if (loginForm) {
 
 async function logout() {
     try {
-        const response = await fetch('/logout', {
+        const response = await fetch(`${apiBase}:5500/logout`, {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
         });
@@ -182,7 +185,7 @@ async function logout() {
 
 async function signOut() {
     try {
-        const response = await fetch('/api/signout', {
+        const response = await fetch(`${apiBase}:5500/api/signout`, {
             method: 'POST',
             credentials: 'include', // Include cookies in the request
         });

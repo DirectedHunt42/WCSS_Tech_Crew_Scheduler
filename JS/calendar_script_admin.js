@@ -97,7 +97,7 @@ prevMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
     if (currentDateDiv) {
         currentDateDiv.style.borderBottom = '1px solid lightblue';
-    }
+    }API
 });
 
 nextMonthBtn.addEventListener('click', () => {
@@ -163,7 +163,12 @@ calendarDates.addEventListener('click', async (event) => {
     console.log('Selected date:', backendDate);
 
     // Fetch events for the selected date from the new API
-    const response = await fetch(`/api/events-by-date?date=${backendDate}`);
+    const apiBase = window.location.origin;
+    const response = await fetch(`${apiBase}:5500/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
+    if (!response.ok) {
+        alert('Failed to fetch events for this date.');
+        return;
+    }
     const events = await response.json();
 
     // Create and display the popup

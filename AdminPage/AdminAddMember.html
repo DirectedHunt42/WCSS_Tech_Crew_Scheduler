@@ -82,7 +82,8 @@
 
             // Send data to the Flask backend
             try {
-                const response = await fetch('/add-member', {
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}:5500/add-member`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

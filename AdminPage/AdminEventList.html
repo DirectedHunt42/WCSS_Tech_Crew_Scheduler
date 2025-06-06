@@ -105,7 +105,8 @@
 
         // --- Approve Event Requests Logic ---
         function loadApproveEventRequests() {
-            fetch('/api/event-requests')
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:5500/api/event-requests`)
                 .then(response => response.json())
                 .then(requests => {
                     const list = document.getElementById('approve-event-list');
@@ -132,7 +133,8 @@
                         pushBtn.style.backgroundColor = 'green';
                         pushBtn.style.marginTop = '8px';
                         pushBtn.onclick = () => {
-                            fetch('/api/push-event-request', {
+                            const apiBase = window.location.origin;
+                            fetch(`${apiBase}:5500/api/push-event-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: event.id })
@@ -166,7 +168,8 @@
                         denyBtn.style.backgroundColor = 'red';
                         denyBtn.onclick = () => {
                             if (confirm('Are you sure you want to deny this event request?')) {
-                                fetch('/api/deny-event-request', {
+                                const apiBase = window.location.origin;
+                                fetch(`${apiBase}:5500/api/deny-event-request`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id })
@@ -196,7 +199,8 @@
         // Fetch and display all opt-in requests
         function loadOptInRequests() {
             console.log('Fetching opt-in requests...');
-            fetch('/admin/opt-in-requests')
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:6421/admin/opt-in-requests`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Opt-in requests:', data); // Debug log
@@ -239,7 +243,8 @@
 
         // Approve or deny an opt-in request
         function updateOptIn(userId, eventName, action) {
-            fetch('/admin/update-opt-in', {
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:6421/admin/update-opt-in`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, eventName, action }),
@@ -258,7 +263,8 @@
     <script>
         // Load events into the "Edit Event" section from events.db via backend API
         function loadEvents() {
-            fetch('/api/events')
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(events => {
                     const eventList = document.getElementById('edit-event-list');
@@ -301,7 +307,8 @@
     <script>
         // Load events into the "Remove Event" section from events.db via backend API
         function loadRemoveEvents() {
-            fetch('/api/events')
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(events => {
                     const removeEventList = document.getElementById('remove-event-list');
@@ -329,7 +336,8 @@
                         removeButton.style.backgroundColor = 'red';
                         removeButton.onclick = () => {
                             if (confirm('Are you sure you want to remove this event?')) {
-                                fetch('/remove_event', {
+                                const apiBase = window.location.origin;
+                                fetch(`${apiBase}:5500/remove_event`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',

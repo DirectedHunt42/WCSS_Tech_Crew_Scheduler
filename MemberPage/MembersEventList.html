@@ -97,7 +97,8 @@
         <script>
             async function fetchOptInStatus() {
                 try {
-                    const response = await fetch('http://127.0.0.1:6421/opt-in-status', {
+                    const apiBase = window.location.origin;
+                    const response = await fetch(`${apiBase}:6421/opt-in-status`, {
                         credentials: 'include'
                     });
                     if (response.ok) {
@@ -134,7 +135,8 @@
                 }
 
                 try {
-                    const response = await fetch(`http://127.0.0.1:6421${endpoint}`, {
+                    const apiBase = window.location.origin;
+                    const response = await fetch(`${apiBase}:6421${endpoint}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -273,7 +275,8 @@
 
                             console.log('Opt-out request:', { eventName: event.name, username});
 
-                            const res = await fetch('http://127.0.0.1:6420/opt-out-request', {
+                            const apiBase = window.location.origin;
+                            const res = await fetch(`${apiBase}:6420/opt-out-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -400,5 +403,4 @@
 </body>
 <script src="/JS/authClient.js"></script>
 <script src="/JS/themeHandler.js"></script>
-
 </html>

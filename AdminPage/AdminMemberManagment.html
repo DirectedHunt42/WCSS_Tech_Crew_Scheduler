@@ -23,7 +23,8 @@
     <script>
         // Fetch and display the member list
         function loadMembers() {
-            fetch('/api/get-members')
+            const apiBase = window.location.origin;
+            fetch(`${apiBase}:5500/api/get-members`)
                 .then(response => response.json())
                 .then(data => {
                     const memberList = document.getElementById('member-list');
@@ -53,7 +54,8 @@
             const trimmedMember = member.username; // Use the username property directly
             const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
             if (confirmRemoval) {
-                fetch('/remove-member', {
+                const apiBase = window.location.origin;
+                fetch(`${apiBase}:5500/remove-member`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

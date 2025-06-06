@@ -58,14 +58,14 @@
         </div>
     </div>
     <script>
-    const API_BASE = "http://127.0.0.1:5500"; 
 
     async function loadAnnouncements() {
         const list = document.getElementById('admin-announcements-list');
         if (!list) return;
         list.innerHTML = "Loading...";
         try {
-            const res = await fetch(`${API_BASE}/api/announcements`, { credentials: 'include' });
+            const apiBase = window.location.origin;
+            const res = await fetch(`${apiBase}:5500/api/announcements`, { credentials: 'include' });
             if (!res.ok) {
                 alert("Failed to load announcements.");
                 list.innerHTML = "";
@@ -101,7 +101,8 @@
         const commentsDiv = document.getElementById(`comments-${announcementId}`);
         if (!commentsDiv) return;
         try {
-            const res = await fetch(`/api/announcements/${announcementId}/comments`);
+            const apiBase = window.location.origin;
+            const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`);
             if (!res.ok) {
                 commentsDiv.innerHTML = "<i>Failed to load comments.</i>";
                 return;
@@ -126,7 +127,8 @@
     window.deleteComment = async function(announcementId, createdAt) {
         if (!confirm("Are you sure you want to delete this comment?")) return;
         try {
-            const res = await fetch(`/api/announcements/${announcementId}/comments`, {
+            const apiBase = window.location.origin;
+            const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({created_at: createdAt})
@@ -145,7 +147,8 @@
     window.deleteAnnouncement = async function(id) {
         if (!confirm("Are you sure you want to delete this announcement?")) return;
         try {
-            const res = await fetch(`/api/announcements/${id}`, { method: 'DELETE' });
+            const apiBase = window.location.origin;
+            const res = await fetch(`${apiBase}:5500/api/announcements/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 loadAnnouncements();
             } else {
@@ -167,7 +170,8 @@
             return;
         }
         try {
-            const res = await fetch(`${API_BASE}/api/announcements`, {
+            const apiBase = window.location.origin;
+            const res = await fetch(`${apiBase}:5500/api/announcements`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({title, content, author})

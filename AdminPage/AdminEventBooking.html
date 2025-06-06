@@ -167,7 +167,8 @@
             const formData = new FormData(event.target);
 
             try {
-                const response = await fetch('/api/save-event', {
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}:5500/api/save-event`, {
                     method: 'POST',
                     body: formData
                 });

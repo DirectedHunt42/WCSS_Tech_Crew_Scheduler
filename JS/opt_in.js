@@ -147,7 +147,8 @@ app.post('/cancel-opt-in', (req, res) => {
 });
 
 // Endpoint to fetch all opt-in requests for admin
-app.get('/admin/opt-in-requests', (req, res) => {
+const apiBase = window.location.origin;
+app.get(`${apiBase}:6421/admin/opt-in-requests`, (req, res) => {
     try {
         const optInData = readOptInFile();
         res.json(optInData); // Send all opt-in requests to the admin

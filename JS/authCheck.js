@@ -45,38 +45,6 @@ app.post('/login', (req, res) => {
     }
 });
 
-app.post('/api/login', async (req, res) => {
-    const { username, password, type } = req.body;
-
-    try {
-        // Forward the login request to the Python login API
-        const pythonResponse = await axios.post('/api/login', {
-            username,
-            password,
-            type
-        });
-
-        // Check the response from the Python API
-        if (pythonResponse.data.success) {
-            // Set cookies for the logged-in user
-            const cookieName = type === 'user' ? 'loggedInUser' : 'loggedInAdmin';
-            res.cookie(cookieName, username, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'Strict',
-                maxAge: 3600 * 1000 // 1 hour
-            });
-
-            res.status(200).json({ message: 'Login successful' });
-        } else {
-            res.status(401).json({ message: pythonResponse.data.error });
-        }
-    } catch (error) {
-        console.error('Error communicating with Python login API:', error.message);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
 app.get('/auth/status', (req, res) => {
     const loggedInUser = req.cookies.loggedInUser || null;
     const loggedInAdmin = req.cookies.loggedInAdmin || null;
