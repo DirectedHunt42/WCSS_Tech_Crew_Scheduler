@@ -136,10 +136,10 @@ function getCookie(name) {
     return null;
 }
 
-const loginForm = document.getElementById("login-form");
+const loginForm2 = document.getElementById("login-form");
 
-if (loginForm) {
-    loginForm.addEventListener("submit", async function (event) {
+if (loginForm2) {
+    loginForm2.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const username = document.getElementById("username").value;
