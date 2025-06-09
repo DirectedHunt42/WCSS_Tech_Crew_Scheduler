@@ -8,6 +8,8 @@ import json
 import time
 import pytz
 from datetime import datetime
+import io
+import sys
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -933,6 +935,24 @@ def auth_status():
         "loggedInUser": logged_in_user,
         "loggedInAdmin": logged_in_admin
     })
+
+import io
+import sys
+
+server_log = []
+
+class LogCatcher(io.StringIO):
+    def write(self, s):
+        server_log.append(s)
+        sys.__stdout__.write(s)
+
+sys.stdout = LogCatcher()
+sys.stderr = LogCatcher()
+
+@app.route('/api/server-log')
+def get_server_log():
+    # Return the last 100 lines
+    return "<br>".join(server_log[-100:])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)
