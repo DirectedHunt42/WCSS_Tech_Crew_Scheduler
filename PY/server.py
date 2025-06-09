@@ -910,5 +910,14 @@ def to_est(dt_str):
     dt_est = dt_utc.astimezone(est)
     return dt_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
 
+@app.route('/auth/status', methods=['GET'])
+def auth_status():
+    logged_in_user = request.cookies.get('loggedInUser')
+    logged_in_admin = request.cookies.get('loggedInAdmin')
+    return jsonify({
+        "loggedInUser": logged_in_user,
+        "loggedInAdmin": logged_in_admin
+    })
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)

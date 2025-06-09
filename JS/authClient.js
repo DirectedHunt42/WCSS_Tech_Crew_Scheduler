@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const apiBase = window.location.hostname + ":6422"; // just the IP or hostname
+        const apiBase = window.location.origin + ":5500"; // Use Flask backend
         console.log(`Checking login status at ${apiBase}/auth/status`);
-        const response = await fetch(`http://${apiBase}/auth/status`, { credentials: 'include' });
+        const response = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
