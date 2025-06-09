@@ -100,17 +100,31 @@
             }
         };
 
-        // Function to handle form submission via AJAX
+        // Function to handle form submission via AJAX as JSON
         async function submitForm(event) {
             event.preventDefault(); // Prevent default form submission
 
-            const formData = new FormData(event.target);
+            // Gather form values
+            const form = event.target;
+            const data = {
+                name: form.name.value,
+                email: form.email.value,
+                date: form.date.value,
+                Stime: form.Stime.value,
+                Etime: form.Etime.value,
+                location: form.location.value,
+                people: form.people.value,
+                VolHours: form.VolHours.value
+            };
 
             try {
                 const apiBase = window.location.origin;
                 const response = await fetch(`${apiBase}:5500/submit-booking`, {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
                 });
 
                 if (response.ok) {
@@ -125,8 +139,9 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+                const errorMessage = document.getElementById('error-message');
                 errorMessage.textContent = 'An error occurred while submitting the form. Please try again.';
-                document.getElementById('error-message').style.display = 'block';
+                errorMessage.style.display = 'block';
             }
         }
     </script>

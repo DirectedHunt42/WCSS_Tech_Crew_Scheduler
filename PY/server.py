@@ -671,17 +671,28 @@ def get_events_by_date():
 
 @app.route('/submit-booking', methods=['POST'])
 def submit_booking():
-    # Get form data
-    user_name = request.form.get('name')
-    email = request.form.get('email')
-    date = request.form.get('date')
-    start_time = request.form.get('Stime')
-    end_time = request.form.get('Etime')
-    location = request.form.get('location')
-    people = request.form.get('people')
-    volunteer_hours = request.form.get('VolHours')
+    # Accept both JSON and form data
+    if request.is_json:
+        data = request.get_json()
+        name = data.get('name')
+        email = data.get('email')
+        date = data.get('date')
+        start_time = data.get('Stime')
+        end_time = data.get('Etime')
+        location = data.get('location')
+        people = data.get('people')
+        volunteer_hours = data.get('VolHours')
+    else:
+        name = request.form.get('name')
+        email = request.form.get('email')
+        date = request.form.get('date')
+        start_time = request.form.get('Stime')
+        end_time = request.form.get('Etime')
+        location = request.form.get('location')
+        people = request.form.get('people')
+        volunteer_hours = request.form.get('VolHours')
 
-    print("Booking form values:", user_name, email, date, start_time, end_time, location, people, volunteer_hours)  # Add this line
+    print("Booking form values:", name, email, date, start_time, end_time, location, people, volunteer_hours)
 
     try:
         # Connect to the eventRequests database
@@ -705,15 +716,14 @@ def submit_booking():
         cursor.execute('''
             INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (user_name, email, date, start_time, end_time, location, people, volunteer_hours))
+        ''', (name, email, date, start_time, end_time, location, people, volunteer_hours))
         conn.commit()
         conn.close()
         print("Event request saved to eventRequests.db successfully!")
-        # Show a popup and redirect
-        return f"success", 200
+        return jsonify({"status": "success"}), 200
     except Exception as e:
         print(f"Error saving event request: {e}")
-        return f"Internal Server Error. Form values: {user_name}, {email}, {date}, {start_time}, {end_time}, {location}, {people}, {volunteer_hours}", 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/event-requests', methods=['GET'])
 def api_event_requests():
