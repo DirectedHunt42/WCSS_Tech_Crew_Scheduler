@@ -126,6 +126,7 @@ def login():
             # Set a cookie for successful login
             response = make_response(jsonify({"success": True, "message": "Login successful"}))
             cookie_name = 'loggedInUser' if user_type == 'user' else 'loggedInAdmin'
+            print(f"Setting cookie '{cookie_name}' for user '{username}'")
             response.set_cookie(
                 cookie_name,
                 username,
@@ -680,6 +681,8 @@ def submit_booking():
     location = request.form.get('location')
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
+
+    print("Form values:", user_name, email, date, start_time, end_time, location, people, volunteer_hours)  # Add this line
 
     try:
         # Connect to the eventRequests database
