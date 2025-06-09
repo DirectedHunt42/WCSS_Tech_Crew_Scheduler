@@ -136,36 +136,6 @@ function getCookie(name) {
     return null;
 }
 
-const loginForm2 = document.getElementById("login-form");
-
-if (loginForm2) {
-    loginForm2.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-
-        try {
-            const apiBase = window.location.origin;
-            const response = await fetch(`${apiBase}:5500/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, type: 'user' }) // <-- add type
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                window.location.href = '/MemberPage/membersPage.html';
-            } else {
-                console.error('Login failed:', result.message);
-            }
-        } catch (error) {
-            console.error('Error during login:', error);
-        }
-    });
-}
-
 async function logout() {
     try {
         const apiBase = window.location.origin;
