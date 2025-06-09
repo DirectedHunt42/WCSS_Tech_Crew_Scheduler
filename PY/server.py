@@ -135,7 +135,7 @@ def login():
                 samesite='Strict'
                 # secure=True,  # Uncomment if using HTTPS
             )
-            return response
+            return response + jsonify({"username": username, "type": user_type}), 200
 
         return jsonify({"error": "Invalid username or password"}), 401
     except Exception as e:
