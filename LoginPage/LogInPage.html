@@ -81,7 +81,7 @@
                 try {
                     // Use relative URL
                     const apiBase = window.location.origin + ":5500";
-                    const response = await fetch(`http://${apiBase}/api/login`, {
+                    const response = await fetch(`${apiBase}/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, password, type: 'user' }),
