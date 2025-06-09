@@ -124,8 +124,8 @@ function getCookie(name) {
 
 async function logout() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:5500/logout`, {
+        const apiBase = window.location.origin + ":5500";
+        const response = await fetch(`${apiBase}/logout`, {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
         });
@@ -143,8 +143,8 @@ async function logout() {
 
 async function signOut() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`/api/signout`, {
+        const apiBase = window.location.origin + ":5500";
+        const response = await fetch(`${apiBase}/api/signout`, {
             method: 'POST',
             credentials: 'include'
         });
