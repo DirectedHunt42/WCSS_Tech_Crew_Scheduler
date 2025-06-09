@@ -1,22 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-        // Use this on the login pages to bypass login if the user or admin is already logged in
-        bypassLoginIfLoggedIn();
-    } else {
-        // Redirect to login page if not logged in (for other pages)
+    // Only check login status via API, not cookies
+    if (
+        window.location.pathname !== "/LoginPage/LogInPage.html" &&
+        window.location.pathname !== "/AdminPage/AdminLogInPage.html"
+    ) {
         checkLoggedInUser();
     }
-
-    // Check for accepted cookies
     checkAcceptedCookies();
 });
 
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const apiBase = window.location.origin + ":5500"; // Use Flask backend
-        console.log(`Checking login status at ${apiBase}/auth/status`);
-        const response = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
+        const response = await fetch(`/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
@@ -25,41 +21,19 @@ async function checkLoggedInUser(redirectToLogin = true) {
             !window.location.pathname.startsWith("/UserPage/") &&
             !window.location.pathname.startsWith("/LoginPage/")
         ) {
-            console.log("No user or admin is logged in. Redirecting to login page...");
             if (redirectToLogin) {
                 window.location.href = "/LoginPage/LogInPage.html";
-            } else {
-                console.log("No user or admin is logged in.");
             }
         } else {
-            if (data.loggedInAdmin) {
-                console.log("Admin is logged in. No redirection needed.");
-                return data.loggedInAdmin;
-            }
-
+            if (data.loggedInAdmin) return data.loggedInAdmin;
             if (data.loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
-                console.log("User cannot access admin pages. Redirecting to member page...");
                 window.location.href = "/MemberPage/membersPage.html";
             } else {
-                console.log(`Logged in as: ${data.loggedInUser}`);
                 return data.loggedInUser;
             }
         }
     } catch (error) {
         console.error("Error checking login status:", error);
-    }
-}
-
-// Function to bypass login if the user or admin is already logged in
-function bypassLoginIfLoggedIn() {
-    const apiBase = window.location.origin;
-    const loggedInUser = getCookie('loggedInUser');
-    const loggedInAdmin = getCookie('loggedInAdmin');
-
-    if (loggedInUser && window.location.pathname === "/LoginPage/LogInPage.html") {
-        window.location.href = "/MemberPage/membersPage.html";
-    } else if (loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-        window.location.href = "/AdminPage/AdminPage.html";
     }
 }
 
@@ -157,10 +131,9 @@ async function logout() {
 
 async function signOut() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:5500/api/signout`, {
+        const response = await fetch(`/api/signout`, {
             method: 'POST',
-            credentials: 'include', // Include cookies in the request
+            credentials: 'include'
         });
 
         if (response.ok) {
