@@ -681,8 +681,6 @@ def submit_booking():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
-    print("Form values:", user_name, email, date, start_time, end_time, location, people, volunteer_hours)  # Add this line
-
     try:
         # Connect to the eventRequests database
         conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
@@ -718,7 +716,7 @@ def submit_booking():
         '''
     except Exception as e:
         print(f"Error saving event request: {e}")
-        return "Internal Server Error", 500
+        return f"Internal Server Error. Form values: {user_name}, {email}, {date}, {start_time}, {end_time}, {location}, {people}, {volunteer_hours}", 500
 
 @app.route('/api/event-requests', methods=['GET'])
 def api_event_requests():
