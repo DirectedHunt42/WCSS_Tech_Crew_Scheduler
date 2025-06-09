@@ -57,6 +57,7 @@
     <title>WCSS Tech Member Login</title>
     <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <script src="/JS/authClient.js"></script>
     <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
     <style>
         #theme-switcher {
@@ -65,42 +66,6 @@
             right: 0px;
         }
     </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const loginForm = document.getElementById("login-form");
-            const errorMessage = document.getElementById("error-message");
-
-            // Handle form submission
-            loginForm.addEventListener("submit", async (event) => {
-                event.preventDefault();
-
-                const username = document.getElementById("username").value;
-                const password = document.getElementById("password").value;
-
-                try {
-                    const apiBase = window.location.origin;
-                    const response = await fetch(`${apiBase}:5500/api/login`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password, type: 'user' })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        window.location.href = "/MemberPage/membersPage.html";
-                    } else {
-                        errorMessage.textContent = result.error || "Login failed";
-                        errorMessage.style.display = "block";
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    errorMessage.textContent = "An error occurred. Please try again.";
-                    errorMessage.style.display = "block";
-                }
-            });
-        });
-    </script>
 </head>
 
 <body>
