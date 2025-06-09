@@ -1,18 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Only check login status via API, not cookies
-    if (
-        window.location.pathname !== "/LoginPage/LogInPage.html" &&
-        window.location.pathname !== "/AdminPage/AdminLogInPage.html"
-    ) {
+    if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
+        // Use this on the login pages to bypass login if the user or admin is already logged in
+    } else {
+        // Redirect to login page if not logged in (for other pages)
         checkLoggedInUser();
     }
+
+    // Check for accepted cookies
     checkAcceptedCookies();
 });
 
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const response = await fetch(`/auth/status`, { credentials: 'include' });
+        const apiBase = window.location.origin + ":5500";
+        console.log(`Checking login status at ${apiBase}/auth/status`);
+        const response = await fetch(`http://${apiBase}/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
@@ -21,14 +24,23 @@ async function checkLoggedInUser(redirectToLogin = true) {
             !window.location.pathname.startsWith("/UserPage/") &&
             !window.location.pathname.startsWith("/LoginPage/")
         ) {
+            console.log("No user or admin is logged in. Redirecting to login page...");
             if (redirectToLogin) {
                 window.location.href = "/LoginPage/LogInPage.html";
+            } else {
+                console.log("No user or admin is logged in.");
             }
         } else {
-            if (data.loggedInAdmin) return data.loggedInAdmin;
+            if (data.loggedInAdmin) {
+                console.log("Admin is logged in. No redirection needed.");
+                return data.loggedInAdmin;
+            }
+
             if (data.loggedInUser && window.location.pathname.startsWith("/AdminPage")) {
+                console.log("User cannot access admin pages. Redirecting to member page...");
                 window.location.href = "/MemberPage/membersPage.html";
             } else {
+                console.log(`Logged in as: ${data.loggedInUser}`);
                 return data.loggedInUser;
             }
         }
@@ -131,6 +143,7 @@ async function logout() {
 
 async function signOut() {
     try {
+        const apiBase = window.location.origin;
         const response = await fetch(`/api/signout`, {
             method: 'POST',
             credentials: 'include'
