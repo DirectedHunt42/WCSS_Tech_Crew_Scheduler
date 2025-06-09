@@ -126,7 +126,15 @@ def login():
             # Set a cookie for successful login
             response = make_response(jsonify({"success": True, "message": "Login successful"}))
             cookie_name = 'loggedInUser' if user_type == 'user' else 'loggedInAdmin'
-            response.set_cookie(cookie_name, username, max_age=3600, path='/')
+            response.set_cookie(
+                cookie_name,
+                username,
+                max_age=3600,
+                path='/',
+                httponly=True,
+                samesite='Strict'
+                # secure=True,  # Uncomment if using HTTPS
+            )
             return response
 
         return jsonify({"error": "Invalid username or password"}), 401
