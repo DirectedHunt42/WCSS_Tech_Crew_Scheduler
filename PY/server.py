@@ -708,12 +708,7 @@ def submit_booking():
         conn.close()
         print("Event request saved to eventRequests.db successfully!")
         # Show a popup and redirect
-        return '''
-            <script>
-                alert("Event request sent to admin!");
-                window.location.href = "/UserPage/UserPage.html";
-            </script>
-        '''
+        return f"success", 200
     except Exception as e:
         print(f"Error saving event request: {e}")
         return f"Internal Server Error. Form values: {user_name}, {email}, {date}, {start_time}, {end_time}, {location}, {people}, {volunteer_hours}", 500
