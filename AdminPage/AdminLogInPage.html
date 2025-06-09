@@ -85,6 +85,7 @@
                     const result = await response.json();
 
                     if (response.ok) {
+                        console.log("Login successful:", result);
                         window.location.href = "/AdminPage/AdminPage.html";
                     } else {
                         errorMessage.textContent = result.error || "Login failed";

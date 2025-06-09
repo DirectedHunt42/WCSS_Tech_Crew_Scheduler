@@ -126,7 +126,6 @@ def login():
             # Set a cookie for successful login
             response = make_response(jsonify({"success": True, "message": "Login successful"}))
             cookie_name = 'loggedInUser' if user_type == 'user' else 'loggedInAdmin'
-            print(f"Setting cookie '{cookie_name}' for user '{username}'")
             response.set_cookie(
                 cookie_name,
                 username,
