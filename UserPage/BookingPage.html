@@ -121,6 +121,7 @@
                     console.error('Error response:', response.status, response.statusText);
                     const errorMessage = document.getElementById('error-message');
                     errorMessage.textContent = 'Failed to save the event. Please try again.';
+                    errorMessage.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error:', error);

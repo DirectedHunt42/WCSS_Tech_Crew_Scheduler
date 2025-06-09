@@ -681,6 +681,8 @@ def submit_booking():
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
 
+    print("Booking form values:", user_name, email, date, start_time, end_time, location, people, volunteer_hours)  # Add this line
+
     try:
         # Connect to the eventRequests database
         conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
