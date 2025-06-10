@@ -6,6 +6,10 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_DIR = os.path.join(PROJECT_DIR, "Resources")
 BACKUP_DIR = "/home/Admin/resources_backup"  # Change this path as needed
 
+def get_timestamp():
+    from datetime import datetime
+    return datetime.now().strftime("%Y / %m / %d - %H : %M : %S")
+
 def backup_resources():
     print(f"Checking for existing backup at {BACKUP_DIR}...")
     if os.path.exists(BACKUP_DIR):
@@ -51,6 +55,7 @@ def git_force_pull():
         print("Summary errors:", summary.stderr)
 
 if __name__ == "__main__":
+    print("\n\n\n---------- Update Script Started: " + get_timestamp() + " ----------")
     print("Backing up resources folder...")
     backup_resources()
     print("Force pulling latest code from main...")
