@@ -43,7 +43,26 @@
         <a href="/AdminPage/AdminAnnouncements.html">Announcements</a>
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
+    <script>
+        // Refetch data for each tab when opened
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabFunctions = {
+                'approve-event': loadApproveEventRequests,
+                'edit-event': loadEvents,
+                'remove-event': loadRemoveEvents,
+                'approve-opt-in': loadOptInRequests
+            };
 
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+                    if (tabFunctions[tab]) {
+                        tabFunctions[tab]();
+                    }
+                });
+            });
+        });
+    </script>
     <!-- Tab system -->
     <div class="tab-container">
         <!-- Tab buttons -->
@@ -261,29 +280,29 @@
         document.addEventListener('DOMContentLoaded', () => {
             const optInTab = document.getElementById('approve-opt-in');
             if (optInTab) {
-            const clearBtn = document.createElement('button');
-            clearBtn.textContent = 'Clear All Opt-in Requests';
-            clearBtn.style.marginTop = '20px';
-            clearBtn.style.border = '1px solid black';
-            clearBtn.style.backgroundColor = 'red';
-            clearBtn.onclick = () => {
-                if (confirm('Are you sure you want to clear all opt-in requests?')) {
-                const apiBase = window.location.origin;
-                fetch(`${apiBase}:6421/clear-opt-in-requests`, {
-                    method: 'POST'
-                })
-                .then(response => {
-                    if (response.ok) {
-                    alert('All opt-in requests cleared!');
-                    loadOptInRequests();
-                    } else {
-                    response.text().then(errorText => alert('Failed to clear opt-in requests: ' + errorText));
+                const clearBtn = document.createElement('button');
+                clearBtn.textContent = 'Clear All Opt-in Requests';
+                clearBtn.style.marginTop = '20px';
+                clearBtn.style.border = '1px solid black';
+                clearBtn.style.backgroundColor = 'red';
+                clearBtn.onclick = () => {
+                    if (confirm('Are you sure you want to clear all opt-in requests?')) {
+                    const apiBase = window.location.origin;
+                    fetch(`${apiBase}:6421/clear-opt-in-requests`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                        alert('All opt-in requests cleared!');
+                        loadOptInRequests();
+                        } else {
+                        response.text().then(errorText => alert('Failed to clear opt-in requests: ' + errorText));
+                        }
+                    })
+                    .catch(error => console.error('Error clearing opt-in requests:', error));
                     }
-                })
-                .catch(error => console.error('Error clearing opt-in requests:', error));
-                }
-            };
-            optInTab.appendChild(clearBtn);
+                };
+                optInTab.appendChild(clearBtn);
             }
         });
     </script>
