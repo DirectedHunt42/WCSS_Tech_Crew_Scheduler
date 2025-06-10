@@ -871,6 +871,7 @@ def post_comment(announcement_id):
     data = request.json
     commenter = data.get('commenter')
     comment = data.get('comment')
+    print(f"[POST COMMENT] announcement_id={announcement_id}, commenter={commenter}, comment={comment}")  # <-- Add this line
     if not commenter or not comment:
         return jsonify({"error": "Missing commenter or comment"}), 400
     conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
