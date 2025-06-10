@@ -127,6 +127,13 @@
                 .then(requests => {
                     const list = document.getElementById('approve-event-list');
                     list.innerHTML = '';
+                    if (!requests.length) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No event requests to display.';
+                        msg.style.fontStyle = 'italic';
+                        list.appendChild(msg);
+                        return;
+                    }
                     requests.forEach(event => {
                         const li = document.createElement('li');
                         li.innerHTML = `
@@ -223,9 +230,10 @@
                     const requestList = document.getElementById('approve-opt-in-list');
                     requestList.innerHTML = ''; // Clear the list
 
+                    let hasRequests = false;
                     Object.entries(data).forEach(([userId, events]) => {
                         events.forEach(event => {
-                            console.log('Processing event:', event); // Debug log
+                            hasRequests = true;
                             const listItem = document.createElement('li');
                             listItem.textContent = `${event.name} (User: ${userId}, Status: ${event.status})`;
 
@@ -253,6 +261,12 @@
                             requestList.appendChild(listItem);
                         });
                     });
+                    if (!hasRequests) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No opt-in requests to display.';
+                        msg.style.fontStyle = 'italic';
+                        requestList.appendChild(msg);
+                    }
                 })
                 .catch(error => console.error('Error loading opt-in requests:', error));
         }
@@ -314,8 +328,14 @@
                 .then(response => response.json())
                 .then(events => {
                     const eventList = document.getElementById('edit-event-list');
-                    eventList.innerHTML = ''; // Clear the list
-
+                    eventList.innerHTML = '';
+                    if (!events.length) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No events to display.';
+                        msg.style.fontStyle = 'italic';
+                        eventList.appendChild(msg);
+                        return;
+                    }
                     events.forEach(event => {
                         const listItem = document.createElement('li');
                         // Display all event info except ID, button goes under all text
@@ -358,8 +378,14 @@
                 .then(response => response.json())
                 .then(events => {
                     const removeEventList = document.getElementById('remove-event-list');
-                    removeEventList.innerHTML = ''; // Clear the list
-
+                    removeEventList.innerHTML = '';
+                    if (!events.length) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No events to display.';
+                        msg.style.fontStyle = 'italic';
+                        removeEventList.appendChild(msg);
+                        return;
+                    }
                     events.forEach(event => {
                         const listItem = document.createElement('li');
                         // Display all event info except ID, button goes under all text
