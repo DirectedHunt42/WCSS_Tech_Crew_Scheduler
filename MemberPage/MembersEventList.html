@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: left;
-            margin-left: 230px;
+            margin-left: 250px;
         }
 
         #member-event-list {
@@ -158,8 +158,9 @@
                     alert(failMsg + 'Please try again.');
                 }
             }
+            apiBase = window.location.origin;
 
-            fetch('/api/events')
+            fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(async events => {
                     const optInStatus = await fetchOptInStatus();
@@ -274,7 +275,6 @@
 
                             console.log('Opt-out request:', { eventName: event.name, username});
 
-                            const apiBase = window.location.origin;
                             const res = await fetch(`${apiBase}:6420/opt-out-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -321,7 +321,7 @@
             }
         });
 
-        fetch('/api/events')
+        fetch(`${apiBase}:5500/api/events`)
             .then(response => response.json())
             .then(async events => {
                 const optInStatus = await fetchOptInStatus();
