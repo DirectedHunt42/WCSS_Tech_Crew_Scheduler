@@ -8,7 +8,7 @@ BACKUP_DIR = "/home/Admin/resources_backup"  # Change this path as needed
 
 def get_timestamp():
     from datetime import datetime
-    return datetime.now().strftime("%Y%m%d_%H%M%S")
+    return datetime.now().strftime("%Y / %m / %d - %H : %M : %S")
 
 def backup_resources():
     print(f"Checking for existing backup at {BACKUP_DIR}...")
