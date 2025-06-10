@@ -128,12 +128,12 @@
                 document.getElementById('eventEndTime').value = event.endTime;
                 document.getElementById('eventLocation').value = event.location;
                 document.getElementById('TCP').value = event.TCP;
-                document.getElementById('volunteerHours').value = event.voulenteerHours;
+                document.getElementById('volunteerHours').value = event.volunteerHours; // fixed spelling
 
             } catch (error) {
                 console.error(error);
                 alert('Error loading event data!');
-                windows.location.href = 'AdminEventList.html'; // Redirect to the event list if there's an error
+                window.location.href = 'AdminEventList.html'; // fixed typo
             }
         }
 
@@ -148,14 +148,25 @@
                 startTime: document.getElementById('eventStartTime').value,
                 endTime: document.getElementById('eventEndTime').value,
                 location: document.getElementById('eventLocation').value,
-                TCP: document.getElementById('TCP').value, // Correct field name
-                voulenteerHours: document.getElementById('volunteerHours').value, // Correct field name
+                TCP: document.getElementById('TCP').value,
+                volunteerHours: document.getElementById('volunteerHours').value, // fixed spelling
             };
 
-            if (startTime >= endTime) {
-                errorMessage.textContent = 'Start time must be before end time.';
-                errorMessage.style.display = 'block';
-                return;
+            // Time validation logic (match BookingPage.html)
+            const startInput = document.getElementById('eventStartTime');
+            const endInput = document.getElementById('eventEndTime');
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                if (end <= start) {
+                    errorMessage.textContent = 'End time must be after start time.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
             }
 
             try {
