@@ -41,6 +41,14 @@ def git_force_pull():
     print(reset.stdout)
     if reset.stderr:
         print("Reset errors:", reset.stderr)
+    print("Showing summary of changes (insertions/deletions)...")
+    summary = subprocess.run(
+        ["git", "diff", "--stat", "HEAD@{1}", "HEAD"],
+        cwd=PROJECT_DIR, capture_output=True, text=True
+    )
+    print(summary.stdout)
+    if summary.stderr:
+        print("Summary errors:", summary.stderr)
 
 if __name__ == "__main__":
     print("Backing up resources folder...")
