@@ -55,7 +55,7 @@ def git_force_pull():
         print("Summary errors:", summary.stderr)
 
 if __name__ == "__main__":
-    print("---------- Update Script Started: " + get_timestamp() + " ----------")
+    print("\n\n\n---------- Update Script Started: " + get_timestamp() + " ----------")
     print("Backing up resources folder...")
     backup_resources()
     print("Force pulling latest code from main...")
