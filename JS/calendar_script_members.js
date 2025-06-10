@@ -26,6 +26,11 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+function isLightMode() {
+    // Looks for "theme=light" in the cookie string
+    return document.cookie.split(';').some(cookie => cookie.trim() === 'theme=light');
+}
+
 function renderCalendar(month, year) {
     calendarDates.innerHTML = ''; // Clear previous calendar
     monthYear.textContent = `${months[month]} ${year}`;
@@ -47,7 +52,7 @@ function renderCalendar(month, year) {
         const day = prevMonthLastDay - i;
         const div = document.createElement('div');
         div.textContent = day;
-        div.classList.add('ghost-day'); // Add a class for styling
+        div.classList.add('ghost-day');
         calendarDates.appendChild(div);
     }
 
@@ -63,7 +68,11 @@ function renderCalendar(month, year) {
             month === currentDate.getMonth() &&
             i === currentDate.getDate()
         ) {
-            div.style.borderBottom = '1px solid lightblue';
+            if (isLightMode()) {
+                div.style.borderBottom = '1px solid #444'; // Darker underline for light mode
+            } else {
+                div.style.borderBottom = '1px solid lightblue'; // Light underline for dark mode
+            }
         }
 
         calendarDates.appendChild(div);
@@ -74,20 +83,13 @@ function renderCalendar(month, year) {
     for (let i = 1; i <= remainingBoxes; i++) {
         const div = document.createElement('div');
         div.textContent = i;
-        div.classList.add('ghost-day'); // Add a class for styling
+        div.classList.add('ghost-day');
         calendarDates.appendChild(div);
     }
 }
 
 // Initial render
 renderCalendar(currentMonth, currentYear);
-
-// Make current date have a light blue border
-const currentDateDiv = document.querySelector(`[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
-console.log(currentDateDiv);
-if (currentDateDiv) {
-    currentDateDiv.style.borderBottom = '1px solid lightblue';
-}
 
 // Event listeners for navigation buttons
 prevMonthBtn.addEventListener('click', () => {
@@ -336,4 +338,6 @@ document.addEventListener('click', (event) => {
         datesContent.style.display = 'none';
     }
 });
+
+
 
