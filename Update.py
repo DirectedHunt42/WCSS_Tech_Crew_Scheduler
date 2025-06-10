@@ -4,7 +4,7 @@ import subprocess
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_DIR = os.path.join(PROJECT_DIR, "Resources")
-BACKUP_DIR = "/home/pi/resources_backup"  # Change this path as needed
+BACKUP_DIR = "/home/Admin/resources_backup"  # Change this path as needed
 
 def backup_resources():
     if os.path.exists(BACKUP_DIR):
