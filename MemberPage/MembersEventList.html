@@ -49,8 +49,8 @@
 
         #opt-out-mode-btn {
             position: fixed;
-            bottom: 24px;
-            left: 244px;
+            bottom: 35px;
+            left: 270px;
             z-index: 1000;
             background: #1976d2;
             color: #fff;
@@ -175,6 +175,7 @@
                     eventList.id = 'member-event-list';
                     eventList.style.listStyle = 'none';
                     eventList.style.padding = '0';
+                    eventList.style.marginLeft = '20px';
 
                     events.forEach(event => {
                         const listItem = document.createElement('li');
@@ -275,7 +276,7 @@
 
                             console.log('Opt-out request:', { eventName: event.name, username});
 
-                            const res = await fetch(`${apiBase}:6420/opt-out-request`, {
+                            const res = await fetch('http://12.0.0.1:6420/opt-out-request', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
