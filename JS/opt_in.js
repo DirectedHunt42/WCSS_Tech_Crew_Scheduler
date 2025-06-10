@@ -334,7 +334,7 @@ app.get('/approve-opt-out', (req, res) => {
     }
 });
 
-app.post('/admin/clear-opt-in-requests', (req, res) => {
+app.post('/clear-opt-in-requests', (req, res) => {
     try {
         fs.writeFileSync(optInFile, JSON.stringify({}, null, 2));
         res.send('All opt-in requests cleared successfully');

@@ -269,7 +269,7 @@
             clearBtn.onclick = () => {
                 if (confirm('Are you sure you want to clear all opt-in requests?')) {
                 const apiBase = window.location.origin;
-                fetch(`${apiBase}:6421/admin/clear-opt-in-requests`, {
+                fetch(`${apiBase}:6421/clear-opt-in-requests`, {
                     method: 'POST'
                 })
                 .then(response => {
