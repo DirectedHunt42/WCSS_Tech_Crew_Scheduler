@@ -91,7 +91,7 @@ async function loadAnnouncements() {
 
 async function loadComments(announcementId) {
     const apiBase = window.location.origin;
-    const res = await fetch(`${apiBase}/api/announcements/${announcementId}/comments`);
+    const res = await fetch(`${apiBase}5500/api/announcements/${announcementId}/comments`);
     const comments = await res.json();
     const commentsDiv = document.getElementById(`comments-${announcementId}`);
     commentsDiv.innerHTML = comments.map(c =>
@@ -106,7 +106,7 @@ window.postComment = async function(event, announcementId) {
     const comment = form.comment.value.trim();
     if (!commenter || !comment) return false;
     const apiBase = window.location.origin;
-    await fetch(`${apiBase}/api/announcements/${announcementId}/comments`, {
+    await fetch(`${apiBase}5500/api/announcements/${announcementId}/comments`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({commenter, comment})
