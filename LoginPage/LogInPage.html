@@ -79,11 +79,13 @@
                 const password = document.getElementById("password").value;
 
                 try {
-                    const apiBase = window.location.origin;
-                    const response = await fetch(`${apiBase}:5500/api/login`, {
+                    // Use relative URL
+                    const apiBase = window.location.origin + ":5500";
+                    const response = await fetch(`${apiBase}/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password, type: 'user' })
+                        body: JSON.stringify({ username, password, type: 'user' }),
+                        credentials: 'include' // Important!
                     });
 
                     const result = await response.json();

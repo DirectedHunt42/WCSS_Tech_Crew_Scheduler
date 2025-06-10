@@ -8,6 +8,8 @@ import json
 import time
 import pytz
 from datetime import datetime
+import io
+import sys
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -126,7 +128,15 @@ def login():
             # Set a cookie for successful login
             response = make_response(jsonify({"success": True, "message": "Login successful"}))
             cookie_name = 'loggedInUser' if user_type == 'user' else 'loggedInAdmin'
-            response.set_cookie(cookie_name, username, max_age=3600, path='/')
+            response.set_cookie(
+                cookie_name,
+                username,
+                max_age=3600,
+                path='/',
+                httponly=True,
+                samesite='Strict'
+                # secure=True,  # Uncomment if using HTTPS
+            )
             return response
 
         return jsonify({"error": "Invalid username or password"}), 401
@@ -663,15 +673,28 @@ def get_events_by_date():
 
 @app.route('/submit-booking', methods=['POST'])
 def submit_booking():
-    # Get form data
-    user_name = request.form.get('name')
-    email = request.form.get('email')
-    date = request.form.get('date')
-    start_time = request.form.get('Stime')
-    end_time = request.form.get('Etime')
-    location = request.form.get('location')
-    people = request.form.get('people')
-    volunteer_hours = request.form.get('VolHours')
+    # Accept both JSON and form data
+    if request.is_json:
+        data = request.get_json()
+        name = data.get('name')
+        email = data.get('email')
+        date = data.get('date')
+        start_time = data.get('Stime')
+        end_time = data.get('Etime')
+        location = data.get('location')
+        people = data.get('people')
+        volunteer_hours = data.get('VolHours')
+    else:
+        name = request.form.get('name')
+        email = request.form.get('email')
+        date = request.form.get('date')
+        start_time = request.form.get('Stime')
+        end_time = request.form.get('Etime')
+        location = request.form.get('location')
+        people = request.form.get('people')
+        volunteer_hours = request.form.get('VolHours')
+
+    print("Booking form values:", name, email, date, start_time, end_time, location, people, volunteer_hours)
 
     try:
         # Connect to the eventRequests database
@@ -695,20 +718,14 @@ def submit_booking():
         cursor.execute('''
             INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (user_name, email, date, start_time, end_time, location, people, volunteer_hours))
+        ''', (name, email, date, start_time, end_time, location, people, volunteer_hours))
         conn.commit()
         conn.close()
         print("Event request saved to eventRequests.db successfully!")
-        # Show a popup and redirect
-        return '''
-            <script>
-                alert("Event request sent to admin!");
-                window.location.href = "/UserPage/UserPage.html";
-            </script>
-        '''
+        return jsonify({"status": "success"}), 200
     except Exception as e:
         print(f"Error saving event request: {e}")
-        return "Internal Server Error", 500
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/api/event-requests', methods=['GET'])
 def api_event_requests():
@@ -909,6 +926,33 @@ def to_est(dt_str):
     dt_utc = utc.localize(dt)
     dt_est = dt_utc.astimezone(est)
     return dt_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
+
+@app.route('/auth/status', methods=['GET'])
+def auth_status():
+    logged_in_user = request.cookies.get('loggedInUser')
+    logged_in_admin = request.cookies.get('loggedInAdmin')
+    return jsonify({
+        "loggedInUser": logged_in_user,
+        "loggedInAdmin": logged_in_admin
+    })
+
+import io
+import sys
+
+server_log = []
+
+class LogCatcher(io.StringIO):
+    def write(self, s):
+        server_log.append(s)
+        sys.__stdout__.write(s)
+
+sys.stdout = LogCatcher()
+sys.stderr = LogCatcher()
+
+@app.route('/api/server-log')
+def get_server_log():
+    # Return the last 100 lines
+    return "<br>".join(server_log[-100:])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)

@@ -79,12 +79,14 @@
                     const response = await fetch(`${apiBase}:5500/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
                         body: JSON.stringify({ username, password, type: 'admin' })
                     });
 
                     const result = await response.json();
 
                     if (response.ok) {
+                        console.log("Login successful:", result);
                         window.location.href = "/AdminPage/AdminPage.html";
                     } else {
                         errorMessage.textContent = result.error || "Login failed";

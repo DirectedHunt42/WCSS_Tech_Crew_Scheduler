@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     if (window.location.pathname === "/LoginPage/LogInPage.html" || window.location.pathname === "/AdminPage/AdminLogInPage.html") {
         // Use this on the login pages to bypass login if the user or admin is already logged in
-        bypassLoginIfLoggedIn();
     } else {
         // Redirect to login page if not logged in (for other pages)
         checkLoggedInUser();
@@ -14,9 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const apiBase = window.location.hostname + ":6422"; // just the IP or hostname
+        const apiBase = window.location.origin + ":5500";
         console.log(`Checking login status at ${apiBase}/auth/status`);
-        const response = await fetch(`http://${apiBase}/auth/status`, { credentials: 'include' });
+        const response = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (
@@ -47,19 +46,6 @@ async function checkLoggedInUser(redirectToLogin = true) {
         }
     } catch (error) {
         console.error("Error checking login status:", error);
-    }
-}
-
-// Function to bypass login if the user or admin is already logged in
-function bypassLoginIfLoggedIn() {
-    const apiBase = window.location.origin;
-    const loggedInUser = getCookie('loggedInUser');
-    const loggedInAdmin = getCookie('loggedInAdmin');
-
-    if (loggedInUser && window.location.pathname === "/LoginPage/LogInPage.html") {
-        window.location.href = "/MemberPage/membersPage.html";
-    } else if (loggedInAdmin && window.location.pathname === "/AdminPage/AdminLogInPage.html") {
-        window.location.href = "/AdminPage/AdminPage.html";
     }
 }
 
@@ -136,40 +122,10 @@ function getCookie(name) {
     return null;
 }
 
-const loginForm = document.getElementById("login-form");
-
-if (loginForm) {
-    loginForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-
-        try {
-            const apiBase = window.location.origin;
-            const response = await fetch(`${apiBase}:5500/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, type: 'user' }) // <-- add type
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                window.location.href = '/MemberPage/membersPage.html';
-            } else {
-                console.error('Login failed:', result.message);
-            }
-        } catch (error) {
-            console.error('Error during login:', error);
-        }
-    });
-}
-
 async function logout() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:5500/logout`, {
+        const apiBase = window.location.origin + ":5500";
+        const response = await fetch(`${apiBase}/logout`, {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
         });
@@ -187,10 +143,10 @@ async function logout() {
 
 async function signOut() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:5500/api/signout`, {
+        const apiBase = window.location.origin + ":5500";
+        const response = await fetch(`${apiBase}/api/signout`, {
             method: 'POST',
-            credentials: 'include', // Include cookies in the request
+            credentials: 'include'
         });
 
         if (response.ok) {
