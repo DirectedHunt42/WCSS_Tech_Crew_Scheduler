@@ -241,6 +241,9 @@
                 if (cookie.startsWith('loggedInUser=')) {
                     return decodeURIComponent(cookie.substring('loggedInUser='.length));
                 }
+                if (cookie.startsWith('loggedInAdmin=')) {
+                    return decodeURIComponent(cookie.substring('loggedInAdmin='.length));
+                }
             }
             return '';
         }
