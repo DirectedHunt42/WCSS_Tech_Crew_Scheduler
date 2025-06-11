@@ -102,8 +102,8 @@
         <label for="TCP">Tech People Needed:</label>
         <textarea id="TCP" name="TCP" rows="4" required></textarea>
 
-        <label for="volunteerHours">Volunteer Hours:</label>
-        <input type="text" id="volunteerHours" name="volunteerHours" required>
+        <label for="volunteer_hours">Volunteer Hours:</label>
+        <input type="text" id="volunteer_hours" name="volunteer_hours" required>
 
         <div class="button-row">
             <button type="submit" style="background-color: green">Save Changes</button>
@@ -117,6 +117,84 @@
         const eventId = urlParams.get('id');
         const requestId = urlParams.get('requestId');
         const isRequest = urlParams.get('isRequest') === 'true';
+
+        document.getElementById('eventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorMessage = document.getElementById('error-message');
+
+            // Time validation logic
+            const startInput = document.getElementById('eventStartTime');
+            const endInput = document.getElementById('eventEndTime');
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                if (end <= start) {
+                    errorMessage.textContent = 'End time must be after start time.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+            }
+
+            // Prepare event object for update
+            let updatedEvent;
+            if (isRequest && requestId) {
+                updatedEvent = {
+                    id: requestId,
+                    name: document.getElementById('eventName').value,
+                    date: document.getElementById('eventDate').value,
+                    start_time: document.getElementById('eventStartTime').value,
+                    end_time: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    people: document.getElementById('TCP').value,
+                    volunteer_hours: document.getElementById('volunteer_hours').value,
+                };
+            } else {
+                updatedEvent = {
+                    id: eventId,
+                    name: document.getElementById('eventName').value,
+                    date: document.getElementById('eventDate').value,
+                    startTime: document.getElementById('eventStartTime').value,
+                    endTime: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    TCP: document.getElementById('TCP').value,
+                    volunteer_hours: document.getElementById('volunteer_hours').value, // <-- use volunteer_hours here
+                };
+            }
+
+            try {
+                const apiBase = `http://${window.location.hostname}:5500`;
+                let response;
+                if (isRequest && requestId) {
+                    response = await fetch(`${apiBase}/api/updateEventRequest`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedEvent),
+                    });
+                } else {
+                    response = await fetch(`${apiBase}/api/updateEvent`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedEvent),
+                    });
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error('Failed to save event data: ' + errorText);
+                }
+
+                alert('Event updated successfully');
+                window.location.href = 'AdminEventList.html#edit-event';
+            } catch (error) {
+                console.error(error);
+                errorMessage.textContent = 'Error saving event data: ' + error.message;
+                errorMessage.style.display = 'block';
+            }
+        });
 
         async function loadEvent() {
             try {
@@ -135,7 +213,7 @@
                     document.getElementById('eventEndTime').value = event.end_time || '';
                     document.getElementById('eventLocation').value = event.location || '';
                     document.getElementById('TCP').value = event.people || '';
-                    document.getElementById('volunteerHours').value = event.volunteer_hours || '';
+                    document.getElementById('volunteer_hours').value = event.volunteer_hours || '';
                 } else if (eventId) {
                     // Editing a main event
                     response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
@@ -148,7 +226,7 @@
                     document.getElementById('eventEndTime').value = event.endTime || '';
                     document.getElementById('eventLocation').value = event.location || '';
                     document.getElementById('TCP').value = event.TCP || event.people || '';
-                    document.getElementById('volunteerHours').value = event.volunteerHours || event.volunteer_hours || '';
+                    document.getElementById('volunteer_hours').value = event.volunteer_hours || event.volunteer_hours || '';
                 } else {
                     throw new Error('No event ID provided');
                 }
@@ -158,87 +236,6 @@
                 window.location.href = 'AdminEventList.html';
             }
         }
-
-        document.getElementById('eventForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errorMessage = document.getElementById('error-message');
-
-            // Prepare event object for update
-            let updatedEvent;
-            if (isRequest && requestId) {
-                updatedEvent = {
-                    id: requestId,
-                    name: document.getElementById('eventName').value,
-                    date: document.getElementById('eventDate').value,
-                    start_time: document.getElementById('eventStartTime').value,
-                    end_time: document.getElementById('eventEndTime').value,
-                    location: document.getElementById('eventLocation').value,
-                    people: document.getElementById('TCP').value,
-                    volunteer_hours: document.getElementById('volunteerHours').value,
-                };
-            } else {
-                updatedEvent = {
-                    id: eventId,
-                    name: document.getElementById('eventName').value,
-                    date: document.getElementById('eventDate').value,
-                    startTime: document.getElementById('eventStartTime').value,
-                    endTime: document.getElementById('eventEndTime').value,
-                    location: document.getElementById('eventLocation').value,
-                    TCP: document.getElementById('TCP').value,
-                    volunteerHours: document.getElementById('volunteerHours').value,
-                    // Add these for compatibility:
-                    people: document.getElementById('TCP').value,
-                    volunteer_hours: document.getElementById('volunteerHours').value,
-                };
-            }
-
-            // Time validation logic (match BookingPage.html)
-            const startInput = document.getElementById('eventStartTime');
-            const endInput = document.getElementById('eventEndTime');
-            if (startInput.value && endInput.value) {
-                const [startHour, startMinute] = startInput.value.split(':').map(Number);
-                const [endHour, endMinute] = endInput.value.split(':').map(Number);
-
-                let start = new Date(0, 0, 0, startHour, startMinute, 0);
-                let end = new Date(0, 0, 0, endHour, endMinute, 0);
-
-                if (end <= start) {
-                    errorMessage.textContent = 'End time must be after start time.';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-            }
-
-            try {
-                const apiBase = window.location.origin;
-                let response;
-                if (isRequest && requestId) {
-                    // Update event request
-                    response = await fetch(`${apiBase}:5500/api/updateEventRequest`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedEvent),
-                    });
-                } else {
-                    // Update main event
-                    response = await fetch(`${apiBase}:5500/api/updateEvent`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedEvent),
-                    });
-                }
-
-                if (!response.ok) {
-                    throw new Error('Failed to save event data');
-                }
-
-                alert('Event updated successfully');
-                window.location.href = 'AdminEventList.html#edit-event';
-            } catch (error) {
-                console.error(error);
-                alert('Error saving event data!');
-            }
-        });
 
         loadEvent();
     </script>

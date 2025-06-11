@@ -1,5 +1,5 @@
 <head>
-    <title>WCSS Tech Events</title>
+    <title>WCSS Tech Announcements</title>
     <link rel="stylesheet" href="/CSS/DarkStyle.css">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
@@ -54,6 +54,12 @@
     <script>
         
 function getCookie(name) {
+    try {
+        if (!document.cookie) return null;
+    } catch (e) {
+        console.error('Error accessing cookies:', e);
+        return null;
+    }
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
@@ -104,16 +110,22 @@ window.postComment = async function(event, announcementId) {
     const form = event.target;
     const commenter = loggedInUser;
     const comment = form.comment.value.trim();
-    if (!commenter || !comment) return false;
-    const apiBase = window.location.origin;
-    await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({commenter, comment})
-    });
-    form.reset();
-    loadComments(announcementId);
-    return false;
+    try {
+        if (!commenter || !comment) return false;
+        const apiBase = window.location.origin;
+        await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({commenter, comment})
+            
+        });
+        form.reset();
+        loadComments(announcementId);
+        return false;
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        return false;
+    }
 };
 
 window.onload = loadAnnouncements;
@@ -121,5 +133,4 @@ window.onload = loadAnnouncements;
     <script src="/JS/authClient.js"></script>
     <script src="/JS/themeHandler.js"></script>
 </body>
-
 </html>
