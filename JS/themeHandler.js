@@ -49,7 +49,6 @@ function toggleTheme() {
     // Set body class for theme
     body.classList.remove('lightStyle', 'darkStyle');
     body.classList.add(newTheme === 'light' ? 'lightStyle' : 'darkStyle');
-    location.reload(); // Reload the page to apply the new theme
 }
 
 // Add event listener to the toggle switch
