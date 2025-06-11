@@ -84,10 +84,14 @@ async function loadAnnouncements() {
             <p>${ann.content}</p>
             <small>Posted by ${ann.author} on ${ann.created_at}</small>
             <div class="comments" id="comments-${ann.id}"></div>
-            <form onsubmit="return postComment(event, ${ann.id})">
-                <input type="text" name="comment" style="margin-top: 5px;" placeholder="Add a comment..." required>
-                <button type="submit" style="margin-left: 10px; margin-top: 5px;">Comment</button>
-            </form>
+            ${
+                loggedInUser
+                ? `<form onsubmit="return postComment(event, ${ann.id})">
+                    <input type="text" name="comment" style="margin-top: 5px;" placeholder="Add a comment..." required>
+                    <button type="submit" style="margin-left: 10px; margin-top: 5px;">Comment</button>
+                </form>`
+                : `<div style="color:gray; margin-top:5px;">Log in to comment.</div>`
+            }
             <hr>
         `;
         list.appendChild(annDiv);
@@ -110,20 +114,29 @@ window.postComment = async function(event, announcementId) {
     const form = event.target;
     const commenter = loggedInUser;
     const comment = form.comment.value.trim();
+    console.log('[DEBUG] postComment called:', { commenter, comment, announcementId });
     try {
-        if (!commenter || !comment) return false;
+        if (!commenter || !comment) {
+            alert("You must be logged in and enter a comment.");
+            return false;
+        }
         const apiBase = window.location.origin;
-        await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
+        const response = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({commenter, comment})
-            
         });
+        if (!response.ok) {
+            const err = await response.text();
+            alert("Failed to post comment: " + err);
+            return false;
+        }
         form.reset();
         loadComments(announcementId);
         return false;
     } catch (error) {
         console.error('Error posting comment:', error);
+        alert("Error posting comment: " + error);
         return false;
     }
 };
