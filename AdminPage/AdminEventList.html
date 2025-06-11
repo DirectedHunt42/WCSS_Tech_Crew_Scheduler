@@ -86,7 +86,16 @@
         </div>
         <div id="manage-event" class="tab-content">
             <h2>Manage Events</h2>
-            <ul id="manage-event-list"></ul>
+            <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                <div>
+                    <h3>Edit Events</h3>
+                    <ul id="manage-edit-event-list"></ul>
+                </div>
+                <div>
+                    <h3>Remove Events</h3>
+                    <ul id="manage-remove-event-list"></ul>
+                </div>
+            </div>
         </div>
         <div id="approve-opt-in" class="tab-content">
             <h2>Approve Opt-in Requests</h2>
@@ -313,25 +322,36 @@
         });
     </script>
     <script>
-        // Load events into the "Edit Event" section from events.db via backend API
-        function loadEvents() {
+        // --- Manage Events Tab: Edit and Remove Lists ---
+        function loadManageEvents() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(events => {
-                    const eventList = document.getElementById('edit-event-list');
-                    eventList.innerHTML = '';
+                    // Edit List
+                    const editList = document.getElementById('manage-edit-event-list');
+                    editList.innerHTML = '';
+                    // Remove List
+                    const removeList = document.getElementById('manage-remove-event-list');
+                    removeList.innerHTML = '';
+
                     if (!events.length) {
-                        const msg = document.createElement('li');
-                        msg.textContent = 'No events to display.';
-                        msg.style.fontStyle = 'italic';
-                        eventList.appendChild(msg);
+                        const msg1 = document.createElement('li');
+                        msg1.textContent = 'No events to display.';
+                        msg1.style.fontStyle = 'italic';
+                        editList.appendChild(msg1);
+
+                        const msg2 = document.createElement('li');
+                        msg2.textContent = 'No events to display.';
+                        msg2.style.fontStyle = 'italic';
+                        removeList.appendChild(msg2);
                         return;
                     }
+
                     events.forEach(event => {
-                        const listItem = document.createElement('li');
-                        // Display all event info except ID, button goes under all text
-                        listItem.innerHTML = `
+                        // --- Edit List Item ---
+                        const editItem = document.createElement('li');
+                        editItem.innerHTML = `
                             <strong>${event.name}</strong><br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
@@ -340,48 +360,23 @@
                             People: ${event.people}<br>
                             Volunteer Hours: ${event.volunteerHours}<br>
                         `;
-
-                        // Create the "Edit Event" button
-                        const editButton = document.createElement('button');
-                        editButton.textContent = 'Edit Event';
-                        editButton.style.marginTop = '8px';
-                        editButton.style.marginBottom = '16px'; // Add margin below
-                        editButton.style.border = '1px solid black';
-                        editButton.style.backgroundColor = '#242424';
-                        editButton.onclick = () => {
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = 'Edit Event';
+                        editBtn.style.marginTop = '8px';
+                        editBtn.style.marginBottom = '16px';
+                        editBtn.style.border = '1px solid black';
+                        editBtn.style.backgroundColor = '#242424';
+                        editBtn.onclick = () => {
                             const encodedID = encodeURIComponent(event.id);
                             window.location.href = `AdminEventEditor.html?id=${encodedID}`;
                         };
+                        editItem.appendChild(document.createElement('br'));
+                        editItem.appendChild(editBtn);
+                        editList.appendChild(editItem);
 
-                        // Place button under all text
-                        listItem.appendChild(document.createElement('br'));
-                        listItem.appendChild(editButton);
-                        eventList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching event list:', error));
-        }
-    </script>
-    <script>
-        // Load events into the "Remove Event" section from events.db via backend API
-        function loadRemoveEvents() {
-            const apiBase = window.location.origin;
-            fetch(`${apiBase}:5500/api/events`)
-                .then(response => response.json())
-                .then(events => {
-                    const removeEventList = document.getElementById('remove-event-list');
-                    removeEventList.innerHTML = '';
-                    if (!events.length) {
-                        const msg = document.createElement('li');
-                        msg.textContent = 'No events to display.';
-                        msg.style.fontStyle = 'italic';
-                        removeEventList.appendChild(msg);
-                        return;
-                    }
-                    events.forEach(event => {
-                        const listItem = document.createElement('li');
-                        // Display all event info except ID, button goes under all text
-                        listItem.innerHTML = `
+                        // --- Remove List Item ---
+                        const removeItem = document.createElement('li');
+                        removeItem.innerHTML = `
                             <strong>${event.name}</strong><br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
@@ -390,98 +385,75 @@
                             People: ${event.people}<br>
                             Volunteer Hours: ${event.volunteerHours}<br>
                         `;
-
-                        // Create the "Remove" button
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
-                        removeButton.style.marginTop = '8px';
-                        removeButton.style.marginBottom = '16px'; // Add margin below
-                        removeButton.style.border = '1px solid black';
-                        removeButton.style.backgroundColor = 'red';
-                        removeButton.onclick = () => {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.textContent = 'Remove';
+                        removeBtn.style.marginTop = '8px';
+                        removeBtn.style.marginBottom = '16px';
+                        removeBtn.style.border = '1px solid black';
+                        removeBtn.style.backgroundColor = 'red';
+                        removeBtn.onclick = () => {
                             if (confirm('Are you sure you want to remove this event?')) {
-                                const apiBase = window.location.origin;
                                 fetch(`${apiBase}:5500/remove_event`, {
                                     method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
+                                    headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id }),
-                                })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            alert('Event removed successfully!');
-                                            loadRemoveEvents(); // Reload the list
-                                        } else {
-                                            alert('Failed to remove event.');
-                                        }
-                                    })
-                                    .catch(error => console.error('Error removing event:', error));
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Event removed successfully!');
+                                    loadManageEvents();
+                                } else {
+                                    alert('Failed to remove event.');
+                                }
+                            })
+                            .catch(error => console.error('Error removing event:', error));
                             }
                         };
-
-                        // Place button under all text
-                        listItem.appendChild(document.createElement('br'));
-                        listItem.appendChild(removeButton);
-                        removeEventList.appendChild(listItem);
+                        removeItem.appendChild(document.createElement('br'));
+                        removeItem.appendChild(removeBtn);
+                        removeList.appendChild(removeItem);
                     });
                 })
-                .catch(error => console.error('Error fetching event list:', error));
+                .catch(error => {
+                    console.error('Error fetching event list:', error);
+                });
         }
     </script>
     <script>
-        // Load the opt-in requests when the page loads
+        // Cleaned up DOMContentLoaded and tab logic
         document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching logic
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function activateTab(tabName) {
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === tabName);
+                });
+            }
+
+            // Activate tab based on URL fragment, or default to approve-event
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                activateTab(hash);
+            } else {
+                activateTab('approve-event');
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    activateTab(button.dataset.tab);
+                });
+            });
+
+            // Load data for all tabs
             loadOptInRequests();
-            loadEvents();
-            loadRemoveEvents();
-            loadApproveEventRequests(); // <-- Add this line
+            loadApproveEventRequests();
+            loadManageEvents();
         });
     </script>
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Tab switching logic
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    function activateTab(tabName) {
-        tabButtons.forEach(btn => {
-            if (btn.dataset.tab === tabName) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        tabContents.forEach(content => {
-            if (content.id === tabName) {
-                content.classList.add('active');
-            } else {
-                content.classList.remove('active');
-            }
-        });
-    }
-
-    // Activate tab based on URL fragment, or default to approve-event
-    const hash = window.location.hash.substring(1);
-    if (hash && document.getElementById(hash)) {
-        activateTab(hash);
-    } else {
-        activateTab('approve-event');
-    }
-
-    // Add click listeners
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            activateTab(button.dataset.tab);
-        });
-    });
-
-    // Load data for all tabs
-    loadOptInRequests();
-    loadEvents();
-    loadRemoveEvents();
-    loadApproveEventRequests();
-});
-</script>
 </body>
 </html>
