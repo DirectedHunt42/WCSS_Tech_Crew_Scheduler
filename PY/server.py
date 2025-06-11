@@ -785,7 +785,7 @@ def api_push_event_request():
         conn.commit()
         conn.close()
         # Send the email
-        email_service_url = "/send-update-email"
+        email_service_url = "http://localhost:6420/send-update-email"
         email_payload = {
             "name": row[0],
             "email": row[1],
@@ -812,11 +812,14 @@ def api_deny_event_request():
         cursor = conn.cursor()
         cursor.execute('SELECT name, email, date, start_time, end_time, location, people, volunteer_hours FROM event_requests WHERE id = ?', (req_id,))
         row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return jsonify({"error": "Event request not found"}), 404
         cursor.execute('DELETE FROM event_requests WHERE id = ?', (req_id,))
         conn.commit()
         conn.close()
         # Send the email
-        email_service_url = "/send-update-email"
+        email_service_url = "http://localhost:6420/send-update-email"
         email_payload = {
             "name": row[0],
             "email": row[1],

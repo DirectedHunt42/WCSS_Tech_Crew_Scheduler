@@ -3,7 +3,7 @@
 
 <head>
     <title>WCSS Tech Admin Events</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,6 +23,51 @@
             flex-direction: column;
             width: calc(100% - 250px);
             margin-left: 250px;
+        }
+
+        .tab-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 0;
+        }
+
+        .add-event-persistent-btn {
+            margin-left: 250px;
+            margin-top: 8px;
+            margin-bottom: 0;
+            font-size: 1rem;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .tab-buttons {
+            margin-top: 0;
+        }
+
+        .add-event-persistent-btn {
+            margin-left: 260px;
+            background-color: green;
+        }
+
+        #approve-event-list,
+        #manage-event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        #approve-event-list li,
+        #manage-event-list li {
+            border-radius: 8px;
+            padding: 18px 18px 12px 18px;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            min-width: 0;
+            word-break: break-word;
         }
     </style>
     <script src="/JS/authClient.js" defer></script>
@@ -44,39 +89,28 @@
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
 
+    <!-- Persistent Add Event Button -->
+    <button class="add-event-persistent-btn" onclick="window.location.href='AdminEventBooking.html'">Add Event</button>
+
     <!-- Tab system -->
     <div class="tab-container">
         <!-- Tab buttons -->
         <div class="tab-buttons">
-            <button class="tab-button active" data-tab="add-event" style="flex: 1 1 auto; text-align: center;">Add
-                Event</button>
-            <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve
-                Event</button>
-            <button class="tab-button" data-tab="edit-event" style="flex: 1 1 auto; text-align: center;">Edit
-                Event</button>
-            <button class="tab-button" data-tab="remove-event" style="flex: 1 1 auto; text-align: center;">Remove
-                Event</button>
-            <button class="tab-button" data-tab="approve-opt-in" style="flex: 1 1 auto; text-align: center;">Approve
-                Opt-in Requests</button>
+            <!-- Removed Add Event tab -->
+            <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve Event</button>
+            <button class="tab-button" data-tab="manage-event" style="flex: 1 1 auto; text-align: center;">Manage Events</button>
+            <button class="tab-button" data-tab="approve-opt-in" style="flex: 1 1 auto; text-align: center;">Opt-in Requests</button>
         </div>
 
         <!-- Tab content -->
-        <div id="add-event" class="tab-content active">
-            <h2>Add Event</h2>
-            <button onclick="window.location.href='AdminEventBooking.html'"
-                style="border: 1px solid black; background-color: #242424;">Go to Event Booking</button>
-        </div>
+        <!-- Remove the add-event tab content -->
         <div id="approve-event" class="tab-content">
             <h2>Approve Event</h2>
             <ul id="approve-event-list"></ul>
         </div>
-        <div id="edit-event" class="tab-content">
-            <h2>Edit Event</h2>
-            <ul id="edit-event-list"></ul>
-        </div>
-        <div id="remove-event" class="tab-content">
-            <h2>Remove Event</h2>
-            <ul id="remove-event-list"></ul>
+        <div id="manage-event" class="tab-content">
+            <h2>Manage Events</h2>
+            <ul id="manage-event-list"></ul>
         </div>
         <div id="approve-opt-in" class="tab-content">
             <h2>Approve Opt-in Requests</h2>
@@ -109,6 +143,13 @@
                 .then(requests => {
                     const list = document.getElementById('approve-event-list');
                     list.innerHTML = '';
+                    if (!requests.length) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No event requests to display.';
+                        msg.style.fontStyle = 'italic';
+                        list.appendChild(msg);
+                        return;
+                    }
                     requests.forEach(event => {
                         const li = document.createElement('li');
                         li.innerHTML = `
@@ -154,9 +195,8 @@
                         editBtn.textContent = 'Edit Event';
                         editBtn.style.marginRight = '8px';
                         editBtn.style.border = '1px solid black';
-                        editBtn.style.backgroundColor = '#242424';
                         editBtn.onclick = () => {
-                            window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
+                            window.location.href = `AdminEventEditor.html?id=${encodeURIComponent(event.id)}`;
                         };
 
                         // Deny Event button
@@ -205,9 +245,10 @@
                     const requestList = document.getElementById('approve-opt-in-list');
                     requestList.innerHTML = ''; // Clear the list
 
+                    let hasRequests = false;
                     Object.entries(data).forEach(([userId, events]) => {
                         events.forEach(event => {
-                            console.log('Processing event:', event); // Debug log
+                            hasRequests = true;
                             const listItem = document.createElement('li');
                             listItem.textContent = `${event.name} (User: ${userId}, Status: ${event.status})`;
 
@@ -235,6 +276,12 @@
                             requestList.appendChild(listItem);
                         });
                     });
+                    if (!hasRequests) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No opt-in requests to display.';
+                        msg.style.fontStyle = 'italic';
+                        requestList.appendChild(msg);
+                    }
                 })
                 .catch(error => console.error('Error loading opt-in requests:', error));
         }
@@ -243,35 +290,72 @@
         function updateOptIn(userId, eventName, action) {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:6421/admin/update-opt-in`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, eventName, action }),
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, eventName, action }),
             })
-                .then(response => {
-                    if (response.ok) {
-                        alert(`Opt-in ${action}d successfully!`);
-                        loadOptInRequests(); // Reload the list
-                    } else {
-                        response.text().then(errorText => alert(`Failed to ${action} opt-in: ${errorText}`));
-                    }
-                })
-                .catch(error => console.error(`Error ${action}ing opt-in:`, error));
+            .then(response => {
+                if (response.ok) {
+                alert(`Opt-in ${action}d successfully!`);
+                loadOptInRequests(); // Reload the list
+                } else {
+                response.text().then(errorText => alert(`Failed to ${action} opt-in: ${errorText}`));
+                }
+            })
+            .catch(error => console.error(`Error ${action}ing opt-in:`, error));
         }
+
+        // Add a button to clear all opt-in requests
+        document.addEventListener('DOMContentLoaded', () => {
+            const optInTab = document.getElementById('approve-opt-in');
+            if (optInTab) {
+                const clearBtn = document.createElement('button');
+                clearBtn.textContent = 'Clear All Opt-in Requests';
+                clearBtn.style.marginTop = '20px';
+                clearBtn.style.border = '1px solid black';
+                clearBtn.style.backgroundColor = 'red';
+                clearBtn.onclick = () => {
+                    if (confirm('Are you sure you want to clear all opt-in requests?')) {
+                    const apiBase = window.location.origin;
+                    fetch(`${apiBase}:6421/clear-opt-in-requests`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                        alert('All opt-in requests cleared!');
+                        loadOptInRequests();
+                        } else {
+                        response.text().then(errorText => alert('Failed to clear opt-in requests: ' + errorText));
+                        }
+                    })
+                    .catch(error => console.error('Error clearing opt-in requests:', error));
+                    }
+                };
+                optInTab.appendChild(clearBtn);
+            }
+        });
     </script>
     <script>
-        // Load events into the "Edit Event" section from events.db via backend API
-        function loadEvents() {
+        // --- Manage Events Tab ---
+        function loadManageEvents() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(events => {
-                    const eventList = document.getElementById('edit-event-list');
-                    eventList.innerHTML = ''; // Clear the list
+                    const eventList = document.getElementById('manage-event-list');
+                    eventList.innerHTML = '';
+
+                    if (!events.length) {
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No events to display.';
+                        msg.style.fontStyle = 'italic';
+                        eventList.appendChild(msg);
+                        return;
+                    }
 
                     events.forEach(event => {
-                        const listItem = document.createElement('li');
-                        // Display all event info except ID, button goes under all text
-                        listItem.innerHTML = `
+                        const item = document.createElement('li');
+                        item.innerHTML = `
                             <strong>${event.name}</strong><br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
@@ -281,108 +365,89 @@
                             Volunteer Hours: ${event.volunteerHours}<br>
                         `;
 
-                        // Create the "Edit Event" button
-                        const editButton = document.createElement('button');
-                        editButton.textContent = 'Edit Event';
-                        editButton.style.marginTop = '8px';
-                        editButton.style.marginBottom = '16px'; // Add margin below
-                        editButton.style.border = '1px solid black';
-                        editButton.style.backgroundColor = '#242424';
-                        editButton.onclick = () => {
+                        // Edit button
+                        const editBtn = document.createElement('button');
+                        editBtn.textContent = 'Edit';
+                        editBtn.style.marginTop = '8px';
+                        editBtn.style.marginRight = '10px';
+                        editBtn.style.border = '1px solid black';
+                        editBtn.onclick = () => {
                             const encodedID = encodeURIComponent(event.id);
                             window.location.href = `AdminEventEditor.html?id=${encodedID}`;
                         };
 
-                        // Place button under all text
-                        listItem.appendChild(document.createElement('br'));
-                        listItem.appendChild(editButton);
-                        eventList.appendChild(listItem);
-                    });
-                })
-                .catch(error => console.error('Error fetching event list:', error));
-        }
-    </script>
-    <script>
-        // Load events into the "Remove Event" section from events.db via backend API
-        function loadRemoveEvents() {
-            const apiBase = window.location.origin;
-            fetch(`${apiBase}:5500/api/events`)
-                .then(response => response.json())
-                .then(events => {
-                    const removeEventList = document.getElementById('remove-event-list');
-                    removeEventList.innerHTML = ''; // Clear the list
-
-                    events.forEach(event => {
-                        const listItem = document.createElement('li');
-                        // Display all event info except ID, button goes under all text
-                        listItem.innerHTML = `
-                            <strong>${event.name}</strong><br>
-                            Date: ${event.date}<br>
-                            Location: ${event.location}<br>
-                            Start Time: ${event.startTime}<br>
-                            End Time: ${event.endTime}<br>
-                            People: ${event.people}<br>
-                            Volunteer Hours: ${event.volunteerHours}<br>
-                        `;
-
-                        // Create the "Remove" button
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'Remove';
-                        removeButton.style.marginTop = '8px';
-                        removeButton.style.marginBottom = '16px'; // Add margin below
-                        removeButton.style.border = '1px solid black';
-                        removeButton.style.backgroundColor = 'red';
-                        removeButton.onclick = () => {
+                        // Remove button
+                        const removeBtn = document.createElement('button');
+                        removeBtn.textContent = 'Remove';
+                        removeBtn.style.marginTop = '8px';
+                        removeBtn.style.border = '1px solid black';
+                        removeBtn.style.backgroundColor = 'red';
+                        removeBtn.onclick = () => {
                             if (confirm('Are you sure you want to remove this event?')) {
-                                const apiBase = window.location.origin;
                                 fetch(`${apiBase}:5500/remove_event`, {
                                     method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                    },
+                                    headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id }),
-                                })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            alert('Event removed successfully!');
-                                            loadRemoveEvents(); // Reload the list
-                                        } else {
-                                            alert('Failed to remove event.');
-                                        }
-                                    })
-                                    .catch(error => console.error('Error removing event:', error));
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Event removed successfully!');
+                                    loadManageEvents();
+                                } else {
+                                    alert('Failed to remove event.');
+                                }
+                            })
+                            .catch(error => console.error('Error removing event:', error));
                             }
                         };
 
-                        // Place button under all text
-                        listItem.appendChild(document.createElement('br'));
-                        listItem.appendChild(removeButton);
-                        removeEventList.appendChild(listItem);
+                        item.appendChild(document.createElement('br'));
+                        item.appendChild(editBtn);
+                        item.appendChild(removeBtn);
+                        item.style.marginBottom = '18px';
+                        eventList.appendChild(item);
                     });
                 })
-                .catch(error => console.error('Error fetching event list:', error));
+                .catch(error => {
+                    console.error('Error fetching event list:', error);
+                });
         }
     </script>
     <script>
-        // Load the opt-in requests when the page loads
+        // Cleaned up DOMContentLoaded and tab logic
         document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching logic
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function activateTab(tabName) {
+                tabButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
+                tabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === tabName);
+                });
+            }
+
+            // Activate tab based on URL fragment, or default to approve-event
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(hash)) {
+                activateTab(hash);
+            } else {
+                activateTab('approve-event');
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    activateTab(button.dataset.tab);
+                });
+            });
+
+            // Load data for all tabs
             loadOptInRequests();
-            loadEvents();
-            loadRemoveEvents();
-            loadApproveEventRequests(); // <-- Add this line
+            loadApproveEventRequests();
+            loadManageEvents();
         });
     </script>
-    <script>
-    // Activate tab based on URL fragment (e.g., #edit-event)
-    document.addEventListener('DOMContentLoaded', () => {
-        const hash = window.location.hash.substring(1); // Get the hash without '#'
-        if (hash) {
-            const targetButton = document.querySelector(`.tab-button[data-tab="${hash}"]`);
-            if (targetButton) {
-                targetButton.click(); // Simulate click to activate the tab
-            }
-        }
-    });
-</script>
 </body>
 </html>
