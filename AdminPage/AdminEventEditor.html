@@ -99,8 +99,8 @@
         <label for="eventLocation">Location:</label>
         <input type="text" id="eventLocation" name="eventLocation" required>
 
-        <label for="TCP">Tech People Needed:</label>
-        <textarea id="TCP" name="TCP" rows="4" required></textarea>
+        <label for="people">Tech People Needed:</label>
+        <textarea id="people" name="people" rows="4" required></textarea>
 
         <label for="volunteer_hours">Volunteer Hours:</label>
         <input type="text" id="volunteer_hours" name="volunteer_hours" required>
@@ -149,7 +149,7 @@
                     start_time: document.getElementById('eventStartTime').value,
                     end_time: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
-                    people: document.getElementById('TCP').value,
+                    people: document.getElementById('people').value,
                     volunteer_hours: document.getElementById('volunteer_hours').value,
                 };
             } else {
@@ -160,7 +160,7 @@
                     startTime: document.getElementById('eventStartTime').value,
                     endTime: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
-                    TCP: document.getElementById('TCP').value,
+                    people: document.getElementById('people').value,
                     volunteer_hours: document.getElementById('volunteer_hours').value, // <-- use volunteer_hours here
                 };
             }
@@ -212,7 +212,7 @@
                     document.getElementById('eventStartTime').value = event.start_time || '';
                     document.getElementById('eventEndTime').value = event.end_time || '';
                     document.getElementById('eventLocation').value = event.location || '';
-                    document.getElementById('TCP').value = event.people || '';
+                    document.getElementById('people').value = event.people || '';
                     document.getElementById('volunteer_hours').value = event.volunteer_hours || '';
                 } else if (eventId) {
                     // Editing a main event
@@ -225,7 +225,7 @@
                     document.getElementById('eventStartTime').value = event.startTime || '';
                     document.getElementById('eventEndTime').value = event.endTime || '';
                     document.getElementById('eventLocation').value = event.location || '';
-                    document.getElementById('TCP').value = event.TCP || event.people || '';
+                    document.getElementById('people').value = event.people || event.people || '';
                     document.getElementById('volunteer_hours').value = event.volunteer_hours || event.volunteer_hours || '';
                 } else {
                     throw new Error('No event ID provided');
