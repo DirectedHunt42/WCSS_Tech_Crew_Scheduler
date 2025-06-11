@@ -79,20 +79,56 @@ def clean_announcements_db():
     finally:
         conn.close()
 
+def get_all_event_names():
+    """Return a set of all valid event names from events and event_requests tables."""
+    event_names = set()
+    # Check both events and event_requests tables
+    for db_path, table_name in [
+        (EVENTS_DB, "events"),
+    ]:
+        if not os.path.exists(db_path):
+            continue
+        conn = sqlite3.connect(db_path)
+        c = conn.cursor()
+        try:
+            c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+            if not c.fetchone():
+                continue
+            # Try to get event names
+            try:
+                c.execute(f"SELECT name FROM {table_name}")
+                event_names.update(row[0] for row in c.fetchall())
+            except Exception:
+                continue
+        finally:
+            conn.close()
+    return event_names
+
 def clean_optin_json():
     if not os.path.exists(OPTIN_JSON):
         return
     with open(OPTIN_JSON, "r") as f:
         data = json.load(f)
     changed = False
+
+    # Get all valid event names
+    valid_event_names = get_all_event_names()
+
     for user, events in list(data.items()):
         new_events = []
         for event in events:
-            # Try to find a date in the event dict
+            event_name = event.get("name")
+            # Remove if event name is missing, empty, or not valid (event deleted)
+            if not event_name or event_name not in valid_event_names:
+                print(f"Removing orphaned or deleted opt-in (user: {user}, event: {event_name})")
+                changed = True
+                continue
+            # Try to find a date in the event dict (for old events)
             date_str = event.get("date") or event.get("eventDate")
             if date_str:
                 dt = parse_event_date(date_str)
                 if dt and dt < CUTOFF:
+                    print(f"Removing opt-in for old event '{event_name}' (user: {user})")
                     changed = True
                     continue
             new_events.append(event)
@@ -102,7 +138,7 @@ def clean_optin_json():
     if changed:
         with open(OPTIN_JSON, "w") as f:
             json.dump(data, f, indent=2)
-        print("Cleaned old opt-in requests from optInRequests.json")
+        print("Cleaned old or deleted opt-in requests from optInRequests.json")
 
 if __name__ == "__main__":
     print(f"Cutoff date for this school year: {CUTOFF}")
