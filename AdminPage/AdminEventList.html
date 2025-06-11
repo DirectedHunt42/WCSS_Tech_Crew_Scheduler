@@ -45,6 +45,11 @@
         .tab-buttons {
             margin-top: 0;
         }
+
+        .add-event-persistent-btn {
+            margin-left: 260px;
+            background-color: green;
+        }
     </style>
     <script src="/JS/authClient.js" defer></script>
     <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
@@ -86,16 +91,7 @@
         </div>
         <div id="manage-event" class="tab-content">
             <h2>Manage Events</h2>
-            <div style="display: flex; gap: 40px; flex-wrap: wrap;">
-                <div>
-                    <h3>Edit Events</h3>
-                    <ul id="manage-edit-event-list"></ul>
-                </div>
-                <div>
-                    <h3>Remove Events</h3>
-                    <ul id="manage-remove-event-list"></ul>
-                </div>
-            </div>
+            <ul id="manage-event-list"></ul>
         </div>
         <div id="approve-opt-in" class="tab-content">
             <h2>Approve Opt-in Requests</h2>
@@ -322,36 +318,26 @@
         });
     </script>
     <script>
-        // --- Manage Events Tab: Edit and Remove Lists ---
+        // --- Manage Events Tab: Single List with Edit and Remove Buttons ---
         function loadManageEvents() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
                 .then(events => {
-                    // Edit List
-                    const editList = document.getElementById('manage-edit-event-list');
-                    editList.innerHTML = '';
-                    // Remove List
-                    const removeList = document.getElementById('manage-remove-event-list');
-                    removeList.innerHTML = '';
+                    const eventList = document.getElementById('manage-event-list');
+                    eventList.innerHTML = '';
 
                     if (!events.length) {
-                        const msg1 = document.createElement('li');
-                        msg1.textContent = 'No events to display.';
-                        msg1.style.fontStyle = 'italic';
-                        editList.appendChild(msg1);
-
-                        const msg2 = document.createElement('li');
-                        msg2.textContent = 'No events to display.';
-                        msg2.style.fontStyle = 'italic';
-                        removeList.appendChild(msg2);
+                        const msg = document.createElement('li');
+                        msg.textContent = 'No events to display.';
+                        msg.style.fontStyle = 'italic';
+                        eventList.appendChild(msg);
                         return;
                     }
 
                     events.forEach(event => {
-                        // --- Edit List Item ---
-                        const editItem = document.createElement('li');
-                        editItem.innerHTML = `
+                        const item = document.createElement('li');
+                        item.innerHTML = `
                             <strong>${event.name}</strong><br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
@@ -360,35 +346,23 @@
                             People: ${event.people}<br>
                             Volunteer Hours: ${event.volunteerHours}<br>
                         `;
+
+                        // Edit button
                         const editBtn = document.createElement('button');
-                        editBtn.textContent = 'Edit Event';
+                        editBtn.textContent = 'Edit';
                         editBtn.style.marginTop = '8px';
-                        editBtn.style.marginBottom = '16px';
+                        editBtn.style.marginRight = '10px';
                         editBtn.style.border = '1px solid black';
                         editBtn.style.backgroundColor = '#242424';
                         editBtn.onclick = () => {
                             const encodedID = encodeURIComponent(event.id);
                             window.location.href = `AdminEventEditor.html?id=${encodedID}`;
                         };
-                        editItem.appendChild(document.createElement('br'));
-                        editItem.appendChild(editBtn);
-                        editList.appendChild(editItem);
 
-                        // --- Remove List Item ---
-                        const removeItem = document.createElement('li');
-                        removeItem.innerHTML = `
-                            <strong>${event.name}</strong><br>
-                            Date: ${event.date}<br>
-                            Location: ${event.location}<br>
-                            Start Time: ${event.startTime}<br>
-                            End Time: ${event.endTime}<br>
-                            People: ${event.people}<br>
-                            Volunteer Hours: ${event.volunteerHours}<br>
-                        `;
+                        // Remove button
                         const removeBtn = document.createElement('button');
                         removeBtn.textContent = 'Remove';
                         removeBtn.style.marginTop = '8px';
-                        removeBtn.style.marginBottom = '16px';
                         removeBtn.style.border = '1px solid black';
                         removeBtn.style.backgroundColor = 'red';
                         removeBtn.onclick = () => {
@@ -409,9 +383,12 @@
                             .catch(error => console.error('Error removing event:', error));
                             }
                         };
-                        removeItem.appendChild(document.createElement('br'));
-                        removeItem.appendChild(removeBtn);
-                        removeList.appendChild(removeItem);
+
+                        item.appendChild(document.createElement('br'));
+                        item.appendChild(editBtn);
+                        item.appendChild(removeBtn);
+                        item.style.marginBottom = '18px';
+                        eventList.appendChild(item);
                     });
                 })
                 .catch(error => {
