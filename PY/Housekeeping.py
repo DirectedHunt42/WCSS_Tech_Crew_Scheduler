@@ -9,6 +9,10 @@ EVENT_REQUESTS_DB = os.path.join(BASE_DIR, '../Resources/eventRequests.db')
 ANNOUNCEMENTS_DB = os.path.join(BASE_DIR, '../Resources/announcements.db')
 OPTIN_JSON = os.path.join(BASE_DIR, '../Resources/optInRequests.json')
 
+def get_timestamp():
+    from datetime import datetime
+    return datetime.now().strftime("%Y / %m / %d - %H : %M : %S")
+
 def get_school_year_cutoff():
     now = datetime.now()
     year = now.year
@@ -141,6 +145,7 @@ def clean_optin_json():
         print("Cleaned old or deleted opt-in requests from optInRequests.json")
 
 if __name__ == "__main__":
+    print("\n\n\n---------- Housekeeping Script Started: " + get_timestamp() + " ----------")
     print(f"Cutoff date for this school year: {CUTOFF}")
     clean_events_db(EVENTS_DB, "events")
     clean_events_db(EVENT_REQUESTS_DB, "event_requests")
