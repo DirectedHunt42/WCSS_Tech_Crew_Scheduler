@@ -271,8 +271,8 @@ def get_event():
                 "startTime": row[3],
                 "endTime": row[4],
                 "location": row[5],
-                "TCP": row[6],
-                "voulenteerHours": row[7],
+                "people": row[6],
+                "volunteer_hours": row[7],
             }
             return jsonify(event)
         else:
@@ -300,7 +300,7 @@ def update_event():
             updated_event['startTime'],
             updated_event['endTime'],
             updated_event['location'],
-            updated_event['TCP'],
+            updated_event['people'],
             updated_event['volunteer_Hours'],
             updated_event['id']
         ))
