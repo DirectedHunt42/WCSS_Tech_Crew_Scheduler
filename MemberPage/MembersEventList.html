@@ -231,7 +231,7 @@
                 .catch(error => console.error('Error fetching events:', error));
         </script>
     </div>
-    <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
+    <button id="opt-out-mode-btn" title="Opt out of an approved event" onclick="enableOptOutMode()">Opt Out of Event</button>
 
     <script>
         function enableOptOutMode(optInStatus) {
@@ -264,9 +264,9 @@
 
                         // Now send the opt-out request
                         try {
-                            const apiBase = window.location.origin + ":5500";
-                            console.log(`Checking login status at ${apiBase}/auth/status`);
-                            const response = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
+                            const apiBase2 = window.location.origin + ":5500";
+                            console.log(`Checking login status at ${apiBase2}/auth/status`);
+                            const response = await fetch(`${apiBase2}/auth/status`, { credentials: 'include' });
                             const data = await response.json();
                             const username = data.loggedInUser;
 
