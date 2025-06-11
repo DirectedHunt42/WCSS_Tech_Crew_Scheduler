@@ -195,8 +195,11 @@ a:hover {
 .tab-buttons {
     display: flex;
     /* Flexbox layout */
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #ffffff;
     /* Bottom border */
+    margin-top: 0 !important;
+    /* Remove extra margin from tab-buttons if present */
+    outline-color: #222;
 }
 
 .tab-buttons button {
@@ -223,6 +226,15 @@ a:hover {
     /* Lighter background for active tab */
     font-weight: bold;
     /* Bold text */
+    outline: 2px solid #1976d2;
+    /* or another color that fits your theme */
+    z-index: 1;
+    position: relative;
+}
+
+/* Remove extra margin from tab-buttons if present */
+.tab-buttons {
+    margin-top: 0 !important;
 }
 
 /* Tab content styling */
@@ -233,7 +245,7 @@ a:hover {
     /* Padding for content */
     background-color: #ddd;
     /* Light gray background */
-    border: 1px solid #ccc;
+    border: 1px solid #ffffff;
     /* Border around content */
     border-top: none;
     /* Remove top border */
