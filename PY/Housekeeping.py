@@ -30,21 +30,27 @@ def parse_event_date(date_str):
     except Exception:
         return None
 
-def clean_events_db(db_path):
+def clean_events_db(db_path, table_name):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     try:
-        c.execute("SELECT id, date FROM events")
+        c.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+        if not c.fetchone():
+            print(f"Table '{table_name}' does not exist in {db_path}. Skipping.")
+            return
+        c.execute(f"SELECT id, date FROM {table_name}")
         to_delete = []
         for row in c.fetchall():
             event_id, date_str = row
             dt = parse_event_date(date_str)
             if dt and dt < CUTOFF:
+                print(f"Will delete {table_name} id={event_id} date={date_str} (parsed: {dt})")
                 to_delete.append(event_id)
         for eid in to_delete:
-            c.execute("DELETE FROM events WHERE id = ?", (eid,))
+            c.execute(f"DELETE FROM {table_name} WHERE id = ?", (eid,))
+            print(f"Deleted {table_name} id={eid}")
         conn.commit()
-        print(f"Deleted {len(to_delete)} old events from {db_path}")
+        print(f"Deleted {len(to_delete)} old records from {db_path} ({table_name})")
     finally:
         conn.close()
 
@@ -99,8 +105,9 @@ def clean_optin_json():
         print("Cleaned old opt-in requests from optInRequests.json")
 
 if __name__ == "__main__":
-    clean_events_db(EVENTS_DB)
-    clean_events_db(EVENT_REQUESTS_DB)
+    print(f"Cutoff date for this school year: {CUTOFF}")
+    clean_events_db(EVENTS_DB, "events")
+    clean_events_db(EVENT_REQUESTS_DB, "event_requests")
     clean_announcements_db()
     clean_optin_json()
     print("Housekeeping complete.")
