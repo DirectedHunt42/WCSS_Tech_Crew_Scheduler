@@ -102,8 +102,8 @@
         <label for="TCP">Tech People Needed:</label>
         <textarea id="TCP" name="TCP" rows="4" required></textarea>
 
-        <label for="volunteerHours">Volunteer Hours:</label>
-        <input type="text" id="volunteerHours" name="volunteerHours" required>
+        <label for="volunteer_hours">Volunteer Hours:</label>
+        <input type="text" id="volunteer_hours" name="volunteer_hours" required>
 
         <div class="button-row">
             <button type="submit" style="background-color: green">Save Changes</button>
@@ -117,47 +117,6 @@
         const eventId = urlParams.get('id');
         const requestId = urlParams.get('requestId');
         const isRequest = urlParams.get('isRequest') === 'true';
-
-        async function loadEvent() {
-            try {
-                const apiBase = window.location.origin;
-                let response, event;
-                if (isRequest && requestId) {
-                    // Editing an event request
-                    response = await fetch(`${apiBase}:5500/api/getEventRequest?id=${requestId}`);
-                    if (!response.ok) throw new Error('Failed to fetch event request data');
-                    event = await response.json();
-
-                    // Map event request fields to editor fields
-                    document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
-                    document.getElementById('eventStartTime').value = event.start_time || '';
-                    document.getElementById('eventEndTime').value = event.end_time || '';
-                    document.getElementById('eventLocation').value = event.location || '';
-                    document.getElementById('TCP').value = event.people || '';
-                    document.getElementById('volunteerHours').value = event.volunteer_hours || '';
-                } else if (eventId) {
-                    // Editing a main event
-                    response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
-                    if (!response.ok) throw new Error('Failed to fetch event data');
-                    event = await response.json();
-
-                    document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
-                    document.getElementById('eventStartTime').value = event.startTime || '';
-                    document.getElementById('eventEndTime').value = event.endTime || '';
-                    document.getElementById('eventLocation').value = event.location || '';
-                    document.getElementById('TCP').value = event.TCP || event.people || '';
-                    document.getElementById('volunteerHours').value = event.volunteerHours || event.volunteer_hours || '';
-                } else {
-                    throw new Error('No event ID provided');
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Error loading event data!');
-                window.location.href = 'AdminEventList.html';
-            }
-        }
 
         document.getElementById('eventForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -191,7 +150,7 @@
                     end_time: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
                     people: document.getElementById('TCP').value,
-                    volunteer_hours: document.getElementById('volunteerHours').value,
+                    volunteer_hours: document.getElementById('volunteer_hours').value,
                 };
             } else {
                 updatedEvent = {
@@ -202,7 +161,7 @@
                     endTime: document.getElementById('eventEndTime').value,
                     location: document.getElementById('eventLocation').value,
                     TCP: document.getElementById('TCP').value,
-                    volunteer_hours: document.getElementById('volunteerHours').value, // <-- use volunteer_hours here
+                    volunteer_hours: document.getElementById('volunteer_hours').value, // <-- use volunteer_hours here
                 };
             }
 
@@ -236,6 +195,47 @@
                 errorMessage.style.display = 'block';
             }
         });
+
+        async function loadEvent() {
+            try {
+                const apiBase = window.location.origin;
+                let response, event;
+                if (isRequest && requestId) {
+                    // Editing an event request
+                    response = await fetch(`${apiBase}:5500/api/getEventRequest?id=${requestId}`);
+                    if (!response.ok) throw new Error('Failed to fetch event request data');
+                    event = await response.json();
+
+                    // Map event request fields to editor fields
+                    document.getElementById('eventName').value = event.name || '';
+                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
+                    document.getElementById('eventStartTime').value = event.start_time || '';
+                    document.getElementById('eventEndTime').value = event.end_time || '';
+                    document.getElementById('eventLocation').value = event.location || '';
+                    document.getElementById('TCP').value = event.people || '';
+                    document.getElementById('volunteer_hours').value = event.volunteer_hours || '';
+                } else if (eventId) {
+                    // Editing a main event
+                    response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
+                    if (!response.ok) throw new Error('Failed to fetch event data');
+                    event = await response.json();
+
+                    document.getElementById('eventName').value = event.name || '';
+                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
+                    document.getElementById('eventStartTime').value = event.startTime || '';
+                    document.getElementById('eventEndTime').value = event.endTime || '';
+                    document.getElementById('eventLocation').value = event.location || '';
+                    document.getElementById('TCP').value = event.TCP || event.people || '';
+                    document.getElementById('volunteer_hours').value = event.volunteer_hours || event.volunteer_hours || '';
+                } else {
+                    throw new Error('No event ID provided');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Error loading event data!');
+                window.location.href = 'AdminEventList.html';
+            }
+        }
 
         loadEvent();
     </script>
