@@ -113,27 +113,49 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
+        // Support both ?id=... (main event) and ?requestId=...&isRequest=true (event request)
         const eventId = urlParams.get('id');
+        const requestId = urlParams.get('requestId');
+        const isRequest = urlParams.get('isRequest') === 'true';
 
         async function loadEvent() {
             try {
                 const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
-                if (!response.ok) throw new Error('Failed to fetch event data');
-                const event = await response.json();
+                let response, event;
+                if (isRequest && requestId) {
+                    // Editing an event request
+                    response = await fetch(`${apiBase}:5500/api/getEventRequest?id=${requestId}`);
+                    if (!response.ok) throw new Error('Failed to fetch event request data');
+                    event = await response.json();
 
-                document.getElementById('eventName').value = event.name;
-                document.getElementById('eventDate').value = event.date;
-                document.getElementById('eventStartTime').value = event.startTime;
-                document.getElementById('eventEndTime').value = event.endTime;
-                document.getElementById('eventLocation').value = event.location;
-                document.getElementById('TCP').value = event.TCP;
-                document.getElementById('volunteerHours').value = event.volunteerHours; // fixed spelling
+                    // Map event request fields to editor fields
+                    document.getElementById('eventName').value = event.name || '';
+                    document.getElementById('eventDate').value = event.date || '';
+                    document.getElementById('eventStartTime').value = event.start_time || '';
+                    document.getElementById('eventEndTime').value = event.end_time || '';
+                    document.getElementById('eventLocation').value = event.location || '';
+                    document.getElementById('TCP').value = event.people || '';
+                    document.getElementById('volunteerHours').value = event.volunteer_hours || '';
+                } else if (eventId) {
+                    // Editing a main event
+                    response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
+                    if (!response.ok) throw new Error('Failed to fetch event data');
+                    event = await response.json();
 
+                    document.getElementById('eventName').value = event.name || '';
+                    document.getElementById('eventDate').value = event.date || '';
+                    document.getElementById('eventStartTime').value = event.startTime || '';
+                    document.getElementById('eventEndTime').value = event.endTime || '';
+                    document.getElementById('eventLocation').value = event.location || '';
+                    document.getElementById('TCP').value = event.TCP || event.people || '';
+                    document.getElementById('volunteerHours').value = event.volunteerHours || event.volunteer_hours || '';
+                } else {
+                    throw new Error('No event ID provided');
+                }
             } catch (error) {
                 console.error(error);
                 alert('Error loading event data!');
-                window.location.href = 'AdminEventList.html'; // fixed typo
+                window.location.href = 'AdminEventList.html';
             }
         }
 
@@ -141,16 +163,31 @@
             e.preventDefault();
             const errorMessage = document.getElementById('error-message');
 
-            const updatedEvent = {
-                id: eventId,
-                name: document.getElementById('eventName').value,
-                date: document.getElementById('eventDate').value,
-                startTime: document.getElementById('eventStartTime').value,
-                endTime: document.getElementById('eventEndTime').value,
-                location: document.getElementById('eventLocation').value,
-                TCP: document.getElementById('TCP').value,
-                volunteerHours: document.getElementById('volunteerHours').value, // fixed spelling
-            };
+            // Prepare event object for update
+            let updatedEvent;
+            if (isRequest && requestId) {
+                updatedEvent = {
+                    id: requestId,
+                    name: document.getElementById('eventName').value,
+                    date: document.getElementById('eventDate').value,
+                    start_time: document.getElementById('eventStartTime').value,
+                    end_time: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    people: document.getElementById('TCP').value,
+                    volunteer_hours: document.getElementById('volunteerHours').value,
+                };
+            } else {
+                updatedEvent = {
+                    id: eventId,
+                    name: document.getElementById('eventName').value,
+                    date: document.getElementById('eventDate').value,
+                    startTime: document.getElementById('eventStartTime').value,
+                    endTime: document.getElementById('eventEndTime').value,
+                    location: document.getElementById('eventLocation').value,
+                    TCP: document.getElementById('TCP').value,
+                    volunteerHours: document.getElementById('volunteerHours').value,
+                };
+            }
 
             // Time validation logic (match BookingPage.html)
             const startInput = document.getElementById('eventStartTime');
@@ -171,11 +208,22 @@
 
             try {
                 const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/api/updateEvent`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedEvent),
-                });
+                let response;
+                if (isRequest && requestId) {
+                    // Update event request
+                    response = await fetch(`${apiBase}:5500/api/updateEventRequest`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedEvent),
+                    });
+                } else {
+                    // Update main event
+                    response = await fetch(`${apiBase}:5500/api/updateEvent`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedEvent),
+                    });
+                }
 
                 if (!response.ok) {
                     throw new Error('Failed to save event data');
