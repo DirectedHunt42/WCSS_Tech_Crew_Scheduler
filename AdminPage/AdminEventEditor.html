@@ -208,7 +208,9 @@
 
                     // Map event request fields to editor fields
                     document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
+                    document.getElementById('eventDate').value = event.date
+                        ? new Date(event.date).toISOString().slice(0, 10)
+                        : '';
                     document.getElementById('eventStartTime').value = event.start_time || '';
                     document.getElementById('eventEndTime').value = event.end_time || '';
                     document.getElementById('eventLocation').value = event.location || '';
@@ -221,7 +223,9 @@
                     event = await response.json();
 
                     document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
+                    document.getElementById('eventDate').value = event.date
+                        ? new Date(event.date).toISOString().slice(0, 10)
+                        : '';
                     document.getElementById('eventStartTime').value = event.startTime || '';
                     document.getElementById('eventEndTime').value = event.endTime || '';
                     document.getElementById('eventLocation').value = event.location || '';

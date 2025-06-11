@@ -301,7 +301,7 @@ def update_event():
             updated_event['endTime'],
             updated_event['location'],
             updated_event['people'],
-            updated_event['volunteer_Hours'],
+            updated_event['volunteer_hours'],
             updated_event['id']
         ))
         conn.commit()
