@@ -97,7 +97,7 @@
         <!-- Tab buttons -->
         <div class="tab-buttons">
             <!-- Removed Add Event tab -->
-            <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;">Approve Event</button>
+            <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;" >Approve Event</button>
             <button class="tab-button" data-tab="manage-event" style="flex: 1 1 auto; text-align: center;">Manage Events</button>
             <button class="tab-button" data-tab="approve-opt-in" style="flex: 1 1 auto; text-align: center;">Opt-in Requests</button>
         </div>
@@ -132,6 +132,7 @@
                 // Add active class to the clicked button and corresponding content
                 button.classList.add('active');
                 document.getElementById(button.dataset.tab).classList.add('active');
+                window.location.hash = button.dataset.tab;
             });
         });
 
@@ -196,7 +197,7 @@
                         editBtn.style.marginRight = '8px';
                         editBtn.style.border = '1px solid black';
                         editBtn.onclick = () => {
-                            window.location.href = `AdminEventEditor.html?id=${encodeURIComponent(event.id)}`;
+                            window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
                         };
 
                         // Deny Event button
@@ -440,6 +441,7 @@
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     activateTab(button.dataset.tab);
+                    window.location.hash = button.dataset.tab;
                 });
             });
 
