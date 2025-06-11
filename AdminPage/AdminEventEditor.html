@@ -130,7 +130,7 @@
 
                     // Map event request fields to editor fields
                     document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = event.date || '';
+                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
                     document.getElementById('eventStartTime').value = event.start_time || '';
                     document.getElementById('eventEndTime').value = event.end_time || '';
                     document.getElementById('eventLocation').value = event.location || '';
@@ -143,7 +143,7 @@
                     event = await response.json();
 
                     document.getElementById('eventName').value = event.name || '';
-                    document.getElementById('eventDate').value = event.date || '';
+                    document.getElementById('eventDate').value = (event.date || '').split('T')[0];
                     document.getElementById('eventStartTime').value = event.startTime || '';
                     document.getElementById('eventEndTime').value = event.endTime || '';
                     document.getElementById('eventLocation').value = event.location || '';
@@ -186,6 +186,9 @@
                     location: document.getElementById('eventLocation').value,
                     TCP: document.getElementById('TCP').value,
                     volunteerHours: document.getElementById('volunteerHours').value,
+                    // Add these for compatibility:
+                    people: document.getElementById('TCP').value,
+                    volunteer_hours: document.getElementById('volunteerHours').value,
                 };
             }
 
