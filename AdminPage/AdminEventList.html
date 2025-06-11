@@ -196,7 +196,7 @@
                         editBtn.style.marginRight = '8px';
                         editBtn.style.border = '1px solid black';
                         editBtn.onclick = () => {
-                            window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
+                            window.location.href = `AdminEventEditor.html?id=${encodeURIComponent(event.id)}`;
                         };
 
                         // Deny Event button
