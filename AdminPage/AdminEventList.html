@@ -51,6 +51,7 @@
             background-color: green;
         }
 
+        #approve-event-list,
         #manage-event-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -59,6 +60,7 @@
             list-style: none;
         }
 
+        #approve-event-list li,
         #manage-event-list li {
             border-radius: 8px;
             padding: 18px 18px 12px 18px;
@@ -193,7 +195,6 @@
                         editBtn.textContent = 'Edit Event';
                         editBtn.style.marginRight = '8px';
                         editBtn.style.border = '1px solid black';
-                        editBtn.style.backgroundColor = '#242424';
                         editBtn.onclick = () => {
                             window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
                         };

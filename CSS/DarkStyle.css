@@ -517,6 +517,7 @@ body.dark-theme {
     border-radius: 6px;
 }
 
+#approve-event-list li,
 #manage-event-list li {
     background: #444;
     border: 1px solid #222;

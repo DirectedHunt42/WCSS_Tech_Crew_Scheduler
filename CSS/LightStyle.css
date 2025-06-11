@@ -535,6 +535,7 @@ body.light-theme {
     color: #222;
 }
 
+#approve-event-list li,
 #manage-event-list li {
     background: #ddd;
     border: 1px solid #e0e0e0;
