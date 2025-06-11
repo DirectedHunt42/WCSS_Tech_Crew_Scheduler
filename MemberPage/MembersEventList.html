@@ -265,11 +265,11 @@
                             }
                         });
 
+                        apiBase = window.location.origin;
+
                         // Now send the opt-out request
                         try {
-                            const username = document.cookie.split('; ').find(row => row.startsWith('loggedInUser='))?.split('=')[1]
-                                || document.cookie.split('; ').find(row => row.startsWith('loggedInAdmin='))?.split('=')[1]
-                                || '';
+                            const username = document.cookie.split('; ').find(row => row.startsWith('loggedInUser='))?.split('=')[1];
 
                             console.log('Opt-out request:', { eventName: event.name, username});
 

@@ -24,9 +24,15 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Update isLightMode to use getCookie
 function isLightMode() {
-    // Looks for "theme=light" in the cookie string
-    return document.cookie.split(';').some(cookie => cookie.trim() === 'theme=light');
+    return getCookie('theme') === 'light';
 }
 
 function renderCalendar(month, year) {
@@ -67,9 +73,9 @@ function renderCalendar(month, year) {
             i === currentDate.getDate()
         ) {
             if (isLightMode()) {
-                div.style.borderBottom = '1px solid #444'; // Darker underline for light mode
+                div.style.borderBottom = '3px solid #222'; // dark underline for light mode
             } else {
-                div.style.borderBottom = '1px solid lightblue'; // Light underline for dark mode
+                div.style.borderBottom = '3px solid #fff'; // white underline for dark mode
             }
         }
 
