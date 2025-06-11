@@ -4,7 +4,8 @@ import subprocess
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_DIR = os.path.join(PROJECT_DIR, "Resources")
-BACKUP_DIR = "/home/Admin/resources_backup"  # Change this path as needed
+BACKUP_DIR = "/home/Admin/resources_backup"
+LATEST_BACKUP_DIR = "/home/Admin/resources_backup_latest"
 
 def get_timestamp():
     from datetime import datetime
@@ -19,6 +20,12 @@ def backup_resources():
         print(f"Copying {RESOURCES_DIR} to {BACKUP_DIR}...")
         shutil.copytree(RESOURCES_DIR, BACKUP_DIR)
         print("Backup complete.")
+        # Also update the persistent latest backup
+        print(f"Updating persistent backup at {LATEST_BACKUP_DIR}...")
+        if os.path.exists(LATEST_BACKUP_DIR):
+            shutil.rmtree(LATEST_BACKUP_DIR)
+        shutil.copytree(RESOURCES_DIR, LATEST_BACKUP_DIR)
+        print("Persistent backup updated.")
     else:
         print(f"Resources folder {RESOURCES_DIR} does not exist. Skipping backup.")
 
