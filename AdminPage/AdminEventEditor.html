@@ -184,7 +184,7 @@
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error('Failed to save event data: ' + errorText);
+                    throw new Error(`Failed to save event data (HTTP ${response.status}): ${errorText}`);
                 }
 
                 alert('Event updated successfully');
