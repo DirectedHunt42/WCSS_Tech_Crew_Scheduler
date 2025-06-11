@@ -234,6 +234,16 @@
     <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
 
     <script>
+        // Place this at the top of your <script> block
+        function getUsername() {
+            const cookies = document.cookie.split('; ');
+            for (const cookie of cookies) {
+                if (cookie.startsWith('loggedInUser=')) {
+                    return decodeURIComponent(cookie.substring('loggedInUser='.length));
+                }
+            }
+            return '';
+        }
         let optOutMode = false;
 
         // Store references to event list items and their event names
@@ -269,9 +279,9 @@
 
                         // Now send the opt-out request
                         try {
-                            const username = document.cookie.split('; ').find(row => row.startsWith('loggedInUser='))?.split('=')[1];
+                            const username = getUsername();
 
-                            console.log('Opt-out request:', { eventName: event.name, username});
+                            console.log('Opt-out request:', { eventName: event.name, username });
 
                             const res = await fetch(`${apiBase}:6420/opt-out-request`, {
                                 method: 'POST',
@@ -400,4 +410,5 @@
 </body>
 <script src="/JS/authClient.js"></script>
 <script src="/JS/themeHandler.js"></script>
+
 </html>
