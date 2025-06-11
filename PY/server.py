@@ -287,6 +287,7 @@ def update_event():
         return "Invalid event data", 400
 
     try:
+        print(f"Updating event with ID: {updated_event['id']} with data: {updated_event}")
         conn = sqlite3.connect(EVENTS_DB_PATH)
         cursor = conn.cursor()
         cursor.execute('''
@@ -312,6 +313,7 @@ def update_event():
 
         return "Event updated successfully", 200
     except Exception as e:
+        print(f"Error updating event: {e}")
         return f"Error updating event: {str(e)}", 500
 
 @app.route('/api/signout', methods=['POST'])
