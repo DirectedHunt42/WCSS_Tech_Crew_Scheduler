@@ -50,6 +50,23 @@
             margin-left: 260px;
             background-color: green;
         }
+
+        #manage-event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            padding: 0;
+            list-style: none;
+        }
+
+        #manage-event-list li {
+            border-radius: 8px;
+            padding: 18px 18px 12px 18px;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            min-width: 0;
+            word-break: break-word;
+        }
     </style>
     <script src="/JS/authClient.js" defer></script>
     <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
@@ -318,7 +335,7 @@
         });
     </script>
     <script>
-        // --- Manage Events Tab: Single List with Edit and Remove Buttons ---
+        // --- Manage Events Tab ---
         function loadManageEvents() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/events`)
@@ -353,7 +370,6 @@
                         editBtn.style.marginTop = '8px';
                         editBtn.style.marginRight = '10px';
                         editBtn.style.border = '1px solid black';
-                        editBtn.style.backgroundColor = '#242424';
                         editBtn.onclick = () => {
                             const encodedID = encodeURIComponent(event.id);
                             window.location.href = `AdminEventEditor.html?id=${encodedID}`;

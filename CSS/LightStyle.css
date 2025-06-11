@@ -534,3 +534,8 @@ body.light-theme {
 .comment-block {
     color: #222;
 }
+
+#manage-event-list li {
+    background: #ddd;
+    border: 1px solid #e0e0e0;
+}

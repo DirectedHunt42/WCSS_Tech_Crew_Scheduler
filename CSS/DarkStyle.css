@@ -516,3 +516,8 @@ body.dark-theme {
     background: var(--popup-scrollbar-track);
     border-radius: 6px;
 }
+
+#manage-event-list li {
+    background: #444;
+    border: 1px solid #222;
+}
