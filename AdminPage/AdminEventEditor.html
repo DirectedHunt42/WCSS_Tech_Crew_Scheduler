@@ -163,6 +163,23 @@
             e.preventDefault();
             const errorMessage = document.getElementById('error-message');
 
+            // Time validation logic
+            const startInput = document.getElementById('eventStartTime');
+            const endInput = document.getElementById('eventEndTime');
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                if (end <= start) {
+                    errorMessage.textContent = 'End time must be after start time.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+            }
+
             // Prepare event object for update
             let updatedEvent;
             if (isRequest && requestId) {
@@ -186,42 +203,20 @@
                     location: document.getElementById('eventLocation').value,
                     TCP: document.getElementById('TCP').value,
                     volunteerHours: document.getElementById('volunteerHours').value,
-                    // Add these for compatibility:
-                    people: document.getElementById('TCP').value,
-                    volunteer_hours: document.getElementById('volunteerHours').value,
                 };
             }
 
-            // Time validation logic (match BookingPage.html)
-            const startInput = document.getElementById('eventStartTime');
-            const endInput = document.getElementById('eventEndTime');
-            if (startInput.value && endInput.value) {
-                const [startHour, startMinute] = startInput.value.split(':').map(Number);
-                const [endHour, endMinute] = endInput.value.split(':').map(Number);
-
-                let start = new Date(0, 0, 0, startHour, startMinute, 0);
-                let end = new Date(0, 0, 0, endHour, endMinute, 0);
-
-                if (end <= start) {
-                    errorMessage.textContent = 'End time must be after start time.';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-            }
-
             try {
-                const apiBase = window.location.origin;
+                const apiBase = `http://${window.location.hostname}:5500`;
                 let response;
                 if (isRequest && requestId) {
-                    // Update event request
-                    response = await fetch(`${apiBase}:5500/api/updateEventRequest`, {
+                    response = await fetch(`${apiBase}/api/updateEventRequest`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(updatedEvent),
                     });
                 } else {
-                    // Update main event
-                    response = await fetch(`${apiBase}:5500/api/updateEvent`, {
+                    response = await fetch(`${apiBase}/api/updateEvent`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(updatedEvent),
@@ -229,14 +224,16 @@
                 }
 
                 if (!response.ok) {
-                    throw new Error('Failed to save event data');
+                    const errorText = await response.text();
+                    throw new Error('Failed to save event data: ' + errorText);
                 }
 
                 alert('Event updated successfully');
                 window.location.href = 'AdminEventList.html#edit-event';
             } catch (error) {
                 console.error(error);
-                alert('Error saving event data!');
+                errorMessage.textContent = 'Error saving event data: ' + error.message;
+                errorMessage.style.display = 'block';
             }
         });
 
