@@ -185,7 +185,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
             log('userId:', userId);
             log('eventName:', eventName);
             log('userEmail:', userEmail);
-            if (event) {
+            if (event || action === 'remove') {
                 if (action === 'approve') {
                     try {
                         event.status = 'approved';
@@ -235,9 +235,15 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         console.error('Error sending denial email:', emailError);
                         return res.status(512).send('Error sending denial email');
                     }
+                } else if (action === 'remove') {
+                    // Remove the opt-in request for this event
+                    optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                    log(`Opt-in request for ${eventName} removed for user ${userId}`);
+                    fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+                    return res.status(200).send('Opt-in removed successfully');
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-                return res.status(200).send(`Opt-in ${event.status} successfully`);
+                return res.status(200).send(`Opt-in ${event && event.status ? event.status : action} successfully`);
             }
         }
 
