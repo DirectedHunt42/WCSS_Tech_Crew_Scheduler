@@ -698,6 +698,19 @@ def submit_booking():
 
     print("Booking form values:", name, email, date, start_time, end_time, location, people, volunteer_hours)
 
+    # Check for duplicate event name in events.db
+    try:
+        conn_events = sqlite3.connect(EVENTS_DB_PATH)
+        cursor_events = conn_events.cursor()
+        cursor_events.execute('SELECT name FROM events')
+        existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
+        conn_events.close()
+        if name and name.strip().lower() in existing_names:
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+    except Exception as e:
+        print(f"Error checking for duplicate event name: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
     try:
         # Connect to the eventRequests database
         conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
@@ -716,14 +729,6 @@ def submit_booking():
                 volunteer_hours TEXT
             )
         ''')
-
-        # Check if the name already exists in the event_requests table
-        cursor.execute('SELECT COUNT(*) FROM event_requests WHERE name = ?', (name,))
-        name_count = cursor.fetchone()[0]
-        if name_count > 0:
-            conn.close()
-            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
-
         # Insert the new event request
         cursor.execute('''
             INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
@@ -967,6 +972,31 @@ sys.stderr = LogCatcher()
 def get_server_log():
     # Return the last 100 lines
     return "<br>".join(server_log[-100:])
+
+@app.route('/get-user-email', methods=['GET'])
+def get_user_email_route():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({"error": "Missing userId"}), 400
+    email = get_user_email(user_id)
+    if email:
+        return jsonify({"email": email}), 200
+    else:
+        return jsonify({"error": "Email not found"}), 404
+    
+def get_user_email(username):
+    try:
+        # Check user database
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+        cursor.execute('SELECT email FROM users WHERE username = ?', (username,))
+        row = cursor.fetchone()
+        conn.close()
+        if row and row[0]:
+            return row[0]
+    except Exception as e:
+        print(f"Error fetching email for {username}: {e}")
+    return None
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)
