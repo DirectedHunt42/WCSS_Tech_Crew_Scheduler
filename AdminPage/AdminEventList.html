@@ -447,16 +447,36 @@
                         return;
                     }
 
+                    // Split into upcoming and past
+                    const now = new Date();
+                    const upcoming = [];
+                    const past = [];
                     events.forEach(event => {
+                        let dateStr = (event.date || '').replace(/,/g, '-');
+                        let eventDate = new Date(dateStr);
+                        if (isNaN(eventDate)) eventDate = new Date(event.date); // fallback
+                        if (isNaN(eventDate)) {
+                            past.push({ ...event, _eventDate: null });
+                        } else if (eventDate.setHours(23,59,59,999) >= now) {
+                            upcoming.push({ ...event, _eventDate: eventDate });
+                        } else {
+                            past.push({ ...event, _eventDate: eventDate });
+                        }
+                    });
+                    upcoming.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
+                    past.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
+
+                    // Helper to render a tile
+                    function renderEventTile(event) {
                         const item = document.createElement('li');
                         item.innerHTML = `
                             <strong>${event.name}</strong><br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
-                            Start Time: ${event.startTime}<br>
-                            End Time: ${event.endTime}<br>
+                            Start Time: ${event.startTime || event.start_time || ''}<br>
+                            End Time: ${event.endTime || event.end_time || ''}<br>
                             People: ${event.people}<br>
-                            Volunteer Hours: ${event.volunteerHours}<br>
+                            Volunteer Hours: ${event.volunteerHours || event.volunteer_hours || ''}<br>
                         `;
 
                         // Edit button
@@ -482,16 +502,16 @@
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id }),
-                            })
-                            .then(response => {
-                                if (response.ok) {
-                                    alert('Event removed successfully!');
-                                    loadManageEvents();
-                                } else {
-                                    alert('Failed to remove event.');
-                                }
-                            })
-                            .catch(error => console.error('Error removing event:', error));
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Event removed successfully!');
+                                loadManageEvents();
+                            } else {
+                                alert('Failed to remove event.');
+                            }
+                        })
+                        .catch(error => console.error('Error removing event:', error));
                             }
                         };
 
@@ -499,8 +519,22 @@
                         item.appendChild(editBtn);
                         item.appendChild(removeBtn);
                         item.style.marginBottom = '18px';
-                        eventList.appendChild(item);
-                    });
+                        return item;
+                    }
+
+                    // Render upcoming
+                    upcoming.forEach(event => eventList.appendChild(renderEventTile(event)));
+                    // Divider if there are past events
+                    if (past.length) {
+                        const divider = document.createElement('li');
+                        divider.innerHTML = '<hr style="margin:16px 0;"><span style="font-style:italic;color:#888;">Past Events</span>';
+                        divider.style.gridColumn = "1 / -1";
+                        divider.style.background = "none";
+                        divider.style.boxShadow = "none";
+                        divider.style.textAlign = "center";
+                        eventList.appendChild(divider);
+                        past.forEach(event => eventList.appendChild(renderEventTile(event)));
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching event list:', error);
