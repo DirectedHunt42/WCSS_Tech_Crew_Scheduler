@@ -160,7 +160,7 @@ app.get('/admin/opt-in-requests', (req, res) => {
 });
 
 // Endpoint to approve or deny opt-in requests
-app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
+app.post('/admin/update-opt-in', async (req, res) => {
     const { userId, eventName, action } = req.body;
     if (!userId || !eventName || !action) {
         return res.status(400).send('Missing userId, eventName, or action');
