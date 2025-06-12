@@ -98,7 +98,8 @@
                     window.location.href = 'AdminMemberManagment.html'; // Redirect and reload
                 } else if (response.status === 409) {
                     // Username already exists, show popup
-                    document.getElementById('error-message').textContent = 'Username already exists. Please choose a different username.';
+                    document.getElementById('error-message').textContent = 'A member with this username already exists. Please choose a different username.'
+                                                                            +'\nExample: "Jhon M Doe" instead of "Jhon Doe"';
                     document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
                     return false; // Prevent further action

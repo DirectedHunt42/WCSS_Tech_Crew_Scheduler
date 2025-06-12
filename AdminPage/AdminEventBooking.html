@@ -179,7 +179,8 @@
                     window.location.href = 'AdminEventList.html#edit-event'; // Redirect to AdminEventList.html
                 } else {
                     if (response.status === 409) {
-                        document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.';
+                        document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
+                                                                                +'\nExample: "School Play - Day 2" instead of "School Play"';
                         document.getElementById('error-message').style.display = 'block';
                         scrollTo(0, 0); // Scroll to the top of the page
                         return;
