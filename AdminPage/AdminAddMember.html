@@ -97,13 +97,20 @@
                     alert(result.message); // Show success message
                 } else if (response.status === 409) {
                     // Username already exists, show popup
-                    alert(result.error); // Or use a custom modal
+                    document.getElementById('error-message').textContent = result.error;
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
                 } else {
-                    alert(result.error || 'An error occurred.');
+                    // Handle other errors
+                    document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while adding the member.');
+                document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                document.getElementById('error-message').style.display = 'block';
+                scrollTo(0, 0); // Scroll to the top of the page
             }
         }
     </script>
@@ -117,6 +124,7 @@
         </label>
     </div>
     <h1>Add Member</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form onsubmit="submitForm(event)">
         <label for="name">Username:</label>
         <input type="text" id="name" name="name" required>
