@@ -93,7 +93,8 @@
 
                 const result = await response.json();
 
-                if (response.ok) {
+                if (response === 200) {
+                    // Member added successfully, show success message and redirect
                     alert(result.message); // Show success message
                     window.location.href = 'AdminMemberManagment.html'; // Redirect and reload
                 } else if (response.status === 409) {
@@ -102,20 +103,17 @@
                                                                             +'\nExample: "Jhon M Doe" instead of "Jhon Doe"';
                     document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
-                    return false; // Prevent further action
                 } else {
                     // Handle other errors
                     document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
                     document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
-                    return false; // Prevent further action
                 }
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
                 document.getElementById('error-message').style.display = 'block';
                 scrollTo(0, 0); // Scroll to the top of the page
-                return false; // Prevent further action
             }
         }
     </script>
