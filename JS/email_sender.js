@@ -170,8 +170,7 @@ app.post('/opt-out-request', (req, res) => {
     }
 
     // Generate a unique token (for demo, use a simple base64, but use a secure random string in production)
-    const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
-    // Store the token and request info somewhere persistent (e.g., a file or DB) for real security
+    // const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
 
     // The link the admin will click
     const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;

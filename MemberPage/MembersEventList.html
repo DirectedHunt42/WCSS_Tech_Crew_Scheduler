@@ -234,6 +234,8 @@
     <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
 
     <script>
+        let optOutMode = false;
+
         function enableOptOutMode(optInStatus) {
             optOutMode = true;
             document.getElementById('opt-out-mode-btn').classList.add('opt-out-active');
@@ -272,7 +274,7 @@
 
                             console.log('Opt-out request:', { eventName: event.name, username });
 
-                            const res = await fetch(`${apiBase}:6420/opt-out-request`, {
+                            const res = await fetch(`http//localhost:6420/opt-out-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',

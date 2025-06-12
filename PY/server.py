@@ -716,6 +716,14 @@ def submit_booking():
                 volunteer_hours TEXT
             )
         ''')
+
+        # Check if the name already exists in the event_requests table
+        cursor.execute('SELECT COUNT(*) FROM event_requests WHERE name = ?', (name,))
+        name_count = cursor.fetchone()[0]
+        if name_count > 0:
+            conn.close()
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+
         # Insert the new event request
         cursor.execute('''
             INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
