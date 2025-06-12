@@ -153,7 +153,28 @@
                         list.appendChild(msg);
                         return;
                     }
+
+                    // Split into upcoming and past
+                    const now = new Date();
+                    const upcoming = [];
+                    const past = [];
                     requests.forEach(event => {
+                        // Parse date (support both YYYY-MM-DD and YYYY,MM,DD)
+                        let dateStr = event.date.replace(/,/g, '-');
+                        let eventDate = new Date(dateStr);
+                        if (isNaN(eventDate)) eventDate = new Date(event.date); // fallback
+                        if (eventDate.setHours(23,59,59,999) >= now) {
+                            upcoming.push({ ...event, _eventDate: eventDate });
+                        } else {
+                            past.push({ ...event, _eventDate: eventDate });
+                        }
+                    });
+                    // Sort both arrays by date ascending
+                    upcoming.sort((a, b) => a._eventDate - b._eventDate);
+                    past.sort((a, b) => a._eventDate - b._eventDate);
+
+                    // Helper to render a tile
+                    function renderEventTile(event) {
                         const li = document.createElement('li');
                         li.innerHTML = `
                             <strong>${event.name}</strong><br>
@@ -165,9 +186,9 @@
                             People: ${event.people}<br>
                             Volunteer Hours: ${event.volunteer_hours}<br>
                         `;
-                        li.style.marginBottom = '16px'; // Add space between events
+                        li.style.marginBottom = '16px';
 
-                        // Push Event button
+                        // Approve
                         const pushBtn = document.createElement('button');
                         pushBtn.textContent = 'Approve Event';
                         pushBtn.style.marginRight = '8px';
@@ -175,7 +196,6 @@
                         pushBtn.style.backgroundColor = 'green';
                         pushBtn.style.marginTop = '8px';
                         pushBtn.onclick = () => {
-                            const apiBase = window.location.origin;
                             fetch(`${apiBase}:5500/api/push-event-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
@@ -185,15 +205,15 @@
                                 if (res.ok) {
                                     alert('Event pushed to main event list!');
                                     loadApproveEventRequests();
-                                    loadEvents();
-                                    loadRemoveEvents();
+                                    loadEvents && loadEvents();
+                                    loadRemoveEvents && loadRemoveEvents();
                                 } else {
                                     res.text().then(t => alert('Failed to push event: ' + t));
                                 }
                             });
                         };
 
-                        // Edit Event button
+                        // Edit
                         const editBtn = document.createElement('button');
                         editBtn.textContent = 'Edit Event';
                         editBtn.style.marginRight = '8px';
@@ -202,14 +222,13 @@
                             window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
                         };
 
-                        // Deny Event button
+                        // Deny
                         const denyBtn = document.createElement('button');
                         denyBtn.textContent = 'Deny Event';
                         denyBtn.style.border = '1px solid black';
                         denyBtn.style.backgroundColor = 'red';
                         denyBtn.onclick = () => {
                             if (confirm('Are you sure you want to deny this event request?')) {
-                                const apiBase = window.location.origin;
                                 fetch(`${apiBase}:5500/api/deny-event-request`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -219,79 +238,143 @@
                                     if (res.ok) {
                                         alert('Event request denied.');
                                         loadApproveEventRequests();
-                                    } else {
-                                        res.text().then(t => alert('Failed to deny event: ' + t));
-                                    }
-                                });
-                            }
-                        };
+                                } else {
+                                    res.text().then(t => alert('Failed to deny event: ' + t));
+                                }
+                            });
+                        }
+                    };
 
-                        li.appendChild(pushBtn);
-                        li.appendChild(editBtn);
-                        li.appendChild(denyBtn);
-                        list.appendChild(li);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error loading event requests:', error);
-                });
+                    li.appendChild(pushBtn);
+                    li.appendChild(editBtn);
+                    li.appendChild(denyBtn);
+                    return li;
+                }
+
+                // Render upcoming
+                upcoming.forEach(event => list.appendChild(renderEventTile(event)));
+                // Divider if there are past events
+                if (past.length) {
+                    const divider = document.createElement('li');
+                    divider.innerHTML = '<hr style="margin:16px 0;"><span style="font-style:italic;color:#888;">Past Event Requests</span>';
+                    divider.style.gridColumn = "1 / -1";
+                    divider.style.background = "none";
+                    divider.style.boxShadow = "none";
+                    divider.style.textAlign = "center";
+                    list.appendChild(divider);
+                    past.forEach(event => list.appendChild(renderEventTile(event)));
+                }
+            })
+            .catch(error => {
+                console.error('Error loading event requests:', error);
+            });
         }
 
         // Fetch and display all opt-in requests
         function loadOptInRequests() {
-            console.log('Fetching opt-in requests...');
             const apiBase = window.location.origin;
-            fetch(`${apiBase}:6421/admin/opt-in-requests`)
+            // First, fetch all events to get their dates
+            fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
-                .then(data => {
-                    console.log('Opt-in requests:', data); // Debug log
-                    const requestList = document.getElementById('approve-opt-in-list');
-                    requestList.innerHTML = ''; // Clear the list
+                .then(events => {
+                    // Build a map: event name -> date
+                    const eventDateMap = {};
+                    events.forEach(ev => {
+                        // Normalize event name for matching
+                        eventDateMap[ev.name] = ev.date;
+                    });
 
-                    let hasRequests = false;
-                    Object.entries(data).forEach(([userId, events]) => {
-                        events.forEach(event => {
-                            hasRequests = true;
-                            const listItem = document.createElement('li');
-                            listItem.innerHTML = `
-                                <strong>${event.name}</strong><br>
-                                User: ${userId}<br>
-                                Status: ${event.status}<br>
-                            `;
+                    // Now fetch opt-in requests
+                    fetch(`${apiBase}:6421/admin/opt-in-requests`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const requestList = document.getElementById('approve-opt-in-list');
+                            requestList.innerHTML = '';
 
-                            if (event.status === 'requested') {
-                                // Approve button
-                                const approveButton = document.createElement('button');
-                                approveButton.textContent = 'Approve';
-                                approveButton.style.marginLeft = '10px';
-                                approveButton.style.border = '1px solid black';
-                                approveButton.style.backgroundColor = 'green';
-                                approveButton.onclick = () => updateOptIn(userId, event.name, 'approve');
+                            let allRequests = [];
+                            Object.entries(data).forEach(([userId, events]) => {
+                                events.forEach(event => {
+                                    // Attach the event date from the event list
+                                    const eventDate = eventDateMap[event.name] || null;
+                                    allRequests.push({ ...event, userId, _eventDate: eventDate });
+                                });
+                            });
 
-                                // Deny button
-                                const denyButton = document.createElement('button');
-                                denyButton.textContent = 'Deny';
-                                denyButton.style.marginLeft = '10px';
-                                denyButton.style.border = '1px solid black';
-                                denyButton.style.backgroundColor = 'red';
-                                denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
-
-                                listItem.appendChild(document.createElement('br'));
-                                listItem.appendChild(approveButton);
-                                listItem.appendChild(denyButton);
+                            if (!allRequests.length) {
+                                const msg = document.createElement('li');
+                                msg.textContent = 'No opt-in requests to display.';
+                                msg.style.fontStyle = 'italic';
+                                requestList.appendChild(msg);
+                                return;
                             }
 
-                            requestList.appendChild(listItem);
-                        });
-                    });
-                    if (!hasRequests) {
-                        const msg = document.createElement('li');
-                        msg.textContent = 'No opt-in requests to display.';
-                        msg.style.fontStyle = 'italic';
-                        requestList.appendChild(msg);
-                    }
+                            // Split into upcoming and past
+                            const now = new Date();
+                            const upcoming = [];
+                            const past = [];
+                            allRequests.forEach(event => {
+                                let dateStr = event._eventDate ? event._eventDate.replace(/,/g, '-') : '';
+                                let eventDate = new Date(dateStr);
+                                if (!event._eventDate || isNaN(eventDate)) {
+                                    // If no date, treat as past
+                                    past.push({ ...event, _parsedDate: null });
+                                } else if (eventDate.setHours(23,59,59,999) >= now) {
+                                    upcoming.push({ ...event, _parsedDate: eventDate });
+                                } else {
+                                    past.push({ ...event, _parsedDate: eventDate });
+                                }
+                            });
+                            upcoming.sort((a, b) => a._parsedDate - b._parsedDate);
+                            past.sort((a, b) => a._parsedDate - b._parsedDate);
+
+                            // Helper to render a tile
+                            function renderOptInTile(event) {
+                                const listItem = document.createElement('li');
+                                listItem.innerHTML = `
+                                    <strong>${event.name}</strong><br>
+                                    User: ${event.userId}<br>
+                                    Status: ${event.status}<br>
+                                    ${event._eventDate ? `Date: ${event._eventDate}<br>` : ''}
+                                `;
+                                if (event.status === 'requested') {
+                                    const approveButton = document.createElement('button');
+                                    approveButton.textContent = 'Approve';
+                                    approveButton.style.marginLeft = '10px';
+                                    approveButton.style.border = '1px solid black';
+                                    approveButton.style.backgroundColor = 'green';
+                                    approveButton.onclick = () => updateOptIn(event.userId, event.name, 'approve');
+
+                                    const denyButton = document.createElement('button');
+                                    denyButton.textContent = 'Deny';
+                                    denyButton.style.marginLeft = '10px';
+                                    denyButton.style.border = '1px solid black';
+                                    denyButton.style.backgroundColor = 'red';
+                                    denyButton.onclick = () => updateOptIn(event.userId, event.name, 'deny');
+
+                                    listItem.appendChild(document.createElement('br'));
+                                    listItem.appendChild(approveButton);
+                                    listItem.appendChild(denyButton);
+                                }
+                                return listItem;
+                            }
+
+                            // Render upcoming
+                            upcoming.forEach(event => requestList.appendChild(renderOptInTile(event)));
+                            // Divider if there are past requests
+                            if (past.length) {
+                                const divider = document.createElement('li');
+                                divider.innerHTML = '<hr style="margin:16px 0;"><span style="font-style:italic;color:#888;">Past Opt-in Requests</span>';
+                                divider.style.gridColumn = "1 / -1";
+                                divider.style.background = "none";
+                                divider.style.boxShadow = "none";
+                                divider.style.textAlign = "center";
+                                requestList.appendChild(divider);
+                                past.forEach(event => requestList.appendChild(renderOptInTile(event)));
+                            }
+                        })
+                        .catch(error => console.error('Error loading opt-in requests:', error));
                 })
-                .catch(error => console.error('Error loading opt-in requests:', error));
+                .catch(error => console.error('Error fetching events for opt-in requests:', error));
         }
 
         // Approve or deny an opt-in request
