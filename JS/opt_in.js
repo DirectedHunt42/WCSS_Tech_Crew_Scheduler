@@ -182,15 +182,15 @@ app.post('/admin/update-opt-in', async (req, res) => {
                 console.error('User email not found for userId:', userId);
                 return res.status(404).send('User email not found');
             }
-            console.log('userId:', userId);
-            console.log('eventName:', eventName);
-            console.log('userEmail:', userEmail);
+            log('userId:', userId);
+            log('eventName:', eventName);
+            log('userEmail:', userEmail);
             if (event) {
                 if (action === 'approve') {
                     try {
                         event.status = 'approved';
-                        console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
-                        console.log('userEmail:', userEmail);
+                        log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
+                        log('userEmail:', userEmail);
                         const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -202,7 +202,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                             })
                         });
                         const emailText = await emailRes.text();
-                        console.log('Email sender response:', emailRes.status, emailText);
+                        log('Email sender response:', emailRes.status, emailText);
                         if (!emailRes.ok) {
                             return res.status(503).send('Email sender error: ' + emailText);
                         }
@@ -213,7 +213,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                 } else if (action === 'deny') {
                     try {
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
-                        console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
+                        log(`Opt-in request for ${eventName} denied for user ${userId}`);
                         const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
                             headers: {
@@ -227,7 +227,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                             })
                         });
                         const emailText = await emailRes.text();
-                        console.log('Email sender response:', emailRes.status, emailText);
+                        log('Email sender response:', emailRes.status, emailText);
                         if (!emailRes.ok) {
                             return res.status(503).send('Email sender error: ' + emailText);
                         }
@@ -405,7 +405,20 @@ app.post('/clear-opt-in-requests', (req, res) => {
     }
 });
 
+const logBuffer = [];
+function log(msg) {
+    const line = `[${new Date().toISOString()}] ${msg}`;
+    logBuffer.push(line);
+    if (logBuffer.length > 200) logBuffer.shift();
+    console.log(line);
+}
+
+// Endpoint to get logs
+app.get('/log', (req, res) => {
+    res.type('text/plain').send(logBuffer.join('\n'));
+});
+
 // Start the server
 app.listen(6421, () => {
-    console.log('Server is running on port 6421');
+    log('Server is running on port 6421');
 });

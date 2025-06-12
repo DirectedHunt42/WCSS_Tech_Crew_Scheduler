@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 // Endpoint to send email
 app.post('/send-reset-email', (req, res) => {
     const { email, username, resetCode } = req.body; // Separate email, username, and code
-    console.log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
+    log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
 
     const mailOptions = {
         from: 'wcsstechcrew@gmail.com', // Sender address
@@ -57,7 +57,7 @@ app.post('/send-reset-email', (req, res) => {
 
 app.post('/send-update-email', (req, res) => {
     const {email, name, accepted} = req.body; // Separate email, name, and accepted status
-    console.log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
+    log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
 
     const mailOptions = {};
 
@@ -112,7 +112,7 @@ app.post('/send-update-email', (req, res) => {
 
 app.post('/send-opt-in-email', (req, res) => {
     const {email, username, event, approved} = req.body; // Separate email, username, and approved status
-    console.log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
+    log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
     const mailOptions = {};
     if (approved === true) {
         mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
@@ -169,7 +169,7 @@ app.post('/opt-out-request', (req, res) => {
         return res.status(400).send('Missing data');
     }
 
-    console.log(`Opt-out request received for: ${username}, Event: ${eventName}, Email: ${userEmail}`);
+    log(`Opt-out request received for: ${username}, Event: ${eventName}, Email: ${userEmail}`);
     // The link the admin will click
     const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
 
@@ -208,7 +208,19 @@ app.get("/", (req, res) => {
     res.send("Welcome to the email sender service!");
 });
 
+const logBuffer = [];
+function log(msg) {
+    const line = `[${new Date().toISOString()}] ${msg}`;
+    logBuffer.push(line);
+    if (logBuffer.length > 200) logBuffer.shift();
+    console.log(line);
+}
+
+app.get('/log', (req, res) => {
+    res.type('text/plain').send(logBuffer.join('\n'));
+});
+
 // Start the server
 app.listen(6420, () => {
-    console.log('Server is running on port 6420');
+    log('Server is running on port 6420');
 });
