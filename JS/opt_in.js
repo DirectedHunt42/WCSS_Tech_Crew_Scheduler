@@ -175,6 +175,10 @@ app.post('/admin/update-opt-in', async (req, res) => {
             const userEmailRes = await fetch(`http://localhost:5500/get-user-email?userId=${encodeURIComponent(userId)}`);
             const userEmailData = await userEmailRes.json();
             const userEmail = userEmailData.email;
+            if (!userEmail) {
+                console.error('User email not found for userId:', userId);
+                return res.status(404).send('User email not found');
+            }
             if (event) {
                 if (action === 'approve') {
                     try {
