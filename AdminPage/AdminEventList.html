@@ -51,6 +51,7 @@
             background-color: green;
         }
 
+        #approve-opt-in-list,
         #approve-event-list,
         #manage-event-list {
             display: grid;
@@ -60,6 +61,7 @@
             list-style: none;
         }
 
+        #approve-opt-in-list li,
         #approve-event-list li,
         #manage-event-list li {
             border-radius: 8px;
@@ -114,7 +116,7 @@
         </div>
         <div id="approve-opt-in" class="tab-content">
             <h2>Approve Opt-in Requests</h2>
-            <ul id="approve-opt-in-list"></ul>
+            <ul id="approve-opt-in-list" class="event-list"></ul>
         </div>
     </div>
 
@@ -251,7 +253,11 @@
                         events.forEach(event => {
                             hasRequests = true;
                             const listItem = document.createElement('li');
-                            listItem.textContent = `${event.name} (User: ${userId}, Status: ${event.status})`;
+                            listItem.innerHTML = `
+                                <strong>${event.name}</strong><br>
+                                User: ${userId}<br>
+                                Status: ${event.status}<br>
+                            `;
 
                             if (event.status === 'requested') {
                                 // Approve button
@@ -270,6 +276,7 @@
                                 denyButton.style.backgroundColor = 'red';
                                 denyButton.onclick = () => updateOptIn(userId, event.name, 'deny');
 
+                                listItem.appendChild(document.createElement('br'));
                                 listItem.appendChild(approveButton);
                                 listItem.appendChild(denyButton);
                             }
