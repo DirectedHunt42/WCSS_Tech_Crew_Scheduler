@@ -138,9 +138,9 @@ app.post('/send-opt-in-email', (req, res) => {
         mailOptions.subject = 'Opt-in Denied';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
-                <h2>Hello ${u},</h2>
-                <p>This is an update regarding your event request <strong>${name}</strong>.</p>
-                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
+                <h2>Hello ${username},</h2>
+                <p>This is an update regarding your opt-in request for <strong>${event}</strong>.</p>
+                <p>We regret to inform you that your request has been <span style="color: red; font-weight: bold;">denied</span>.</p>
                 <p>Thank you,</p>
                 <p style="font-weight: bold;">The Tech Crew Team</p>
                 <hr>
@@ -153,7 +153,15 @@ app.post('/send-opt-in-email', (req, res) => {
     } else {
         return res.status(400).send('Invalid request data');
     }
-}
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error sending email');
+        }
+        res.send('Email sent successfully');
+    });
+});
 
 app.post('/opt-out-request', (req, res) => {
     const { username, eventName, userEmail } = req.body;
