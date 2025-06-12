@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Booking Help</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
         body {
@@ -18,11 +18,23 @@
             max-width: 800px;
             margin-left: 300px;
             text-align: left;
-            font-size: 1.5em; /* Slightly larger for main content */
+            font-size: 1.5em;
+        }
+
+        .admin-member-info {
+            margin-top: 2em;
+            background: #222;
+            border-radius: 8px;
+            padding: 1.5em;
+            font-size: 1em;
+        }
+
+        .admin-member-info h3 {
+            margin-top: 0;
         }
     </style>
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <script src="/JS/authClient.js"></script>
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
@@ -44,27 +56,68 @@
     <!-- Main Content -->
     <div class="how-to-use">
         <h2>How to Use This Website</h2>
-        <p>Welcome to the WCSS Tech Booking Site! Follow these steps to book an event:</p>
+        <p>Welcome to the WCSS Tech Booking Site! This page will help you book an event and understand what happens after you submit your request.</p>
         <ol>
-            <li>Go to <a href="BookingPage.html">Book a tech Event</a> in the sidebar or click on the day of your event on the <a href="UserPage.html">Calendar</a> and click the "Book and event button"</li>
-            <li>On the booking page, fill out the required fields:
+            <li>
+                Go to <a href="BookingPage.html">Book a Tech Event</a> in the sidebar, or click on the day of your event on the <a href="UserPage.html">Calendar</a> and use the "Book an event" button.
+            </li>
+            <li>
+                On the booking page, fill out the required fields:
                 <ul>
-                    <li><strong>Event Name:</strong> Enter the name of your event</li>
+                    <li><strong>Event Name:</strong> Enter the name of your event.</li>
                     <li><strong>Email Address:</strong> Provide a valid email address for communication.</li>
                     <li><strong>Booking Date:</strong> Select the date of your event using the date picker.</li>
                     <li><strong>Start Time:</strong> Enter the starting time for your event.</li>
-                    <li><strong>End Time:</strong> Enter the time your event will end at</li>
-                    <li><strong>Location:</strong> Enter the location of the event, e.g. 'Small Gym', 'Room 225', ect.</li>
-                    <li><strong>Types of People Needed:</strong> Enter the kind of people you will need, e.g. 'Sound', 'Lights', etc.</li>
-                    <li><strong>Voulenteer hours:</strong> This field will be autofiled, edit it if the event will be taking place during scholl hours</li>
+                    <li><strong>End Time:</strong> Enter the time your event will end.</li>
+                    <li><strong>Location:</strong> Enter the location of the event (e.g. "Small Gym", "Room 225").</li>
+                    <li><strong>Types of People Needed:</strong> List the tech roles you need (e.g. "Sound", "Lights").</li>
+                    <li><strong>Volunteer Hours:</strong> This will be auto-filled based on your times, but you can edit it if your event is during school hours.</li>
                 </ul>
             </li>
-            <li>Once all fields are completed, click the <strong>Submit Booking</strong> button to finalize your
-                request.</li>
-            <li>You will recive an email stating wether your request has been aprooved or denied</li>
-            <li>If you need to return to the main page, click the <strong>Back to Main Page</strong> button.</li>
+            <li>
+                Once all fields are completed, click the <strong>Submit Booking</strong> button to send your request.
+            </li>
+            <li>
+                You will receive an email once your request has been approved or denied by an admin.
+            </li>
+            <li>
+                If you need to return to the main page, click the <strong>Back to Main Page</strong> button.
+            </li>
         </ol>
         <p>If you encounter any issues, please contact the WCSS Tech Crew for assistance.</p>
+
+        <div class="admin-member-info">
+            <h3>What Happens After You Submit?</h3>
+            <ul>
+                <li>
+                    <strong>Admin Review:</strong> Your booking request is sent to the Tech Crew admins for approval. They check for conflicts and ensure your event can be supported.
+                </li>
+                <li>
+                    <strong>Member Sign-Ups:</strong> Once approved, Tech Crew members can see your event and "opt in" to help. Members choose which events and roles they want to support.
+                </li>
+                <li>
+                    <strong>Communication:</strong> If more information is needed, admins may contact you using the email you provided.
+                </li>
+                <li>
+                    <strong>Volunteer Assignment:</strong> The Tech Crew team will assign members to your event based on the roles you requested.
+                </li>
+                <li>
+                    <strong>Event Status:</strong> You will be notified by email when your event is approved, and again if there are any changes or if your request is denied.
+                </li>
+            </ul>
+            <h3>Other Notes</h3>
+            <ul>
+                <li>
+                    <strong>Editing or Cancelling:</strong> If you need to change or cancel your booking after submitting, please contact the Tech Crew directly.
+                </li>
+                <li>
+                    <strong>Tech Crew Members:</strong> Only approved members can see the full event list and sign up for events. As a non-member, you only need to use the booking form and check your email for updates.
+                </li>
+                <li>
+                    <strong>Need Help?</strong> If you're unsure about any step, don't hesitate to reach out to the Tech Crew for guidance.
+                </li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>
