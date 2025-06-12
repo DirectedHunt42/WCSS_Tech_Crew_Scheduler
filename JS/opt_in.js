@@ -172,7 +172,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
             // Use hardcoded base URLs for backend services
-            const userEmailRes = await fetch(`http://localhost:5500/get-user-email?userId=${encodeURIComponent(userId)}`);
+            const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
             const userEmailData = await userEmailRes.json();
             const userEmail = userEmailData.email;
             if (!userEmail) {
@@ -186,14 +186,12 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                         await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 email: userEmail,
                                 username: userId,
                                 event: eventName,
-                                approved: true
+                                approved: true // or false
                             })
                         });
                     } catch (emailError) {
@@ -204,7 +202,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     try {
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
-                        await fetch('http://localhost:6420/send-opt-in-email', {
+                        await fetch('/send-opt-in-email', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
