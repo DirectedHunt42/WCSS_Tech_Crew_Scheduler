@@ -48,7 +48,7 @@ app.post('/send-reset-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            log(error);
+            console.error(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -213,7 +213,7 @@ function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}`;
     logBuffer.push(line);
     if (logBuffer.length > 200) logBuffer.shift();
-    console.log(line);
+    log.log(line);
 }
 
 app.get('/log', (req, res) => {
