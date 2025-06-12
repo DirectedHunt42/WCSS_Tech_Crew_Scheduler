@@ -296,9 +296,9 @@
             body: JSON.stringify({ userId, eventName, action }),
             })
             .then(response => {
-                if (response.ok) {
-                alert(`Opt-in ${action}d successfully!`);
-                loadOptInRequests(); // Reload the list
+                if (response.status === 200) {
+                    alert(`Opt-in ${action}d successfully!`);
+                    loadOptInRequests(); // Reload the list
                 } else {
                 response.text().then(errorText => alert(`Failed to ${action} opt-in: ${errorText}`));
                 }
