@@ -25,7 +25,7 @@ function readOptInFile() {
         return fileContent ? JSON.parse(fileContent) : {}; // Return an empty object if the file is empty
     } catch (error) {
         console.error('Error reading opt-in file:', error);
-        return {}; // Return an empty object if there's an error
+        return 503; // Return a 503 status code if there's an error
     }
 }
 
@@ -168,6 +168,9 @@ app.post('/admin/update-opt-in', async (req, res) => {
 
     try {
         const optInData = readOptInFile();
+        if (optInData === 503) {
+            return res.status(503).send('Service unavailable, please try again later');
+        }
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
