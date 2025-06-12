@@ -973,5 +973,30 @@ def get_server_log():
     # Return the last 100 lines
     return "<br>".join(server_log[-100:])
 
+@app.route('/get-user-email', methods=['GET'])
+def get_user_email_route():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({"error": "Missing userId"}), 400
+    email = get_user_email(user_id)
+    if email:
+        return jsonify({"email": email}), 200
+    else:
+        return jsonify({"error": "Email not found"}), 404
+    
+def get_user_email(username):
+    try:
+        # Check user database
+        conn = sqlite3.connect(USER_LOGIN_PATH)
+        cursor = conn.cursor()
+        cursor.execute('SELECT email FROM users WHERE username = ?', (username,))
+        row = cursor.fetchone()
+        conn.close()
+        if row and row[0]:
+            return row[0]
+    except Exception as e:
+        print(f"Error fetching email for {username}: {e}")
+    return None
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)

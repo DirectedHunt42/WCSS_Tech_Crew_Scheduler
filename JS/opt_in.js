@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch'); // Add this at the top
 
 const app = express();
 app.use(cors({
@@ -117,6 +118,7 @@ app.post('/approve-opt-in', (req, res) => {
         if (event) {
             event.status = 'approved';
             fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+
             return res.send('Opt-in approved successfully');
         }
     }
@@ -158,8 +160,8 @@ app.get('/admin/opt-in-requests', (req, res) => {
 });
 
 // Endpoint to approve or deny opt-in requests
-app.post('/admin/update-opt-in', (req, res) => {
-    const { userId, eventName, action } = req.body; // `action` can be 'approve' or 'deny'
+app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
+    const { userId, eventName, action } = req.body;
     if (!userId || !eventName || !action) {
         return res.status(400).send('Missing userId, eventName, or action');
     }
@@ -169,11 +171,39 @@ app.post('/admin/update-opt-in', (req, res) => {
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
+            // Use hardcoded base URLs for backend services
+            const userEmailRes = await fetch(`http://localhost:5500/get-user-email?userId=${encodeURIComponent(userId)}`);
+            const userEmailData = await userEmailRes.json();
+            const userEmail = userEmailData.email;
             if (event) {
                 if (action === 'approve') {
                     event.status = 'approved';
+                    await fetch('http://localhost:6420/send-opt-in-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: userEmail,
+                            username: userId,
+                            event: eventName,
+                            approved: true
+                        })
+                    });
                 } else if (action === 'deny') {
-                    event.status = 'denied'; // Mark the request as denied
+                    optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                    await fetch('http://localhost:6420/send-opt-in-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            email: userEmail,
+                            username: userId,
+                            event: eventName,
+                            approved: false
+                        })
+                    });
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
                 return res.send(`Opt-in ${event.status} successfully`);

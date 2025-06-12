@@ -110,6 +110,59 @@ app.post('/send-update-email', (req, res) => {
     });
 });
 
+app.post('/send-opt-in-email', (req, res) => {
+    const {email, username, event, approved} = req.body; // Separate email, username, and approved status
+    console.log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
+    const mailOptions = {};
+    if (approved === true) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Opt-in Approved';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${username},</h2>
+                <p>This is an update regarding your opt-in request for <strong>${event}</strong>.</p>
+                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else if (approved === false) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Opt-in Denied';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${username},</h2>
+                <p>This is an update regarding your opt-in request for <strong>${event}</strong>.</p>
+                <p>We regret to inform you that your request has been <span style="color: red; font-weight: bold;">denied</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else {
+        return res.status(400).send('Invalid request data');
+    }
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).send('Error sending email');
+        }
+        res.send('Email sent successfully');
+    });
+});
+
 app.post('/opt-out-request', (req, res) => {
     const { username, eventName, userEmail } = req.body;
     if (!username || !eventName || !userEmail) {
@@ -117,8 +170,7 @@ app.post('/opt-out-request', (req, res) => {
     }
 
     // Generate a unique token (for demo, use a simple base64, but use a secure random string in production)
-    const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
-    // Store the token and request info somewhere persistent (e.g., a file or DB) for real security
+    // const token = Buffer.from(`${username}|${eventName}|${Date.now()}`).toString('base64');
 
     // The link the admin will click
     const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
