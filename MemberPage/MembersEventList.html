@@ -262,7 +262,7 @@
                             }
                         });
 
-                        apiBase = window.location.origin;
+                        const apiBase = window.location.origin;
 
                         // Now send the opt-out request
                         try {
@@ -283,6 +283,7 @@
                                     username: username,
                                 })
                             });
+                            console.log('Sending opt-out:', { eventName: event.name, username });
                             if (res.ok) {
                                 alert('Opt-out request sent to admin!');
                             } else {
