@@ -283,6 +283,7 @@
                                     username: username,
                                 })
                             });
+                            console.log('Sending opt-out:', { eventName: event.name, username });
                             if (res.ok) {
                                 alert('Opt-out request sent to admin!');
                             } else {
