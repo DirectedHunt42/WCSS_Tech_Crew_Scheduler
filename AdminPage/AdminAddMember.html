@@ -97,20 +97,23 @@
                     alert(result.message); // Show success message
                 } else if (response.status === 409) {
                     // Username already exists, show popup
-                    document.getElementById('error-message').textContent = result.error;
+                    document.getElementById('error-message').textContent = 'Username already exists. Please choose a different username.';
                     document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
+                    return false; // Prevent further action
                 } else {
                     // Handle other errors
                     document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
                     document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
+                    return false; // Prevent further action
                 }
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
                 document.getElementById('error-message').style.display = 'block';
                 scrollTo(0, 0); // Scroll to the top of the page
+                return false; // Prevent further action
             }
         }
     </script>
