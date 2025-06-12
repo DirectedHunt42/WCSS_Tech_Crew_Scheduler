@@ -167,6 +167,25 @@
                     const oldList = document.getElementById('member-event-list');
                     if (oldList) oldList.remove();
 
+                    // Split into upcoming and past
+                    const now = new Date();
+                    const upcoming = [];
+                    const past = [];
+                    events.forEach(event => {
+                        let dateStr = (event.date || '').replace(/,/g, '-');
+                        let eventDate = new Date(dateStr);
+                        if (isNaN(eventDate)) eventDate = new Date(event.date); // fallback
+                        if (isNaN(eventDate)) {
+                            past.push({ ...event, _eventDate: null });
+                        } else if (eventDate.setHours(23,59,59,999) >= now) {
+                            upcoming.push({ ...event, _eventDate: eventDate });
+                        } else {
+                            past.push({ ...event, _eventDate: eventDate });
+                        }
+                    });
+                    upcoming.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
+                    past.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
+
                     // Create a new list
                     const eventList = document.createElement('ul');
                     eventList.id = 'member-event-list';
@@ -174,7 +193,8 @@
                     eventList.style.padding = '0';
                     eventList.style.marginLeft = '20px';
 
-                    events.forEach(event => {
+                    // Helper to render a tile
+                    function renderEventTile(event) {
                         const listItem = document.createElement('li');
                         listItem.style.border = '1px solid #333';
                         listItem.style.borderRadius = '8px';
@@ -184,13 +204,13 @@
                         listItem.style.transition = 'background 0.2s';
 
                         listItem.innerHTML = `
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Date:</strong> ${event.date}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Start Time:</strong> ${event.startTime}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>End Time:</strong> ${event.endTime}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Location:</strong> ${event.location}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Tech Required:</strong> ${event.people}</p>
-                            <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
+                            <strong>${event.name}</strong><br>
+                            <span><strong>Date:</strong> ${event.date}</span><br>
+                            <span><strong>Start Time:</strong> ${event.startTime || event.start_time || ''}</span><br>
+                            <span><strong>End Time:</strong> ${event.endTime || event.end_time || ''}</span><br>
+                            <span><strong>Location:</strong> ${event.location}</span><br>
+                            <span><strong>Tech Required:</strong> ${event.people}</span><br>
+                            <span><strong>Volunteer Hours:</strong> ${event.volunteerHours || event.volunteer_hours || ''}</span><br>
                         `;
 
                         // Create the opt-in button
@@ -199,8 +219,9 @@
                         optInButton.style.marginBottom = '10px';
                         optInButton.style.border = '1px solid black';
 
-                        const userEvent = optInStatus.find(e => e.name === event.name);
-
+                        const userEvent = optInStatus.find(e =>
+                            e.name.trim().toLowerCase() === event.name.trim().toLowerCase()
+                        );
 
                         if (userEvent) {
                             if (userEvent.status === 'requested') {
@@ -223,8 +244,28 @@
 
                         listItem.appendChild(document.createElement('br'));
                         listItem.appendChild(optInButton);
-                        eventList.appendChild(listItem);
-                    });
+
+                        // For opt-out mode support
+                        if (typeof eventListItems !== 'undefined') {
+                            eventListItems.push({ li: listItem, event });
+                        }
+
+                        return listItem;
+                    }
+
+                    // Render upcoming
+                    upcoming.forEach(event => eventList.appendChild(renderEventTile(event)));
+                    // Divider if there are past events
+                    if (past.length) {
+                        const divider = document.createElement('li');
+                        divider.innerHTML = '<hr style="margin:16px 0;"><span style="font-style:italic;color:#888;">Past Events</span>';
+                        divider.style.gridColumn = "1 / -1";
+                        divider.style.background = "none";
+                        divider.style.boxShadow = "none";
+                        divider.style.textAlign = "center";
+                        eventList.appendChild(divider);
+                        past.forEach(event => eventList.appendChild(renderEventTile(event)));
+                    }
 
                     contentDiv.appendChild(eventList);
                 })

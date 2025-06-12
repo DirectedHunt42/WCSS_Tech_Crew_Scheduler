@@ -159,19 +159,22 @@
                     const upcoming = [];
                     const past = [];
                     requests.forEach(event => {
-                        // Parse date (support both YYYY-MM-DD and YYYY,MM,DD)
-                        let dateStr = event.date.replace(/,/g, '-');
+                        // Normalize and parse the date
+                        let dateStr = (event.date || '').replace(/,/g, '-');
                         let eventDate = new Date(dateStr);
                         if (isNaN(eventDate)) eventDate = new Date(event.date); // fallback
-                        if (eventDate.setHours(23,59,59,999) >= now) {
+                        // Defensive: if still invalid, treat as past
+                        if (isNaN(eventDate)) {
+                            past.push({ ...event, _eventDate: null });
+                        } else if (eventDate.setHours(23,59,59,999) >= now) {
                             upcoming.push({ ...event, _eventDate: eventDate });
                         } else {
                             past.push({ ...event, _eventDate: eventDate });
                         }
                     });
                     // Sort both arrays by date ascending
-                    upcoming.sort((a, b) => a._eventDate - b._eventDate);
-                    past.sort((a, b) => a._eventDate - b._eventDate);
+                    upcoming.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
+                    past.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
 
                     // Helper to render a tile
                     function renderEventTile(event) {
@@ -181,10 +184,10 @@
                             Email: ${event.email}<br>
                             Date: ${event.date}<br>
                             Location: ${event.location}<br>
-                            Start Time: ${event.start_time}<br>
-                            End Time: ${event.end_time}<br>
+                            Start Time: ${event.start_time || event.startTime || ''}<br>
+                            End Time: ${event.end_time || event.endTime || ''}<br>
                             People: ${event.people}<br>
-                            Volunteer Hours: ${event.volunteer_hours}<br>
+                            Volunteer Hours: ${event.volunteer_hours || event.volunteerHours || ''}<br>
                         `;
                         li.style.marginBottom = '16px';
 
