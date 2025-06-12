@@ -179,8 +179,8 @@
                     window.location.href = 'AdminEventList.html#edit-event'; // Redirect to AdminEventList.html
                 } else {
                     if (response.status === 409) {
-                        errorMessage.textContent = 'You already have a booking for this date.';
-                        errorMessage.style.display = 'block';
+                        document.getElementById('error-message').textContent = 'You already have a booking for this date.';
+                        document.getElementById('error-message').style.display = 'block';
                         scrollTo(0, 0); // Scroll to the top of the page
                         return;
                     } else {
@@ -194,12 +194,13 @@
                     } catch (e) {
                         // Ignore JSON parse errors
                     }
-                    errorMessage.textContent = errorText;
-                    errorMessage.style.display = 'block';
+                    document.getElementById('error-message').textContent = errorText;
+                    document.getElementById('error-message').style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                document.getElementById('error-message').textContent = 'An error occurred while saving the event.';
+                document.getElementById('error-message').style.display = 'block';
             }
         }
 
@@ -261,8 +262,8 @@
 
                 // If end time is less than start time, throw error
                 if (end < start) {
-                    errorMessage.textContent = 'End time cannot be earlier than start time.';
-                    errorMessage.style.display = 'block';
+                    document.getElementById('error-message').textContent = 'End time cannot be earlier than start time.';
+                    document.getElementById('error-message').style.display = 'block';
                     scrollTo(0, 0); // Scroll to the top of the page
                     Etime.value = '';
                     return;
