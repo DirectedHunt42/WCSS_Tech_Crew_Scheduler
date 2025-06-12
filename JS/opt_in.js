@@ -160,7 +160,7 @@ app.get('/admin/opt-in-requests', (req, res) => {
 });
 
 // Endpoint to approve or deny opt-in requests
-app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
+app.post('/admin/update-opt-in', async (req, res) => {
     const { userId, eventName, action } = req.body;
     if (!userId || !eventName || !action) {
         return res.status(400).send('Missing userId, eventName, or action');
@@ -175,35 +175,51 @@ app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
             const userEmailRes = await fetch(`http://localhost:5500/get-user-email?userId=${encodeURIComponent(userId)}`);
             const userEmailData = await userEmailRes.json();
             const userEmail = userEmailData.email;
+            if (!userEmail) {
+                console.error('User email not found for userId:', userId);
+                return res.status(404).send('User email not found');
+            }
             if (event) {
                 if (action === 'approve') {
-                    event.status = 'approved';
-                    await fetch('http://localhost:6420/send-opt-in-email', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: userEmail,
-                            username: userId,
-                            event: eventName,
-                            approved: true
-                        })
-                    });
+                    try {
+                        event.status = 'approved';
+                        console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
+                        await fetch('http://localhost:6420/send-opt-in-email', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: userEmail,
+                                username: userId,
+                                event: eventName,
+                                approved: true
+                            })
+                        });
+                    } catch (emailError) {
+                        console.error('Error sending approval email:', emailError);
+                        return res.status(500).send('Error sending approval email');
+                    }
                 } else if (action === 'deny') {
-                    optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
-                    await fetch('http://localhost:6420/send-opt-in-email', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: userEmail,
-                            username: userId,
-                            event: eventName,
-                            approved: false
-                        })
-                    });
+                    try {
+                        optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                        console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
+                        await fetch('http://localhost:6420/send-opt-in-email', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: userEmail,
+                                username: userId,
+                                event: eventName,
+                                approved: false
+                            })
+                        });
+                    } catch (emailError) {
+                        console.error('Error sending denial email:', emailError);
+                        return res.status(500).send('Error sending denial email');
+                    }
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
                 return res.send(`Opt-in ${event.status} successfully`);

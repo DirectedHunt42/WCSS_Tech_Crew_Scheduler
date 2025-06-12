@@ -127,14 +127,25 @@
                     body: JSON.stringify(data)
                 });
 
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.style.display = 'none';
+                errorMessage.textContent = '';
+
                 if (response.ok) {
                     // Show the popup on success
                     alert('Event sent to admin for approval!');
                     window.location.href = '/UserPage/UserPage.html'; // Redirect to the user page
                 } else {
-                    console.error('Error response:', response.status, response.statusText);
-                    const errorMessage = document.getElementById('error-message');
-                    errorMessage.textContent = 'Failed to save the event. Please try again.';
+                    let errorText = 'Failed to save the event. Please try again.';
+                    try {
+                        const errorData = await response.json();
+                        if (errorData && errorData.error) {
+                            errorText = errorData.error;
+                        }
+                    } catch (e) {
+                        // Ignore JSON parse errors
+                    }
+                    errorMessage.textContent = errorText;
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
