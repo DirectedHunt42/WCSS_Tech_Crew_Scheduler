@@ -274,7 +274,7 @@
 
                             console.log('Opt-out request:', { eventName: event.name, username });
 
-                            const res = await fetch(`http//localhost:6420/opt-out-request`, {
+                            const res = await fetch(`${apiBase}:6420/opt-out-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',

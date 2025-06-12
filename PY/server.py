@@ -698,6 +698,19 @@ def submit_booking():
 
     print("Booking form values:", name, email, date, start_time, end_time, location, people, volunteer_hours)
 
+    # Check for duplicate event name in events.db
+    try:
+        conn_events = sqlite3.connect(EVENTS_DB_PATH)
+        cursor_events = conn_events.cursor()
+        cursor_events.execute('SELECT name FROM events')
+        existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
+        conn_events.close()
+        if name and name.strip().lower() in existing_names:
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+    except Exception as e:
+        print(f"Error checking for duplicate event name: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
     try:
         # Connect to the eventRequests database
         conn = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
@@ -716,14 +729,6 @@ def submit_booking():
                 volunteer_hours TEXT
             )
         ''')
-
-        # Check if the name already exists in the event_requests table
-        cursor.execute('SELECT COUNT(*) FROM event_requests WHERE name = ?', (name,))
-        name_count = cursor.fetchone()[0]
-        if name_count > 0:
-            conn.close()
-            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
-
         # Insert the new event request
         cursor.execute('''
             INSERT INTO event_requests (name, email, date, start_time, end_time, location, people, volunteer_hours)
