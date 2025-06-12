@@ -172,23 +172,25 @@ app.post('/admin/update-opt-in', async (req, res) => {
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
             // Use hardcoded base URLs for backend services
-            const userEmailRes = await fetch(`http://localhost:5500/get-user-email?userId=${encodeURIComponent(userId)}`);
+            const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
             const userEmailData = await userEmailRes.json();
             const userEmail = userEmailData.email;
             if (!userEmail) {
                 console.error('User email not found for userId:', userId);
                 return res.status(404).send('User email not found');
             }
+            console.log('userId:', userId);
+            console.log('eventName:', eventName);
+            console.log('userEmail:', userEmail);
             if (event) {
                 if (action === 'approve') {
                     try {
                         event.status = 'approved';
                         console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
-                        await fetch('http://localhost:6420/send-opt-in-email', {
+                        console.log('userEmail:', userEmail);
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 email: userEmail,
                                 username: userId,
@@ -196,6 +198,11 @@ app.post('/admin/update-opt-in', async (req, res) => {
                                 approved: true
                             })
                         });
+                        const emailText = await emailRes.text();
+                        console.log('Email sender response:', emailRes.status, emailText);
+                        if (!emailRes.ok) {
+                            return res.status(500).send('Email sender error: ' + emailText);
+                        }
                     } catch (emailError) {
                         console.error('Error sending approval email:', emailError);
                         return res.status(500).send('Error sending approval email');
@@ -204,7 +211,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     try {
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
-                        await fetch('http://localhost:6420/send-opt-in-email', {
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -216,6 +223,11 @@ app.post('/admin/update-opt-in', async (req, res) => {
                                 approved: false
                             })
                         });
+                        const emailText = await emailRes.text();
+                        console.log('Email sender response:', emailRes.status, emailText);
+                        if (!emailRes.ok) {
+                            return res.status(500).send('Email sender error: ' + emailText);
+                        }
                     } catch (emailError) {
                         console.error('Error sending denial email:', emailError);
                         return res.status(500).send('Error sending denial email');

@@ -95,8 +95,11 @@
 
                 if (response.ok) {
                     alert(result.message); // Show success message
+                } else if (response.status === 409) {
+                    // Username already exists, show popup
+                    alert(result.error); // Or use a custom modal
                 } else {
-                    alert(`Error: ${result.message || 'Failed to add member'}`);
+                    alert(result.error || 'An error occurred.');
                 }
             } catch (error) {
                 console.error('Error:', error);
