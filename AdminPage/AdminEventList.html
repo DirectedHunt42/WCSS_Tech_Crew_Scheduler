@@ -357,6 +357,16 @@
                                     listItem.appendChild(document.createElement('br'));
                                     listItem.appendChild(approveButton);
                                     listItem.appendChild(denyButton);
+                                } else {
+                                    const removeButton = document.createElement('button');
+                                    removeButton.textContent = 'Remove';
+                                    removeButton.style.marginLeft = '10px';
+                                    removeButton.style.border = '1px solid black';
+                                    removeButton.style.backgroundColor = 'red';
+                                    removeButton.onclick = () => updateOptIn(event.userId, event.name, 'remove');
+
+                                    listItem.appendChild(document.createElement('br'));
+                                    listItem.appendChild(removeButton);
                                 }
                                 return listItem;
                             }
