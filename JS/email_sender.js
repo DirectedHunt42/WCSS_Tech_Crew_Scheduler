@@ -48,7 +48,7 @@ app.post('/send-reset-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            log(error);
+            console.error(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
