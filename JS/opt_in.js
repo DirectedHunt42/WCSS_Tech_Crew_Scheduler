@@ -204,11 +204,11 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         const emailText = await emailRes.text();
                         console.log('Email sender response:', emailRes.status, emailText);
                         if (!emailRes.ok) {
-                            return res.status(500).send('Email sender error: ' + emailText);
+                            return res.status(503).send('Email sender error: ' + emailText);
                         }
                     } catch (emailError) {
                         console.error('Error sending approval email:', emailError);
-                        return res.status(500).send('Error sending approval email');
+                        return res.status(512).send('Error sending approval email');
                     }
                 } else if (action === 'deny') {
                     try {
@@ -229,11 +229,11 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         const emailText = await emailRes.text();
                         console.log('Email sender response:', emailRes.status, emailText);
                         if (!emailRes.ok) {
-                            return res.status(500).send('Email sender error: ' + emailText);
+                            return res.status(503).send('Email sender error: ' + emailText);
                         }
                     } catch (emailError) {
                         console.error('Error sending denial email:', emailError);
-                        return res.status(500).send('Error sending denial email');
+                        return res.status(512).send('Error sending denial email');
                     }
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
