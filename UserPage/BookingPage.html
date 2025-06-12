@@ -136,7 +136,14 @@
                     alert('Event sent to admin for approval!');
                     window.location.href = '/UserPage/UserPage.html'; // Redirect to the user page
                 } else {
-                    let errorText = 'Failed to save the event. Please try again.';
+                    if (response.status === 409) {
+                        errorMessage.textContent = 'You already have a booking for this date.';
+                        errorMessage.style.display = 'block';
+                        scrollTo(0, 0); // Scroll to the top of the page
+                        return;
+                    } else {
+                        let errorText = 'Failed to save the event. Please try again.';
+                    }
                     try {
                         const errorData = await response.json();
                         if (errorData && errorData.error) {
@@ -203,7 +210,9 @@
 
                 // If end time is less than start time, throw error
                 if (end < start) {
-                    alert("End time must be after start time.");
+                    errorMessage.textContent = 'End time cannot be earlier than start time.';
+                    errorMessage.style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
                     Etime.value = '';
                     return;
                 }
