@@ -237,7 +237,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     }
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-                return res.send(`Opt-in ${event.status} successfully`);
+                return res.status(200).send(`Opt-in ${event.status} successfully`);
             }
         }
 
