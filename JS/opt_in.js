@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch'); // Add this at the top
 
 const app = express();
 app.use(cors({
@@ -24,7 +25,7 @@ function readOptInFile() {
         return fileContent ? JSON.parse(fileContent) : {}; // Return an empty object if the file is empty
     } catch (error) {
         console.error('Error reading opt-in file:', error);
-        return {}; // Return an empty object if there's an error
+        return 503; // Return a 503 status code if there's an error
     }
 }
 
@@ -159,22 +160,81 @@ app.get('/admin/opt-in-requests', (req, res) => {
 });
 
 // Endpoint to approve or deny opt-in requests
-app.post('/admin/update-opt-in', (req, res) => {
-    const { userId, eventName, action } = req.body; // `action` can be 'approve' or 'deny'
+app.post('/admin/update-opt-in', async (req, res) => {
+    const { userId, eventName, action } = req.body;
     if (!userId || !eventName || !action) {
         return res.status(400).send('Missing userId, eventName, or action');
     }
 
     try {
         const optInData = readOptInFile();
+        if (optInData === 503) {
+            return res.status(503).send('Service unavailable, please try again later');
+        }
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
+            // Use hardcoded base URLs for backend services
+            const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
+            const userEmailData = await userEmailRes.json();
+            const userEmail = userEmailData.email;
+            if (!userEmail) {
+                console.error('User email not found for userId:', userId);
+                return res.status(404).send('User email not found');
+            }
+            console.log('userId:', userId);
+            console.log('eventName:', eventName);
+            console.log('userEmail:', userEmail);
             if (event) {
                 if (action === 'approve') {
-                    event.status = 'approved';
+                    try {
+                        event.status = 'approved';
+                        console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
+                        console.log('userEmail:', userEmail);
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: userEmail,
+                                username: userId,
+                                event: eventName,
+                                approved: true
+                            })
+                        });
+                        const emailText = await emailRes.text();
+                        console.log('Email sender response:', emailRes.status, emailText);
+                        if (!emailRes.ok) {
+                            return res.status(500).send('Email sender error: ' + emailText);
+                        }
+                    } catch (emailError) {
+                        console.error('Error sending approval email:', emailError);
+                        return res.status(500).send('Error sending approval email');
+                    }
                 } else if (action === 'deny') {
-                    event.status = 'denied';
+                    try {
+                        optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                        console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: userEmail,
+                                username: userId,
+                                event: eventName,
+                                approved: false
+                            })
+                        });
+                        const emailText = await emailRes.text();
+                        console.log('Email sender response:', emailRes.status, emailText);
+                        if (!emailRes.ok) {
+                            return res.status(500).send('Email sender error: ' + emailText);
+                        }
+                    } catch (emailError) {
+                        console.error('Error sending denial email:', emailError);
+                        return res.status(500).send('Error sending denial email');
+                    }
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
                 return res.send(`Opt-in ${event.status} successfully`);
