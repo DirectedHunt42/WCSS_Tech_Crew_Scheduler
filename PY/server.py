@@ -993,6 +993,7 @@ def get_user_email(username):
         row = cursor.fetchone()
         conn.close()
         if row and row[0]:
+            print(f"Email found for {username}: {row[0]}")
             return row[0]
     except Exception as e:
         print(f"Error fetching email for {username}: {e}")
