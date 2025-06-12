@@ -221,6 +221,6 @@ app.get('/log', (req, res) => {
 });
 
 // Start the server
-app.listen(6420, () => {
+app.listen(6420, '0.0.0.0', () => {
     log('Server is running on port 6420');
 });

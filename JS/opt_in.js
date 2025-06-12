@@ -419,6 +419,6 @@ app.get('/log', (req, res) => {
 });
 
 // Start the server
-app.listen(6421, () => {
+app.listen(6421, '0.0.0.0', () => {
     log('Server is running on port 6421');
 });
