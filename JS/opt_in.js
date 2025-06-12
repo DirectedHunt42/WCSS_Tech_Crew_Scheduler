@@ -174,20 +174,20 @@ app.post('/admin/update-opt-in', async (req, res) => {
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
-            // Use hardcoded base URLs for backend services
-            const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
-            const userEmailData = await userEmailRes.json();
-            const userEmail = userEmailData.email;
-            if (!userEmail) {
-                console.error('User email not found for userId:', userId);
-                return res.status(404).send('User email not found');
-            }
-            log('userId:', userId);
-            log('eventName:', eventName);
-            log('userEmail:', userEmail);
             if (event || action === 'remove') {
                 if (action === 'approve') {
                     try {
+                        // Use hardcoded base URLs for backend services
+                        const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
+                        const userEmailData = await userEmailRes.json();
+                        const userEmail = userEmailData.email;
+                        if (!userEmail) {
+                            console.error('User email not found for userId:', userId);
+                            return res.status(404).send('User email not found');
+                        }
+                        log('userId:', userId);
+                        log('eventName:', eventName);
+                        log('userEmail:', userEmail);
                         event.status = 'approved';
                         log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                         log('userEmail:', userEmail);
@@ -212,6 +212,17 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     }
                 } else if (action === 'deny') {
                     try {
+                        // Use hardcoded base URLs for backend services
+                        const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
+                        const userEmailData = await userEmailRes.json();
+                        const userEmail = userEmailData.email;
+                        if (!userEmail) {
+                            console.error('User email not found for userId:', userId);
+                            return res.status(404).send('User email not found');
+                        }
+                        log('userId:', userId);
+                        log('eventName:', eventName);
+                        log('userEmail:', userEmail);
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         log(`Opt-in request for ${eventName} denied for user ${userId}`);
                         const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
