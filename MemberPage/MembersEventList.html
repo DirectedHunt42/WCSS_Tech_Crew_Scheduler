@@ -234,6 +234,8 @@
     <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
 
     <script>
+        let optOutMode = false;
+
         function enableOptOutMode(optInStatus) {
             optOutMode = true;
             document.getElementById('opt-out-mode-btn').classList.add('opt-out-active');
