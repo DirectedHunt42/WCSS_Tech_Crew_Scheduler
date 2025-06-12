@@ -73,9 +73,9 @@ function renderCalendar(month, year) {
             i === currentDate.getDate()
         ) {
             if (isLightMode()) {
-                div.style.borderBottom = '3px solid #222'; // dark underline for light mode
+                div.style.borderBottom = '1px solid #222'; // dark underline for light mode
             } else {
-                div.style.borderBottom = '3px solid #fff'; // white underline for dark mode
+                div.style.borderBottom = '1px solid #fff'; // white underline for dark mode
             }
         }
 
