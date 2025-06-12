@@ -53,9 +53,6 @@ app.post('/opt-in', (req, res) => {
 
     try {
         const optInData = readOptInFile();
-        if (optInData === 503) {
-            return res.status(503).send('Service unavailable, please try again later');
-        }
 
         if (!optInData[userId]) {
             optInData[userId] = [];
