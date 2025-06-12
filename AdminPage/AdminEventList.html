@@ -383,7 +383,7 @@
         // Approve or deny an opt-in request
         function updateOptIn(userId, eventName, action) {
             const apiBase = window.location.origin;
-            fetch(`${apiBase}/admin/update-opt-in`, {
+            fetch(`${apiBase}:6420/admin/update-opt-in`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, eventName, action }),
