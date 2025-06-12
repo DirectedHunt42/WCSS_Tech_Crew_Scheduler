@@ -271,7 +271,7 @@
                             const response = await fetch(`${apiBase2}/auth/status`, { credentials: 'include' });
                             const data = await response.json();
                             const username = data.loggedInUser;
-                            const email = await fetch(`${apiBase2}/api/get-user-email`);
+                            const email = await fetch(`${apiBase2}/get-user-email`);
 
                             console.log('Opt-out request:', { eventName: event.name, username });
 
