@@ -24,7 +24,7 @@ function readOptInFile() {
         const fileContent = fs.readFileSync(optInFile, 'utf-8');
         return fileContent ? JSON.parse(fileContent) : {}; // Return an empty object if the file is empty
     } catch (error) {
-        console.error('Error reading opt-in file:', error);
+        log('Error reading opt-in file:', error);
         return 503; // Return a 503 status code if there's an error
     }
 }
@@ -34,7 +34,7 @@ if (!fs.existsSync(optInFile)) {
     try {
         fs.writeFileSync(optInFile, JSON.stringify({})); // Create an empty JSON object
     } catch (error) {
-        console.error('Error creating opt-in file:', error);
+        log('Error creating opt-in file:', error);
     }
 }
 
@@ -66,7 +66,7 @@ app.post('/opt-in', (req, res) => {
         fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
         res.send('Opt-in request saved successfully');
     } catch (error) {
-        console.error('Error writing to opt-in file:', error);
+        log('Error writing to opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -83,7 +83,7 @@ app.get('/opt-in-state', (req, res) => {
         const optInData = readOptInFile();
         res.json(optInData[userId] || []);
     } catch (error) {
-        console.error('Error reading opt-in file:', error);
+        log('Error reading opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -100,7 +100,7 @@ app.get('/opt-in-status', (req, res) => {
         const optInData = readOptInFile();
         res.json(optInData[userId] || []);
     } catch (error) {
-        console.error('Error reading opt-in file:', error);
+        log('Error reading opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -154,7 +154,7 @@ app.get('/admin/opt-in-requests', (req, res) => {
         const optInData = readOptInFile();
         res.json(optInData); // Send all opt-in requests to the admin
     } catch (error) {
-        console.error('Error reading opt-in file:', error);
+        log('Error reading opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -174,20 +174,20 @@ app.post('/admin/update-opt-in', async (req, res) => {
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
-            // Use hardcoded base URLs for backend services
-            const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
-            const userEmailData = await userEmailRes.json();
-            const userEmail = userEmailData.email;
-            if (!userEmail) {
-                console.error('User email not found for userId:', userId);
-                return res.status(404).send('User email not found');
-            }
-            log('userId:', userId);
-            log('eventName:', eventName);
-            log('userEmail:', userEmail);
             if (event || action === 'remove') {
                 if (action === 'approve') {
                     try {
+                        // Use hardcoded base URLs for backend services
+                        const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
+                        const userEmailData = await userEmailRes.json();
+                        const userEmail = userEmailData.email;
+                        if (!userEmail) {
+                            log('User email not found for userId:', userId);
+                            return res.status(404).send('User email not found');
+                        }
+                        log('userId:', userId);
+                        log('eventName:', eventName);
+                        log('userEmail:', userEmail);
                         event.status = 'approved';
                         log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                         log('userEmail:', userEmail);
@@ -207,11 +207,22 @@ app.post('/admin/update-opt-in', async (req, res) => {
                             return res.status(503).send('Email sender error: ' + emailText);
                         }
                     } catch (emailError) {
-                        console.error('Error sending approval email:', emailError);
+                        log('Error sending approval email:', emailError);
                         return res.status(512).send('Error sending approval email');
                     }
                 } else if (action === 'deny') {
                     try {
+                        // Use hardcoded base URLs for backend services
+                        const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
+                        const userEmailData = await userEmailRes.json();
+                        const userEmail = userEmailData.email;
+                        if (!userEmail) {
+                            log('User email not found for userId:', userId);
+                            return res.status(404).send('User email not found');
+                        }
+                        log('userId:', userId);
+                        log('eventName:', eventName);
+                        log('userEmail:', userEmail);
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         log(`Opt-in request for ${eventName} denied for user ${userId}`);
                         const emailRes = await fetch('http://localhost:6421/send-opt-in-email', {
@@ -232,7 +243,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                             return res.status(503).send('Email sender error: ' + emailText);
                         }
                     } catch (emailError) {
-                        console.error('Error sending denial email:', emailError);
+                        log('Error sending denial email:', emailError);
                         return res.status(512).send('Error sending denial email');
                     }
                 } else if (action === 'remove') {
@@ -249,7 +260,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
 
         res.status(404).send('Opt-in request not found');
     } catch (error) {
-        console.error('Error updating opt-in file:', error);
+        log('Error updating opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -277,7 +288,7 @@ app.post('/remove_event', (req, res) => {
         events.splice(eventIndex, 1);
         fs.writeFileSync(eventListPath, events.join('\n'));
     } catch (error) {
-        console.error('Error removing event:', error);
+        log('Error removing event:', error);
         return res.status(500).send('Internal server error');
     }
 
@@ -295,7 +306,7 @@ app.post('/remove_event', (req, res) => {
             fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
         }
     } catch (error) {
-        console.error('Error cleaning up opt-in requests:', error);
+        log('Error cleaning up opt-in requests:', error);
         // Don't fail the whole request if this part fails
     }
 
@@ -327,7 +338,7 @@ app.post('/opt-in-again', (req, res) => {
         fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
         res.send('Opt-in status set to requested');
     } catch (error) {
-        console.error('Error updating opt-in status to requested:', error);
+        log('Error updating opt-in status to requested:', error);
         res.status(500).send('Internal server error');
     }
 });
@@ -406,7 +417,7 @@ app.post('/clear-opt-in-requests', (req, res) => {
         fs.writeFileSync(optInFile, JSON.stringify({}, null, 2));
         res.send('All opt-in requests cleared successfully');
     } catch (error) {
-        console.error('Error clearing opt-in requests:', error);
+        log('Error clearing opt-in requests:', error);
         res.status(500).send('Internal server error');
     }
 });

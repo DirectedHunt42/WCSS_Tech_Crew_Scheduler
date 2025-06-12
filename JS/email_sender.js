@@ -48,7 +48,7 @@ app.post('/send-reset-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -103,7 +103,7 @@ app.post('/send-update-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -156,7 +156,7 @@ app.post('/send-opt-in-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -197,7 +197,7 @@ app.post('/opt-out-request', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Opt-out email sent to admin');
