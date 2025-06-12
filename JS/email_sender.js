@@ -110,6 +110,51 @@ app.post('/send-update-email', (req, res) => {
     });
 });
 
+app.post('/send-opt-in-email', (req, res) => {
+    const {email, username, event, approved} = req.body; // Separate email, username, and approved status
+    console.log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
+    const mailOptions = {};
+    if (approved === true) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Opt-in Approved';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${username},</h2>
+                <p>This is an update regarding your opt-in request for <strong>${event}</strong>.</p>
+                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else if (approved === false) {
+        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
+        mailOptions.to = email; // Recipient address
+        mailOptions.subject = 'Opt-in Denied';
+        mailOptions.html = `
+            <div style="font-family: Arial, sans-serif; color: #333;">
+                <h2>Hello ${u},</h2>
+                <p>This is an update regarding your event request <strong>${name}</strong>.</p>
+                <p>We are pleased to inform you that your request has been <span style="color: green; font-weight: bold;">approved</span>.</p>
+                <p>Thank you,</p>
+                <p style="font-weight: bold;">The Tech Crew Team</p>
+                <hr>
+                <p style="font-size: 12px; color: #888;">
+                    Note: This is an automated message, please do not reply to this email.
+                </p>
+                </div>
+            </div>
+        `;
+    } else {
+        return res.status(400).send('Invalid request data');
+    }
+}
+
 app.post('/opt-out-request', (req, res) => {
     const { username, eventName, userEmail } = req.body;
     if (!username || !eventName || !userEmail) {
