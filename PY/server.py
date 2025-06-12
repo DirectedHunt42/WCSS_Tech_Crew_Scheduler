@@ -205,10 +205,7 @@ def add_member():
         return jsonify({"error": "Username, job, password, and email are required"}), 400
 
     try:
-        salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
-
-        # Add the member to the USER_LOGIN_PATH database with job
+        # Check for duplicate username (case-insensitive)
         conn = sqlite3.connect(USER_LOGIN_PATH)
         cursor = conn.cursor()
         cursor.execute('''
@@ -220,6 +217,16 @@ def add_member():
             job TEXT NOT NULL
         )
         ''')
+        cursor.execute('SELECT username FROM users')
+        existing_usernames = [row[0].strip().lower() for row in cursor.fetchall() if row[0]]
+        if username.strip().lower() in existing_usernames:
+            conn.close()
+            return jsonify({"error": "A user with this name already exists. Please choose a different name."}), 409
+
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
+
+        # Add the member to the USER_LOGIN_PATH database with job
         cursor.execute('INSERT INTO users (username, password, email, job) VALUES (?, ?, ?, ?)', 
                        (username, hashed_password, email, job))
         conn.commit()
