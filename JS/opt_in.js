@@ -178,6 +178,7 @@ app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
             if (event) {
                 if (action === 'approve') {
                     event.status = 'approved';
+                    console.log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                     await fetch('http://localhost:6420/send-opt-in-email', {
                         method: 'POST',
                         headers: {
@@ -192,6 +193,7 @@ app.post('/admin/update-opt-in', async (req, res) => { // <-- make async
                     });
                 } else if (action === 'deny') {
                     optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                    console.log(`Opt-in request for ${eventName} denied for user ${userId}`);
                     await fetch('http://localhost:6420/send-opt-in-email', {
                         method: 'POST',
                         headers: {
