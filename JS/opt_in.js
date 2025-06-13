@@ -361,7 +361,7 @@ app.post('/request-opt-out', (req, res) => {
         log('Error updating opt-out request:', error);
         res.status(500).send('Internal server error');
     }
-}   
+});
 
 app.post('/clear-opt-in-requests', (req, res) => {
     try {
