@@ -5,17 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Admin Booking</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to default stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Authentication check script -->
+    <script src="/JS/authClient.js"></script>
+    <!-- Theme handler script -->
+    <script src="/JS/themeHandler.js" defer></script>
     <style>
+        /* Styles for header */
         h1 {
             margin-top: 200px;
             font-size: 3rem;
             text-align: center;
         }
 
+        /* Center body content */
         body {
             display: flex;
             flex-direction: column;
@@ -23,25 +29,22 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            /* Remove default margin for full centering */
             box-sizing: border-box;
             font-family: monospace;
             overflow-x: hidden;
-            /* Prevent horizontal overflow */
         }
 
+        /* Center content div */
         .content {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Take full viewport height */
             width: 100vw;
-            /* Take full viewport width */
             margin: 0;
-            /* Remove default margin */
         }
 
+        /* Form layout */
         form {
             display: flex;
             flex-direction: column;
@@ -49,11 +52,13 @@
             margin-top: 10px;
         }
 
+        /* Label spacing */
         label {
             display: block;
             margin-bottom: 10px;
         }
 
+        /* Input, select, textarea styling */
         input,
         select,
         textarea {
@@ -63,12 +68,14 @@
             border-radius: 5px;
         }
 
+        /* Button styling */
         button {
             width: 94%;
             padding: 10px;
             font-size: 12px;
         }
 
+        /* Row for submit/cancel buttons */
         .button-row {
             display: flex;
             justify-content: space-between;
@@ -80,12 +87,13 @@
             width: 48%;
         }
 
+        /* Pointer cursor for date/time inputs */
         input[type="date"]:hover,
         input[type="time"]:hover {
             cursor: pointer;
         }
 
-        /* Popup styles */
+        /* Popup styles (not currently used) */
         .popup {
             display: none;
             position: fixed;
@@ -114,6 +122,7 @@
             background-color: #0056b3;
         }
 
+        /* Overlay for popup (not currently used) */
         .overlay {
             display: none;
             position: fixed;
@@ -125,10 +134,12 @@
             z-index: 999;
         }
     </style>
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Theme handler script (duplicate, can be removed) -->
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
@@ -136,7 +147,9 @@
         </label>
     </div>
 
+    <!-- Page title -->
     <h1>Admin Booking</h1>
+    <!-- Error message display -->
     <p id="error-message" style="color: red; display: none;"></p>
 
     <script>
@@ -168,26 +181,29 @@
 
             try {
                 const apiBase = window.location.origin;
+                // Send POST request to save event
                 const response = await fetch(`${apiBase}:5500/api/save-event`, {
                     method: 'POST',
                     body: formData
                 });
 
                 if (response.ok) {
-                    // Show the popup on success
+                    // Show alert and redirect on success
                     alert('Event saved successfully!');
                     apiBase = window.location.origin;
-                    window.location.href = `${apiBase}/AdminPage/AdminEventList.html#manage-event`; // Redirect to AdminEventList.html
+                    window.location.href = `${apiBase}/AdminPage/AdminEventList.html#manage-event`;
                 } else {
+                    // Handle duplicate event name error
                     if (response.status === 409) {
                         document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
                                                                                 +'\nExample: "School Play - Day 2" instead of "School Play"';
                         document.getElementById('error-message').style.display = 'block';
-                        scrollTo(0, 0); // Scroll to the top of the page
+                        scrollTo(0, 0);
                         return;
                     } else {
                         let errorText = 'Failed to save the event. Please try again.';
                     }
+                    // Try to display server error message
                     try {
                         const errorData = await response.json();
                         if (errorData && errorData.error) {
@@ -200,6 +216,7 @@
                     document.getElementById('error-message').style.display = 'block';
                 }
             } catch (error) {
+                // Handle network or other errors
                 console.error('Error:', error);
                 document.getElementById('error-message').textContent = 'An error occurred while saving the event.';
                 document.getElementById('error-message').style.display = 'block';
@@ -208,6 +225,7 @@
     </script>
 
     <div class="content">
+        <!-- Event booking form -->
         <form onsubmit="submitForm(event)">
             <label for="date">Date (MM-DD-YYYY):</label>
             <input type="date" id="date" name="date" required pattern="\d{4}-\d{2}-\d{2}"
@@ -232,14 +250,14 @@
             <input type="text" id="VolHours" name="VolHours" required>
 
             <div class="button-row">
+                <!-- Submit and Cancel buttons -->
                 <button type="submit" style="background-color: green;">Submit Event</button>
-
                 <button type="button" onclick="history.back()" style="background-color: red;">Cancel</button>
-
             </div>
         </form>
     </div>
     <script>
+        // Automatically calculate volunteer hours based on start and end time
         function calculateVolunteerHours() {
             const startInput = document.getElementById('Stime');
             const endInput = document.getElementById('Etime');
@@ -252,11 +270,11 @@
                 let start = new Date(0, 0, 0, startHour, startMinute, 0);
                 let end = new Date(0, 0, 0, endHour, endMinute, 0);
 
-                // If end time is less than start time, throw error
+                // If end time is less than start time, show error
                 if (end < start) {
                     document.getElementById('error-message').textContent = 'End time cannot be earlier than start time.';
                     document.getElementById('error-message').style.display = 'block';
-                    scrollTo(0, 0); // Scroll to the top of the page
+                    scrollTo(0, 0);
                     Etime.value = '';
                     return;
                 }
@@ -267,6 +285,7 @@
             }
         }
 
+        // Listen for changes to start/end time inputs
         document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
         document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
     </script>
