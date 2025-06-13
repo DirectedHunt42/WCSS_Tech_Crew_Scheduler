@@ -333,7 +333,7 @@ app.post('/opt-in-again', (req, res) => {
     }
 });
 
-app.post(reqest-opt-out), (req, res) => {
+app.post('/request-opt-out', (req, res) => {
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
         return res.status(401).send('User is not logged in');
