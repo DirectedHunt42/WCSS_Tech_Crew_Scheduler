@@ -6,6 +6,7 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "http-proxy-middleware": "^3.0.5",
+    "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.3"
   },
   "name": "wcss_tech_crew_scheduler",
