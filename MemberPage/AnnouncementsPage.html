@@ -51,7 +51,8 @@
         <div id="announcements-list"></div>
     </div>
 
-    <script>        
+    <script>   
+        import { apiBase } from './apiBase.js';     
         function getCookie(name) {
             try {
                 if (!document.cookie) return null;
@@ -74,8 +75,7 @@
 
         // Fetch and display announcements
         async function loadAnnouncements() {
-            const apiBase = window.location.origin;
-            const res = await fetch(`${apiBase}:5500/api/announcements`);
+            const res = await fetch(`${apiBase}/api/announcements`);
             const announcements = await res.json();
             const list = document.getElementById('announcements-list');
             list.innerHTML = '';
@@ -103,8 +103,7 @@
         }
 
         async function loadComments(announcementId) {
-            const apiBase = window.location.origin;
-            const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`);
+            const res = await fetch(`${apiBase}/api/announcements/${announcementId}/comments`);
             const comments = await res.json();
             const commentsDiv = document.getElementById(`comments-${announcementId}`);
             commentsDiv.innerHTML = comments.map(c =>
@@ -123,8 +122,7 @@
                     alert("You must be logged in and enter a comment.");
                     return false;
                 }
-                const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
+                const response = await fetch(`${apiBase}/api/announcements/${announcementId}/comments`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({commenter, comment})
@@ -145,9 +143,8 @@
         };
 
         async function getLoggedInUser() {
-            const apiBase = window.location.origin;
             try {
-                const res = await fetch(`${apiBase}:5500/auth/status`, { credentials: 'include' });
+                const res = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
                 if (!res.ok) return null;
                 const data = await res.json();
                 return data.loggedInUser || data.loggedInAdmin || null;

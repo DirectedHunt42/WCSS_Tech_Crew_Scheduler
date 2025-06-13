@@ -153,6 +153,8 @@
     <p id="error-message" style="color: red; display: none;"></p>
 
     <script>
+        import { apiBase2} from './apiBase.js';
+        import { apiBase } from './apiBase.js';
         // Function to get query parameters from the URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -180,9 +182,8 @@
             const formData = new FormData(event.target);
 
             try {
-                const apiBase = window.location.origin;
                 // Send POST request to save event
-                const response = await fetch(`${apiBase}:5500/api/save-event`, {
+                const response = await fetch(`${apiBase}/api/save-event`, {
                     method: 'POST',
                     body: formData
                 });
@@ -190,8 +191,7 @@
                 if (response.ok) {
                     // Show alert and redirect on success
                     alert('Event saved successfully!');
-                    apiBase = window.location.origin;
-                    window.location.href = `${apiBase}/AdminPage/AdminEventList.html#manage-event`;
+                    window.location.href = `${apiBase2}/AdminPage/AdminEventList.html#manage-event`;
                 } else {
                     // Handle duplicate event name error
                     if (response.status === 409) {

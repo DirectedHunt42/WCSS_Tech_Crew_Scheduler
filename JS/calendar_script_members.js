@@ -1,3 +1,6 @@
+import { apiBase2 } from './apiBase.js';
+import { apiBase } from './apiBase.js';
+
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 
@@ -149,8 +152,7 @@ document.addEventListener('click', (event) => {
 
 async function fetchOptInStatus() {
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:6421/opt-in-status`, {
+        const response = await fetch(`${apiBase2}:6421/opt-in-status`, {
             credentials: 'include'
         });
         if (response.ok) {
@@ -187,8 +189,7 @@ async function toggleOptIn(eventName, button) {
     }
 
     try {
-        const apiBase = window.location.origin;
-        const response = await fetch(`${apiBase}:6421${endpoint}`, {
+        const response = await fetch(`${apiBase2}:6421${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -224,8 +225,7 @@ calendarDates.addEventListener('click', async (event) => {
     console.log('Selected date:', backendDate);
 
     // Fetch events for the selected date from the new API
-    const apiBase = window.location.origin;
-    const response = await fetch(`${apiBase}:5500/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
+    const response = await fetch(`${apiBase}/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
     if (!response.ok) {
         alert('Failed to fetch events for this date.');
         return;

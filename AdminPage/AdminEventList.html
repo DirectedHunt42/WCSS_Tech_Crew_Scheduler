@@ -127,6 +127,8 @@
     </div>
 
     <script>
+        import { apiBase2} from './apiBase.js';
+        import { apiBase } from './apiBase.js';
         // --- Tab Switching Logic ---
         // Handles switching between tabs and updating the URL hash
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -148,8 +150,7 @@
         // --- Approve Event Requests Logic ---
         // Loads event requests for approval and displays them in the tab
         function loadApproveEventRequests() {
-            const apiBase = window.location.origin;
-            fetch(`${apiBase}:5500/api/event-requests`)
+            fetch(`${apiBase}/api/event-requests`)
                 .then(response => response.json())
                 .then(requests => {
                     const list = document.getElementById('approve-event-list');
@@ -208,7 +209,7 @@
                         pushBtn.style.backgroundColor = 'green';
                         pushBtn.style.marginTop = '8px';
                         pushBtn.onclick = () => {
-                            fetch(`${apiBase}:5500/api/push-event-request`, {
+                            fetch(`${apiBase}/api/push-event-request`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ id: event.id })
@@ -241,7 +242,7 @@
                         denyBtn.style.backgroundColor = 'red';
                         denyBtn.onclick = () => {
                             if (confirm('Are you sure you want to deny this event request?')) {
-                                fetch(`${apiBase}:5500/api/deny-event-request`, {
+                                fetch(`${apiBase}/api/deny-event-request`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id })
@@ -285,9 +286,8 @@
         // --- Opt-in Requests Logic ---
         // Loads opt-in requests and displays them in the tab
         function loadOptInRequests() {
-            const apiBase = window.location.origin;
             // First, fetch all events to get their dates
-            fetch(`${apiBase}:5500/api/events`)
+            fetch(`${apiBase}/api/events`)
                 .then(response => response.json())
                 .then(events => {
                     // Build a map: event name -> date
@@ -297,7 +297,7 @@
                     });
 
                     // Now fetch opt-in requests
-                    fetch(`${apiBase}:6421/admin/opt-in-requests`)
+                    fetch(`${apiBase2}:6421/admin/opt-in-requests`)
                         .then(response => response.json())
                         .then(data => {
                             const requestList = document.getElementById('approve-opt-in-list');
@@ -404,8 +404,7 @@
 
         // Approve, deny, or remove an opt-in request
         function updateOptIn(userId, eventName, action) {
-            const apiBase = window.location.origin;
-            fetch(`${apiBase}:6421/admin/update-opt-in`, {
+            fetch(`${apiBase2}:6421/admin/update-opt-in`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, eventName, action }),
@@ -432,8 +431,7 @@
                 clearBtn.style.backgroundColor = 'red';
                 clearBtn.onclick = () => {
                     if (confirm('Are you sure you want to clear all opt-in requests?')) {
-                    const apiBase = window.location.origin;
-                    fetch(`${apiBase}:6421/clear-opt-in-requests`, {
+                    fetch(`${apiBase2}:6421/clear-opt-in-requests`, {
                         method: 'POST'
                     })
                     .then(response => {
@@ -455,8 +453,7 @@
         // --- Manage Events Tab ---
         // Loads all events for management and displays them in the tab
         function loadManageEvents() {
-            const apiBase = window.location.origin;
-            fetch(`${apiBase}:5500/api/events`)
+            fetch(`${apiBase}/api/events`)
                 .then(response => response.json())
                 .then(events => {
                     const eventList = document.getElementById('manage-event-list');
@@ -522,7 +519,7 @@
                         removeBtn.style.backgroundColor = 'red';
                         removeBtn.onclick = () => {
                             if (confirm('Are you sure you want to remove this event?')) {
-                                fetch(`${apiBase}:5500/remove_event`, {
+                                fetch(`${apiBase}/remove_event`, {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ id: event.id }),

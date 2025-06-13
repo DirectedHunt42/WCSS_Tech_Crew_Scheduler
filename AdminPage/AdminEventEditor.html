@@ -127,6 +127,7 @@
     </form>
 
     <script>
+        import { apiBase } from './apiBase.js';
         // Parse URL parameters to determine if editing a main event or an event request
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
@@ -182,8 +183,6 @@
             }
 
             try {
-                // Set API base URL (assumes backend runs on port 5500)
-                const apiBase = `http://${window.location.hostname}:5500`;
                 let response;
                 // Choose endpoint based on event type
                 if (isRequest && requestId) {
@@ -218,11 +217,10 @@
         // Load event data into the form for editing
         async function loadEvent() {
             try {
-                const apiBase = window.location.origin;
                 let response, event;
                 if (isRequest && requestId) {
                     // Editing an event request
-                    response = await fetch(`${apiBase}:5500/api/getEventRequest?id=${requestId}`);
+                    response = await fetch(`${apiBase}:/api/getEventRequest?id=${requestId}`);
                     if (!response.ok) throw new Error('Failed to fetch event request data');
                     event = await response.json();
 
@@ -238,7 +236,7 @@
                     document.getElementById('volunteer_hours').value = event.volunteer_hours || '';
                 } else if (eventId) {
                     // Editing a main event
-                    response = await fetch(`${apiBase}:5500/api/getEvent?id=${eventId}`);
+                    response = await fetch(`${apiBase}/api/getEvent?id=${eventId}`);
                     if (!response.ok) throw new Error('Failed to fetch event data');
                     event = await response.json();
 

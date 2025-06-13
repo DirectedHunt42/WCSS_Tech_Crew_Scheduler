@@ -74,6 +74,7 @@
         }
     </style>
     <script>
+        import { apiBase } from './apiBase.js';
         // Wait for the DOM to load before attaching event listeners
         document.addEventListener("DOMContentLoaded", () => {
             const loginForm = document.getElementById("login-form");
@@ -89,8 +90,7 @@
 
                 try {
                     // Construct API endpoint based on current origin
-                    const apiBase = window.location.origin;
-                    const response = await fetch(`${apiBase}:5500/api/login`, {
+                    const response = await fetch(`${apiBase}/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',

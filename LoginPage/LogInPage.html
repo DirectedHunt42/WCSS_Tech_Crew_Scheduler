@@ -67,6 +67,7 @@
         }
     </style>
     <script>
+        import { apiBase } from './apiBase.js';
         document.addEventListener("DOMContentLoaded", () => {
             const loginForm = document.getElementById("login-form");
             const errorMessage = document.getElementById("error-message");
@@ -80,7 +81,6 @@
 
                 try {
                     // Use relative URL
-                    const apiBase = window.location.protocol + "//" + window.location.hostname + ":5500";
                     const response = await fetch(`${apiBase}/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

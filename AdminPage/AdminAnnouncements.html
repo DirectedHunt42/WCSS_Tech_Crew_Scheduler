@@ -64,15 +64,15 @@
         </div>
     </div>
     <script>
+        import { apiBase } from './apiBase.js';
     // Load all announcements and display them
     async function loadAnnouncements() {
         const list = document.getElementById('admin-announcements-list');
         if (!list) return;
         list.innerHTML = "Loading...";
         try {
-            const apiBase = window.location.origin;
             // Fetch announcements from backend API
-            const res = await fetch(`${apiBase}:5500/api/announcements`, { credentials: 'include' });
+            const res = await fetch(`${apiBase}/api/announcements`, { credentials: 'include' });
             if (!res.ok) {
                 alert("Failed to load announcements.");
                 list.innerHTML = "";
@@ -111,9 +111,8 @@
         const commentsDiv = document.getElementById(`comments-${announcementId}`);
         if (!commentsDiv) return;
         try {
-            const apiBase = window.location.origin;
             // Fetch comments from backend API
-            const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`);
+            const res = await fetch(`${apiBase}/api/announcements/${announcementId}/comments`);
             if (!res.ok) {
                 commentsDiv.innerHTML = "<i>Failed to load comments.</i>";
                 return;
@@ -139,9 +138,8 @@
     window.deleteComment = async function(announcementId, createdAt) {
         if (!confirm("Are you sure you want to delete this comment?")) return;
         try {
-            const apiBase = window.location.origin;
             // Send DELETE request to backend API
-            const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`, {
+            const res = await fetch(`${apiBase}/api/announcements/${announcementId}/comments`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({created_at: createdAt})
@@ -161,9 +159,8 @@
     window.deleteAnnouncement = async function(id) {
         if (!confirm("Are you sure you want to delete this announcement?")) return;
         try {
-            const apiBase = window.location.origin;
             // Send DELETE request to backend API
-            const res = await fetch(`${apiBase}:5500/api/announcements/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${apiBase}/api/announcements/${id}`, { method: 'DELETE' });
             if (res.ok) {
                 loadAnnouncements();
             } else {
@@ -186,9 +183,8 @@
             return;
         }
         try {
-            const apiBase = window.location.origin;
             // Send POST request to backend API to create new announcement
-            const res = await fetch(`${apiBase}:5500/api/announcements`, {
+            const res = await fetch(`${apiBase}/api/announcements`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({title, content, author})

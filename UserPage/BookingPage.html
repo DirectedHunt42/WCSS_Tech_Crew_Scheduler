@@ -80,6 +80,7 @@
         </label>
     </div>
     <script>
+        import { apiBase } from './apiBase.js';
         // Function to get query parameters from the URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -118,8 +119,7 @@
             };
 
             try {
-                const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/submit-booking`, {
+                const response = await fetch(`${apiBase}/submit-booking`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

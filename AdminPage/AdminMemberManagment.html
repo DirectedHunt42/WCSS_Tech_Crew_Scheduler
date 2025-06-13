@@ -25,11 +25,11 @@
     <!-- Authentication client script -->
     <script src="/JS/authClient.js" defer></script>
     <script>
+        import { apiBase } from './apiBase.js';
         // Fetch and display the member list
         function loadMembers() {
-            const apiBase = window.location.origin;
             // Fetch the list of members from the API
-            fetch(`${apiBase}:5500/api/get-members`)
+            fetch(`${apiBase}/api/get-members`)
                 .then(response => response.json())
                 .then(data => {
                     const memberList = document.getElementById('member-list');
@@ -62,9 +62,8 @@
             // Confirm removal with the user
             const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
             if (confirmRemoval) {
-                const apiBase = window.location.origin;
                 // Send a POST request to remove the member
-                fetch(`${apiBase}:5500/remove-member`, {
+                fetch(`${apiBase}/remove-member`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

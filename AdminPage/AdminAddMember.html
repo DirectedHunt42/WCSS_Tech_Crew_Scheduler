@@ -84,6 +84,7 @@
         }
     </style>
     <script>
+        import { apiBase } from './apiBase.js';
         // Handles the form submission
         async function submitForm(event) {
             event.preventDefault(); // Prevent default form submission
@@ -96,8 +97,7 @@
 
             // Send data to the Flask backend
             try {
-                const apiBase = window.location.origin;
-                const response = await fetch(`${apiBase}:5500/add-member`, {
+                const response = await fetch(`${apiBase}/add-member`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
