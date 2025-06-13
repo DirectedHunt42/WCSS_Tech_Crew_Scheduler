@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to the default dark stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Theme handler JavaScript (for dark/light mode) -->
+    <script src="/JS/themeHandler.js" defer></script>
     <style>
+        /* Center content vertically and horizontally */
         body {
             display: flex;
             flex-direction: column;
@@ -16,6 +20,7 @@
             height: 100vh;
             overflow: hidden;
         }
+        /* Large, styled 404 heading with glitch animation */
         h1 {
             font-size: 15em;
             position: relative;
@@ -23,6 +28,7 @@
             text-shadow: 0 0 5px #fff, 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000;
             animation: glitch 2s infinite;
         }
+        /* Glitch effect layers for the 404 heading */
         h1::before, h1::after {
             content: '404';
             position: absolute;
@@ -33,6 +39,7 @@
             clip: rect(0, 900px, 0, 0);
             animation: glitch 5s infinite;
         }
+        /* Keyframes for glitch animation */
         @keyframes glitch {
             0% {
                 clip: rect(0, 900px, 0, 0);
@@ -79,6 +86,7 @@
                 transform: translate(0, 0);
             }
         }
+        /* Style for the return link */
         a {
             text-decoration: none;
             color: #007BFF;
@@ -87,8 +95,11 @@
     </style>
 </head>
 <body>
+    <!-- Main 404 heading -->
     <h1>404</h1>
+    <!-- Message for the user -->
     <p>How did you get here?</p>
+    <!-- Link to return to the home page -->
     <a href="/UserPage/UserPage.html">Return to Home Page</a>
 </body>
 </html>
