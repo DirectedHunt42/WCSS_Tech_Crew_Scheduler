@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Function to check if the user is logged in
 async function checkLoggedInUser(redirectToLogin = true) {
     try {
-        const apiBase = window.location.origin + ":5500";
+        const apiBase = window.location.protocol + "//" + window.location.hostname + ":5500";
         console.log(`Checking login status at ${apiBase}/auth/status`);
         const response = await fetch(`${apiBase}/auth/status`, { credentials: 'include' });
         const data = await response.json();
@@ -124,7 +124,7 @@ function getCookie(name) {
 
 async function logout() {
     try {
-        const apiBase = window.location.origin + ":5500";
+        const apiBase = window.location.protocol + "//" + window.location.hostname + ":5500";
         const response = await fetch(`${apiBase}/logout`, {
             method: 'POST',
             credentials: 'include' // Include cookies in the request
@@ -143,7 +143,7 @@ async function logout() {
 
 async function signOut() {
     try {
-        const apiBase = window.location.origin + ":5500";
+        const apiBase = window.location.protocol + "//" + window.location.hostname + ":5500";
         const response = await fetch(`${apiBase}/api/signout`, {
             method: 'POST',
             credentials: 'include'

@@ -93,7 +93,7 @@
         <script>
             async function fetchOptInStatus() {
                 try {
-                    const apiBase = window.location.origin;
+                    const apiBase = window.location.protocol + "//" + window.location.hostname;
                     const response = await fetch(`${apiBase}:6421/opt-in-status`, {
                         credentials: 'include'
                     });
@@ -131,7 +131,7 @@
                 }
 
                 try {
-                    const apiBase = window.location.origin;
+                    const apiBase = window.location.protocol + "//" + window.location.hostname;
                     const response = await fetch(`${apiBase}:6421${endpoint}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -155,7 +155,7 @@
                     alert(failMsg + 'Please try again.');
                 }
             }
-            apiBase = window.location.origin;
+            apiBase = window.location.protocol + "//" + window.location.hostname;
 
             fetch(`${apiBase}:5500/api/events`)
                 .then(response => response.json())
@@ -262,18 +262,20 @@
                             }
                         });
 
-                        const apiBase = window.location.origin;
+                        const apiBase = window.location.protocol + "//" + window.location.hostname;
 
                         // Now send the opt-out request
                         try {
-                            const apiBase2 = window.location.origin + ":5500";
+                            const apiBase2 = window.location.protocol + "//" + window.location.hostname + ":5500";
                             console.log(`Checking login status at ${apiBase2}/auth/status`);
                             const response = await fetch(`${apiBase2}/auth/status`, { credentials: 'include' });
                             const data = await response.json();
                             const username = data.loggedInUser;
-                            const email = await fetch(`${apiBase2}/get-user-email`);
+                            const emailResponse = await fetch(`${apiBase2}/get-user-email?userId=${encodeURIComponent(username)}`);
+                            const emailJson = await emailResponse.json();
+                            const email = emailJson.email;
 
-                            console.log('Opt-out request:', { eventName: event.name, username });
+                            console.log('Opt-out request:', { eventName: event.name, username, email });
 
                             const res = await fetch(`${apiBase}:6420/opt-out-request`, {
                                 method: 'POST',
@@ -285,7 +287,7 @@
                                     userEmail: email,
                                 })
                             });
-                            console.log('Sending opt-out:', { eventName: event.name, username });
+                            console.log('Sending opt-out:', { eventName: event.name, username, email });
                             if (res.ok) {
                                 alert('Opt-out request sent to admin!');
                             } else {

@@ -169,6 +169,9 @@ app.post('/opt-out-request', (req, res) => {
         return res.status(400).send('Missing data');
     }
 
+    // Generate a token for the opt-out request
+    const token = Buffer.from(`${username}:${eventName}`).toString('base64'); 
+
     console.log(`Opt-out request received for: ${username}, Event: ${eventName}, Email: ${userEmail}`);
     // The link the admin will click
     const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;

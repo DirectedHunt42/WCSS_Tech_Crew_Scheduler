@@ -9,7 +9,7 @@ const servers = [
 ];
 
 // Start the Python server in unbuffered mode (-u)
-const pythonServer = spawn('python', ['-u', path.join(__dirname, '../PY/server.py')]);
+const pythonServer = spawn('python3', ['-u', path.join(__dirname, '../PY/server.py')]);
 
 pythonServer.stdout.on('data', (data) => {
     process.stdout.write(`[server.py]: ${data.toString()}`);

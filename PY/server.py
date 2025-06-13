@@ -987,6 +987,7 @@ def get_user_email_route():
         return jsonify({"error": "Missing userId"}), 400
     email = get_user_email(user_id)
     if email:
+        print(f"Email for user {user_id}: {email}")
         return jsonify({"email": email}), 200
     else:
         return jsonify({"error": "Email not found"}), 404
