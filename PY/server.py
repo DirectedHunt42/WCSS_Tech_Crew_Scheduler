@@ -1,3 +1,4 @@
+# Import necessary libraries
 from flask import Flask, request, jsonify, redirect, send_from_directory, make_response
 from flask_cors import CORS
 import os
@@ -11,10 +12,11 @@ from datetime import datetime
 import io
 import sys
 
+# Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-# Define the path to the .db and .json files
+# Define file paths for databases and JSON resources
 USER_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/loginList.db')
 ADMIN_LOGIN_PATH = os.path.join(os.path.dirname(__file__), '../Resources/adminLoginList.db')
 OPT_IN_REQUESTS_FILE = os.path.join(os.path.dirname(__file__), '../Resources/optInRequests.json')
@@ -22,7 +24,7 @@ EVENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/events.db
 EVENT_REQUESTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/eventRequests.db')
 ANNOUNCEMENTS_DB_PATH = os.path.join(os.path.dirname(__file__), '../Resources/announcements.db')
 
-# Create tables if not exist
+# Create announcements and comments tables if they don't exist
 def init_announcements_db():
     conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
     c = conn.cursor()
@@ -55,6 +57,7 @@ init_announcements_db()
 def serve_static_files(filename):
     return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), filename)
 
+# Save a new event to the events database
 @app.route('/api/save-event', methods=['POST'])
 def save_event():
     # Get form data
@@ -123,6 +126,7 @@ def save_event():
         print(f"Error saving event to database: {e}")
         return f"Internal Server Error: {e}", 500
 
+# User/admin login endpoint
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
@@ -150,6 +154,7 @@ def login():
             result = cursor.fetchone()
         conn.close()
 
+        # Check password
         if result and bcrypt.checkpw(password.encode('utf-8'), result[0].encode('utf-8')):
             # Set a cookie for successful login
             response = make_response(jsonify({"success": True, "message": "Login successful"}))
@@ -170,6 +175,7 @@ def login():
         print(f"Error during login: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Handle cookie consent
 @app.route('/api/cookies', methods=['POST'])
 def handle_cookies():
     data = request.json
@@ -184,6 +190,7 @@ def handle_cookies():
     else:
         return jsonify({"error": "Invalid consent value"}), 400
 
+# Remove a member from the user database and opt-in requests
 @app.route('/remove-member', methods=['POST'])
 def remove_member():
     member_to_remove = request.json.get('member', '').strip()
@@ -220,6 +227,7 @@ def remove_member():
         print(f"Error removing member: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# Add a new member to the user database
 @app.route('/add-member', methods=['POST'])
 def add_member():
     username = request.json.get('username')
@@ -266,6 +274,7 @@ def add_member():
         print(f"Error adding member: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# Get all members (username and job)
 @app.route('/api/get-members', methods=['GET'])
 def get_members():
     try:
@@ -280,6 +289,7 @@ def get_members():
         print(f"Error fetching members: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# Get a single event by ID
 @app.route('/api/getEvent', methods=['GET'])
 def get_event():
     event_id = request.args.get('id')
@@ -313,6 +323,7 @@ def get_event():
     except Exception as e:
         return f"Error reading event: {str(e)}", 500
 
+# Update an event by ID
 @app.route('/api/updateEvent', methods=['POST'])
 def update_event():
     updated_event = request.json
@@ -349,6 +360,7 @@ def update_event():
         print(f"Error updating event: {e}")
         return f"Error updating event: {str(e)}", 500
 
+# Sign out endpoint (clears cookies)
 @app.route('/api/signout', methods=['POST'])
 def sign_out():
     # Clear the authentication cookies
@@ -357,11 +369,13 @@ def sign_out():
     response.set_cookie('loggedInAdmin', '', max_age=0, path='/')  # Clear admin cookie
     return response
 
+# Custom 404 error handler
 @app.errorhandler(404)
 def page_not_found(e):
     # Serve a custom 404 HTML page
     return send_from_directory(os.path.join(os.path.dirname(__file__), '../'), '404.html'), 404
 
+# Remove an event by ID
 @app.route('/remove_event', methods=['POST'])
 def remove_event():
     event_id = request.json.get('id')
@@ -396,6 +410,7 @@ def remove_event():
         print(f"Error removing event: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# Validate user and send password reset email
 @app.route('/api/validate-and-send-reset-email', methods=['POST'])
 def validate_and_send_reset_email():
     data = request.json
@@ -444,6 +459,7 @@ def validate_and_send_reset_email():
         print(f"Error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Update user password after reset
 @app.route('/api/update-password', methods=['POST'])
 def update_password():
     data = request.json
@@ -486,7 +502,7 @@ def update_password():
         print(f"Error updating password: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# Function to safely read the opt-in requests JSON file
+# Safely read the opt-in requests JSON file
 def read_opt_in_requests():
     try:
         with open(OPT_IN_REQUESTS_FILE, 'r') as file:
@@ -496,7 +512,7 @@ def read_opt_in_requests():
     except json.JSONDecodeError:
         return {}  # Return an empty dictionary if the file is malformed
 
-# Function to safely write to the opt-in requests JSON file
+# Safely write to the opt-in requests JSON file
 def write_opt_in_requests(data):
     try:
         with open(OPT_IN_REQUESTS_FILE, 'w') as file:
@@ -504,7 +520,7 @@ def write_opt_in_requests(data):
     except Exception as e:
         print(f"Error writing to opt-in requests file: {e}")
 
-# Endpoint to fetch all opt-in requests for admin
+# Fetch all opt-in requests for admin
 @app.route('/admin/opt-in-requests', methods=['GET'])
 def get_opt_in_requests():
     try:
@@ -514,7 +530,7 @@ def get_opt_in_requests():
         print(f"Error fetching opt-in requests: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# Endpoint to approve or deny an opt-in request
+# Approve or deny an opt-in request
 @app.route('/admin/update-opt-in', methods=['POST'])
 def update_opt_in_request():
     data = request.json
@@ -615,6 +631,7 @@ def validate_reset_code():
         print(f"Error validating reset code: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Another endpoint to verify reset code (slightly different logic)
 @app.route('/api/verify-reset-code', methods=['POST'])
 def verify_reset_code():
     data = request.json
@@ -637,6 +654,7 @@ def verify_reset_code():
 
     return jsonify({"success": True}), 200
 
+# Get all events
 @app.route('/api/events', methods=['GET'])
 def get_all_events():
     try:
@@ -664,6 +682,7 @@ def get_all_events():
         print(f"Error fetching events: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Get events by date
 @app.route('/api/events-by-date', methods=['GET'])
 def get_events_by_date():
     date = request.args.get('date')  # Expecting format: YYYY-MM-DD
@@ -706,6 +725,7 @@ def get_events_by_date():
         print(f"Error fetching events by date: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Submit a new event booking request
 @app.route('/submit-booking', methods=['POST'])
 def submit_booking():
     # Accept both JSON and form data
@@ -787,6 +807,7 @@ def submit_booking():
         print(f"Error saving event request: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
+# Get all event requests
 @app.route('/api/event-requests', methods=['GET'])
 def api_event_requests():
     try:
@@ -814,6 +835,7 @@ def api_event_requests():
         print(f"Error fetching event requests: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Approve an event request and move it to the main events table
 @app.route('/api/push-event-request', methods=['POST'])
 def api_push_event_request():
     data = request.json
@@ -861,6 +883,7 @@ def api_push_event_request():
         print(f"Error pushing event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Deny an event request and notify the user
 @app.route('/api/deny-event-request', methods=['POST'])
 def api_deny_event_request():
     data = request.json
@@ -895,6 +918,7 @@ def api_deny_event_request():
         print(f"Error denying event request: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
+# Get all announcements
 @app.route('/api/announcements', methods=['GET'])
 def get_announcements():
     conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
@@ -913,6 +937,7 @@ def get_announcements():
     conn.close()
     return jsonify(announcements), 200
 
+# Get comments for an announcement
 @app.route('/api/announcements/<int:announcement_id>/comments', methods=['GET'])
 def get_comments(announcement_id):
     conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
@@ -929,6 +954,7 @@ def get_comments(announcement_id):
     conn.close()
     return jsonify(comments), 200
 
+# Post a comment to an announcement
 @app.route('/api/announcements/<int:announcement_id>/comments', methods=['POST'])
 def post_comment(announcement_id):
     data = request.json
@@ -944,7 +970,7 @@ def post_comment(announcement_id):
     conn.close()
     return jsonify({"success": True}), 200
 
-# (Admins can POST to /api/announcements to create new announcements on a different page)
+# Create a new announcement (admin)
 @app.route('/api/announcements', methods=['POST'])
 def create_announcement():
     data = request.json
@@ -960,6 +986,7 @@ def create_announcement():
     conn.close()
     return jsonify({"success": True}), 200
 
+# Delete an announcement by ID
 @app.route('/api/announcements/<int:announcement_id>', methods=['DELETE'])
 def delete_announcement(announcement_id):
     conn = sqlite3.connect(ANNOUNCEMENTS_DB_PATH)
@@ -969,6 +996,7 @@ def delete_announcement(announcement_id):
     conn.close()
     return jsonify({"success": True}), 200
 
+# Delete a comment from an announcement
 @app.route('/api/announcements/<int:announcement_id>/comments', methods=['DELETE'])
 def delete_comment(announcement_id):
     data = request.get_json()
@@ -982,6 +1010,7 @@ def delete_comment(announcement_id):
     conn.close()
     return jsonify({"success": True}), 200
 
+# Convert UTC datetime string to US/Eastern time string
 def to_est(dt_str):
     # dt_str is in format 'YYYY-MM-DD HH:MM:SS' (SQLite default)
     utc = pytz.utc
@@ -991,6 +1020,7 @@ def to_est(dt_str):
     dt_est = dt_utc.astimezone(est)
     return dt_est.strftime("%Y-%m-%d %I:%M:%S %p EST")
 
+# Get authentication status (cookies)
 @app.route('/auth/status', methods=['GET'])
 def auth_status():
     logged_in_user = request.cookies.get('loggedInUser')
@@ -1000,6 +1030,7 @@ def auth_status():
         "loggedInAdmin": logged_in_admin
     })
 
+# Server log capturing
 import io
 import sys
 
@@ -1013,11 +1044,13 @@ class LogCatcher(io.StringIO):
 sys.stdout = LogCatcher()
 sys.stderr = LogCatcher()
 
+# Endpoint to get the last 100 lines of the server log
 @app.route('/api/server-log')
 def get_server_log():
     # Return the last 100 lines
     return "<br>".join(server_log[-100:])
 
+# Get a user's email by username
 @app.route('/get-user-email', methods=['GET'])
 def get_user_email_route():
     user_id = request.args.get('userId')
@@ -1025,6 +1058,7 @@ def get_user_email_route():
         return jsonify({"error": "Missing userId"}), 400
     email = get_user_email(user_id)
     if email:
+        print(f"Email for user {user_id}: {email}")
         return jsonify({"email": email}), 200
     else:
         return jsonify({"error": "Email not found"}), 404
@@ -1044,5 +1078,6 @@ def get_user_email(username):
         print(f"Error fetching email for {username}: {e}")
     return None
 
+# Run the Flask app
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5500, debug=True)

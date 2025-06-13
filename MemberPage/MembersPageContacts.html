@@ -3,11 +3,14 @@
 
 <head>
     <title>WCSS Tech Contacts</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to the default stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Basic body styling for layout */
         body {
             margin: 0;
             padding: 0;
@@ -18,17 +21,21 @@
             text-align: left;
         }
     </style>
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Script for authentication check -->
+    <script src="/JS/authClient.js"></script>
+    <!-- Script for theme switching functionality -->
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation links -->
     <div class="sidebar">
         <a href="membersPage.html">Calendar</a>
         <a href="AnnouncementsPage.html">Announcements</a>
@@ -37,9 +44,11 @@
         <a href="MembersPageContacts.html">Contacts</a>
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
+    <!-- Main content area -->
     <div class="content">
         <h1>Contact Info</h1>
         <p>
+            <!-- Script to fetch and display contacts from a text file -->
             <script>
                 fetch('/Resources/contacts.txt')
                     .then(response => response.text())
@@ -53,6 +62,7 @@
                     })
                     .catch(error => console.error('Error fetching contacts:', error));
             </script>
+            <!-- (Redundant) Script for authentication, already included in <head> -->
             <script src="/JS/authClient.js" defer></script>
         </p>
     </div>

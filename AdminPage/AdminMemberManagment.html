@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Admin Member Management</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to the default dark stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
         body {
@@ -18,17 +20,21 @@
             padding: 20px;
         }
     </style>
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Theme handler script for switching themes -->
+    <script src="/JS/themeHandler.js" defer></script>
+    <!-- Authentication client script -->
     <script src="/JS/authClient.js" defer></script>
     <script>
         // Fetch and display the member list
         function loadMembers() {
             const apiBase = window.location.origin;
+            // Fetch the list of members from the API
             fetch(`${apiBase}:5500/api/get-members`)
                 .then(response => response.json())
                 .then(data => {
                     const memberList = document.getElementById('member-list');
                     memberList.innerHTML = '';
+                    // For each member, create a list item with a remove button
                     data.forEach(member => {
                         const listItem = document.createElement('li');
                         listItem.textContent = `${member.username}, ${member.job}`;
@@ -40,6 +46,7 @@
                         removeButton.style.marginTop = '10px';
                         removeButton.style.marginLeft = '10px';
                         removeButton.style.backgroundColor = 'red';
+                        // Set up the remove button's click handler
                         removeButton.onclick = () => removeMember(member);
 
                         listItem.appendChild(removeButton);
@@ -52,9 +59,11 @@
         // Remove a member
         function removeMember(member) {
             const trimmedMember = member.username; // Use the username property directly
+            // Confirm removal with the user
             const confirmRemoval = confirm(`Are you sure you want to remove ${trimmedMember}?`);
             if (confirmRemoval) {
                 const apiBase = window.location.origin;
+                // Send a POST request to remove the member
                 fetch(`${apiBase}:5500/remove-member`, {
                     method: 'POST',
                     headers: {
@@ -66,7 +75,7 @@
                     .then(data => {
                         if (data.success) {
                             alert(data.message);
-                            location.reload();
+                            location.reload(); // Reload the page to update the list
                         } else {
                             alert(`Error: ${data.error}`);
                         }
@@ -81,12 +90,14 @@
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation -->
     <div class="sidebar">
         <a href="AdminPage.html">Admin Main</a>
         <a href="AdminEventList.html">Event Management</a>
@@ -94,9 +105,12 @@
         <a href="/AdminPage/AdminAnnouncements.html">Announcements</a>
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
+    <!-- Main content area -->
     <div class="content">
         <h1>Member Management</h1>
+        <!-- List of members will be populated here -->
         <ul id="member-list"></ul>
+        <!-- Button to add a new member -->
         <button onclick="window.location.href='AdminAddMember.html'">Add Member</button>
     </div>
 </body>

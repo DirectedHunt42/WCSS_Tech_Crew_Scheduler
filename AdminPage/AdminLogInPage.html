@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+    This HTML file provides an admin login page for the WCSS Tech Crew Scheduler.
+    It includes styling, theme switching, and a login form that submits credentials to an API endpoint.
+-->
 <style>
+    /* Center the content vertically and horizontally */
     body {
         display: flex;
         flex-direction: column;
@@ -10,6 +15,7 @@
         margin: 0;
     }
 
+    /* Style the form and its elements */
     form {
         display: flex;
         flex-direction: column;
@@ -51,11 +57,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Admin Login</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Default dark theme stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Script for authentication logic -->
+    <script src="/JS/authClient.js"></script>
+    <!-- Script for theme switching functionality -->
+    <script src="/JS/themeHandler.js" defer></script>
     <style>
+        /* Position the theme switcher in the top-right corner */
         #theme-switcher {
             position: absolute;
             top: 0px;
@@ -63,18 +74,21 @@
         }
     </style>
     <script>
+        // Wait for the DOM to load before attaching event listeners
         document.addEventListener("DOMContentLoaded", () => {
             const loginForm = document.getElementById("login-form");
             const errorMessage = document.getElementById("error-message");
 
-            // Handle form submission
+            // Handle login form submission
             loginForm.addEventListener("submit", async (event) => {
-                event.preventDefault();
+                event.preventDefault(); // Prevent default form submission
 
+                // Get username and password values
                 const username = document.getElementById("username").value;
                 const password = document.getElementById("password").value;
 
                 try {
+                    // Construct API endpoint based on current origin
                     const apiBase = window.location.origin;
                     const response = await fetch(`${apiBase}:5500/api/login`, {
                         method: 'POST',
@@ -86,13 +100,16 @@
                     const result = await response.json();
 
                     if (response.ok) {
+                        // On successful login, redirect to admin page
                         console.log("Login successful:", result);
                         window.location.href = "/AdminPage/AdminPage.html";
                     } else {
+                        // Show error message from server
                         errorMessage.textContent = result.error || "Login failed";
                         errorMessage.style.display = "block";
                     }
                 } catch (error) {
+                    // Handle network or other errors
                     console.error("Error:", error);
                     errorMessage.textContent = "An error occurred. Please try again.";
                     errorMessage.style.display = "block";
@@ -103,24 +120,28 @@
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Page title -->
     <h1>Admin Login</h1>
+    <!-- Error message display -->
     <p id="error-message" style="color: red; display: none;"></p>
+    <!-- Admin login form -->
     <form id="login-form">
-        <!--Admin Username-->
+        <!-- Admin Username input -->
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
-        <!--Admin Password-->
+        <!-- Admin Password input -->
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-        <!--Submit-->
+        <!-- Submit button for login -->
         <button type="submit" style="background-color: green;" id="login-button">Log In</button>
-        <!--Back to Log In Button-->
+        <!-- Button to go back to general login page -->
         <div class="button-row">
             <button type="button" style="background-color: red;" onclick="window.location.href='/LoginPage/LogInPage.html'">Back to Log In</button>
         </div>

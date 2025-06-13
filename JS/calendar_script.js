@@ -1,3 +1,4 @@
+// Get references to DOM elements for calendar and controls
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 
@@ -15,42 +16,44 @@ const dropbtn = document.querySelector('.dropbtn');
 const datesContent = document.querySelector('.dates-content');
 const buttonStyle = "padding: 4px 8px; border-radius: 5px; cursor: pointer;";
 
-
+// Initialize current date, month, and year
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
 
+// Array of month names for display
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-// Copy this function from themeHandler.js
+// Function to get a cookie value by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Update isLightMode to use getCookie
+// Function to check if the theme is light mode
 function isLightMode() {
     return getCookie('theme') === 'light';
 }
 
+// Render the calendar for a given month and year
 function renderCalendar(month, year) {
     calendarDates.innerHTML = ''; // Clear previous calendar
     monthYear.textContent = `${months[month]} ${year}`;
 
-    // Get the first day of the month
+    // Get the first day of the month (0 = Sunday)
     const firstDay = new Date(year, month, 1).getDay();
 
-    // Get the number of days in the month
+    // Get the number of days in the current month
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     // Get the last day of the previous month
     const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-    // Total boxes in the calendar grid (7 columns x 6 rows)
+    // Total boxes in the calendar grid (6 weeks x 7 days)
     const totalBoxes = 42;
 
     // Add ghost days from the previous month
@@ -84,7 +87,7 @@ function renderCalendar(month, year) {
         calendarDates.appendChild(div);
     }
 
-    // Add ghost days from the next month
+    // Add ghost days from the next month to fill the grid
     const remainingBoxes = totalBoxes - (firstDay + daysInMonth);
     for (let i = 1; i <= remainingBoxes; i++) {
         const div = document.createElement('div');
@@ -94,10 +97,12 @@ function renderCalendar(month, year) {
     }
 }
 
-// Initial render
+// Initial render of the calendar
 renderCalendar(currentMonth, currentYear);
 
 // Event listeners for navigation buttons
+
+// Go to previous month
 prevMonthBtn.addEventListener('click', () => {
     currentMonth--;
     if (currentMonth < 0) {
@@ -107,6 +112,7 @@ prevMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
 });
 
+// Go to next month
 nextMonthBtn.addEventListener('click', () => {
     currentMonth++;
     if (currentMonth > 11) {
@@ -116,16 +122,19 @@ nextMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
 });
 
+// Go to previous year
 prevYearBtn.addEventListener('click', () => {
     currentYear--;
     renderCalendar(currentMonth, currentYear);
 });
 
+// Go to next year
 nextYearBtn.addEventListener('click', () => {
     currentYear++;
     renderCalendar(currentMonth, currentYear);
 });
 
+// Handle month selection from dropdown
 monthYearSelect.addEventListener('click', (event) => {
     const selectedMonth = event.target.dataset.month;
     if (selectedMonth) {
@@ -135,29 +144,32 @@ monthYearSelect.addEventListener('click', (event) => {
     }
 });
 
+// Toggle dropdown visibility
 dropbtn.addEventListener('click', () => {
     const isVisible = dropdownContent.style.display === 'block';
     dropdownContent.style.display = isVisible ? 'none' : 'block';
 });
 
+// Hide dropdown when clicking outside
 document.addEventListener('click', (event) => {
     if (!event.target.closest('.dropdown')) {
         dropdownContent.style.display = 'none';
     }
 });
 
+// Handle clicking on a calendar date
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
     if (!selectedDate) return;
 
-    // Parse year, month, day for both branches
+    // Parse year, month, day from the selected date
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Convert to backend format: YYYY,MM,DD (no leading zeros)
+    // Format date for backend (YYYY-MM-DD)
     const backendDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     console.log('Selected date:', backendDate);
 
-    // Fetch events for the selected date from the new API
+    // Fetch events for the selected date from the API
     const apiBase = window.location.origin;
     const response = await fetch(`${apiBase}:5500/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
     if (!response.ok) {
@@ -166,7 +178,7 @@ calendarDates.addEventListener('click', async (event) => {
     }
     const events = await response.json();
 
-    // Create and display the popup
+    // Create and display the popup with events or a message if none
     if (events.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
@@ -191,12 +203,13 @@ calendarDates.addEventListener('click', async (event) => {
             </div>
         `;
 
-        // Add event listener to close button
+        // Add event listener to close button in popup
         const closePopupBtn = datesContent.querySelector('.close-popup-btn');
         closePopupBtn.addEventListener('click', () => {
             datesContent.style.display = 'none';
         });
     } else {
+        // If no events, show a message and book button
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
@@ -207,7 +220,7 @@ calendarDates.addEventListener('click', async (event) => {
             <p>No events for this date.</p>
         `;
 
-        // Add event listener to close button
+        // Add event listener to close button in popup
         const closePopupBtn = datesContent.querySelector('.close-popup-btn');
         closePopupBtn.addEventListener('click', () => {
             datesContent.style.display = 'none';
@@ -224,14 +237,16 @@ calendarDates.addEventListener('click', async (event) => {
     datesContent.style.padding = '16px';
     datesContent.style.position = 'absolute';
 
+    // Get the position of the clicked date cell
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;
     const popupHeight = datesContent.offsetHeight;
 
-    // Determine column and row indices
+    // Determine column and row indices in the calendar grid
     const columnIndex = Array.from(calendarDates.children).indexOf(event.target) % 7;
     const rowIndex = Math.floor(Array.from(calendarDates.children).indexOf(event.target) / 7);
 
+    // Position the popup to avoid overflow
     if (columnIndex >= 5) {
         datesContent.style.left = `${rect.left - popupWidth + rect.width + window.scrollX}px`;
     } else {
@@ -245,6 +260,7 @@ calendarDates.addEventListener('click', async (event) => {
     }
 });
 
+// Hide the popup when clicking outside of it
 document.addEventListener('click', (event) => {
     if (datesContent.contains(event.target)) {
         return;

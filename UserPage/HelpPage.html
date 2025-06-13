@@ -5,14 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Booking Help</title>
+    <!-- Link to external CSS for dark theme styling -->
     <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the website -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
+        /* Flex layout for the body */
         body {
             display: flex;
             flex-direction: column;
         }
 
+        /* Main content styling */
         .how-to-use {
             width: 90%;
             max-width: 800px;
@@ -21,6 +25,7 @@
             font-size: 1.5em;
         }
 
+        /* Info box for admin/member details */
         .admin-member-info {
             margin-top: 2em;
             background: #222;
@@ -33,17 +38,20 @@
             margin-top: 0;
         }
     </style>
+    <!-- Authentication and theme scripts -->
     <script src="/JS/authClient.js"></script>
     <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation links -->
     <div class="sidebar">
         <a href="UserPage.html">Main Page</a>
         <a href="BookingPage.html">Book a Tech Event</a>
@@ -53,15 +61,17 @@
         <a href="HelpPage.html">Help</a>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content: Help instructions -->
     <div class="how-to-use">
         <h2>How to Use This Website</h2>
         <p>Welcome to the WCSS Tech Booking Site! This page will help you book an event and understand what happens after you submit your request.</p>
         <ol>
             <li>
+                <!-- Step 1: Navigation to booking -->
                 Go to <a href="BookingPage.html">Book a Tech Event</a> in the sidebar, or click on the day of your event on the <a href="UserPage.html">Calendar</a> and use the "Book an event" button.
             </li>
             <li>
+                <!-- Step 2: Fill out booking form -->
                 On the booking page, fill out the required fields:
                 <ul>
                     <li><strong>Event Name:</strong> Enter the name of your event.</li>
@@ -75,17 +85,21 @@
                 </ul>
             </li>
             <li>
+                <!-- Step 3: Submit booking -->
                 Once all fields are completed, click the <strong>Submit Booking</strong> button to send your request.
             </li>
             <li>
+                <!-- Step 4: Email notification -->
                 You will receive an email once your request has been approved or denied by an admin.
             </li>
             <li>
+                <!-- Step 5: Return to main page -->
                 If you need to return to the main page, click the <strong>Back to Main Page</strong> button.
             </li>
         </ol>
         <p>If you encounter any issues, please contact the WCSS Tech Crew for assistance.</p>
 
+        <!-- Admin/member process information -->
         <div class="admin-member-info">
             <h3>What Happens After You Submit?</h3>
             <ul>

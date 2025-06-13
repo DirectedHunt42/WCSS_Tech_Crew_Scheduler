@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+    WCSS Tech Crew Scheduler - Login Page
+    This HTML file provides a login form for members, with theme switching and navigation options.
+-->
 <style>
+    /* Center the body content vertically and horizontally */
     body {
         display: flex;
         flex-direction: column;
@@ -10,6 +15,7 @@
         margin: 0;
     }
 
+    /* Style the form and its elements */
     form {
         display: flex;
         flex-direction: column;
@@ -35,6 +41,7 @@
         font-size: 12px;
     }
 
+    /* Row for Admin and Forgot Password buttons */
     .button-row {
         display: flex;
         justify-content: space-between;
@@ -55,11 +62,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Member Login</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Default dark stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <!-- Authentication and theme handler scripts -->
     <script src="/JS/authClient.js"></script>
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <script src="/JS/themeHandler.js" defer></script>
     <style>
+        /* Position the theme switcher in the top-right corner */
         #theme-switcher {
             position: absolute;
             top: 0px;
@@ -67,36 +78,42 @@
         }
     </style>
     <script>
+        // Wait for the DOM to load before attaching event listeners
         document.addEventListener("DOMContentLoaded", () => {
             const loginForm = document.getElementById("login-form");
             const errorMessage = document.getElementById("error-message");
 
-            // Handle form submission
+            // Handle login form submission
             loginForm.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
+                // Get username and password values
                 const username = document.getElementById("username").value;
                 const password = document.getElementById("password").value;
 
                 try {
-                    // Use relative URL
-                    const apiBase = window.location.origin + ":5500";
+                    // Build API base URL dynamically
+                    const apiBase = window.location.protocol + "//" + window.location.hostname + ":5500";
+                    // Send login request to backend
                     const response = await fetch(`${apiBase}/api/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, password, type: 'user' }),
-                        credentials: 'include' // Important!
+                        credentials: 'include' // Include cookies
                     });
 
                     const result = await response.json();
 
                     if (response.ok) {
+                        // Redirect to member page on success
                         window.location.href = "/MemberPage/membersPage.html";
                     } else {
+                        // Show error message from server
                         errorMessage.textContent = result.error || "Login failed";
                         errorMessage.style.display = "block";
                     }
                 } catch (error) {
+                    // Show generic error message on failure
                     console.error("Error:", error);
                     errorMessage.textContent = "An error occurred. Please try again.";
                     errorMessage.style.display = "block";
@@ -107,29 +124,33 @@
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Page title -->
     <h1>Log In</h1>
+    <!-- Error message display -->
     <p id="error-message" style="color: red; display: none;"></p>
+    <!-- Login form -->
     <form id="login-form">
-        <!--Username-->
+        <!-- Username input -->
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
-        <!--Password-->
+        <!-- Password input -->
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
-        <!--Submit-->
+        <!-- Submit button -->
         <button type="submit" style="background-color: green;">Log In</button>
-        <!--Admin and Forgot Password Buttons-->
+        <!-- Admin and Forgot Password buttons in a row -->
         <div class="button-row">
             <button type="button" onclick="window.location.href='/AdminPage/AdminLogInPage.html'">Admin</button>
             <button type="button" onclick="window.location.href='ForgotPassword.html'">Forgot Password</button>
         </div>
-        <!-- Go Back Button -->
+        <!-- Go Back button -->
         <button type="button" style="background-color: red;" onclick="window.location.href='/UserPage/UserPage.html'">Back to Main Page</button>
     </form>
 </body>
