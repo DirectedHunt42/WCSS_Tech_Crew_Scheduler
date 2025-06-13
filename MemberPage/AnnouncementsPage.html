@@ -1,38 +1,43 @@
 <head>
     <title>WCSS Tech Announcements</title>
+    <!-- Link to external CSS for dark theme -->
     <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <style>
-        body {
-            display: flex;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .sidebar {
-            width: 250px;
-        }
-        .main-content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-        }
-        .announcements-container {
-            max-width: 600px;
-            width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    /* Layout and styling for body and containers */
+    body {
+        display: flex;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .sidebar {
+        width: 250px;
+    }
+    .main-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+    .announcements-container {
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 </style>
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation links -->
     <div class="sidebar">
         <a href="membersPage.html">Calendar</a>
         <a href="AnnouncementsPage.html">Announcements</a>
@@ -42,16 +47,20 @@
         <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
     </div>
 
+    <!-- Main announcements container -->
     <div class="announcements-container" style="margin-left:250px; max-width:600px; padding:20px;">
         <h1>Announcements</h1>
+        <!-- Admin post box, hidden by default -->
         <div id="admin-post-box" style="display:none; margin-bottom:20px;">
             <textarea id="announcement-input" rows="3" style="width:100%;" placeholder="No announcements"></textarea>
             <button id="post-announcement-btn" style="margin-top:5px;" onclick="postComment()">Post</button>
         </div>
+        <!-- Where announcements will be loaded -->
         <div id="announcements-list"></div>
     </div>
 
-    <script>        
+    <script>
+        // Helper to get a cookie by name
         function getCookie(name) {
             try {
                 if (!document.cookie) return null;
@@ -65,14 +74,15 @@
             return null;
         }
 
-        // Usage:
+        // Store logged in user
         let loggedInUser = null;
+        // On page load, get user and load announcements
         window.onload = async function() {
             loggedInUser = await getLoggedInUser();
             loadAnnouncements();
         };
 
-        // Fetch and display announcements
+        // Fetch and display announcements from API
         async function loadAnnouncements() {
             const apiBase = window.location.origin;
             const res = await fetch(`${apiBase}:5500/api/announcements`);
@@ -98,10 +108,11 @@
                     <hr>
                 `;
                 list.appendChild(annDiv);
-                loadComments(ann.id);
+                loadComments(ann.id); // Load comments for each announcement
             }
         }
 
+        // Fetch and display comments for a specific announcement
         async function loadComments(announcementId) {
             const apiBase = window.location.origin;
             const res = await fetch(`${apiBase}:5500/api/announcements/${announcementId}/comments`);
@@ -112,6 +123,7 @@
             ).join('');
         }
 
+        // Post a comment for an announcement
         window.postComment = async function(event, announcementId) {
             event.preventDefault();
             const form = event.target;
@@ -135,7 +147,7 @@
                     return false;
                 }
                 form.reset();
-                loadComments(announcementId);
+                loadComments(announcementId); // Reload comments after posting
                 return false;
             } catch (error) {
                 console.error('Error posting comment:', error);
@@ -144,6 +156,7 @@
             }
         };
 
+        // Get the currently logged in user from the server
         async function getLoggedInUser() {
             const apiBase = window.location.origin;
             try {
@@ -156,6 +169,7 @@
             }
         }
     </script>
+    <!-- External scripts for authentication and theme handling -->
     <script src="/JS/authClient.js"></script>
     <script src="/JS/themeHandler.js"></script>
 </body>
