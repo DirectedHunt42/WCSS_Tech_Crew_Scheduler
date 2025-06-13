@@ -148,8 +148,10 @@
                     });
 
                     if (response.ok) {
-                        button.textContent = nextLabel;
-                        button.disabled = false;
+                        if (button.textContent !== 'Opt-out Pending') {
+                            button.textContent = nextLabel;
+                            button.disabled = false;
+                        }
                         alert(successMsg);
                     } else {
                         const errorText = await response.text();
