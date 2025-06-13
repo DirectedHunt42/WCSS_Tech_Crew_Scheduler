@@ -1,7 +1,7 @@
-// Import importd modules
-const nodemailer = import('nodemailer');
-const express = import('express');
-const cors = import('cors');
+// Import required modules
+const nodemailer = require('nodemailer');
+const express = require('express');
+const cors = require('cors');
 const app = express();
 
 // Enable CORS for all origins and allow credentials
