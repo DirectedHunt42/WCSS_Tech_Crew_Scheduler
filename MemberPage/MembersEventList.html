@@ -240,7 +240,6 @@
                             optInButton.textContent = 'Cancel Request';
                         } else if (userEvent.status === 'approved') {
                             optInButton.textContent = 'Request Opt-out';
-                            optInButton.disabled = true;
                         } else if (userEvent.status === 'denied') {
                             optInButton.textContent = 'Opt-in Again';
                         }
