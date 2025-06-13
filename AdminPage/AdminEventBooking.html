@@ -176,7 +176,6 @@
                 if (response.ok) {
                     // Show the popup on success
                     alert('Event saved successfully!');
-                    apiBase = window.location.origin;
                     window.location.href = `${apiBase}/AdminPage/AdminEventList.html#manage-event`; // Redirect to AdminEventList.html
                 } else {
                     if (response.status === 409) {
