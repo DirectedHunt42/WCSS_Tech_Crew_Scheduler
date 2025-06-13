@@ -93,17 +93,30 @@
 
                 const result = await response.json();
 
-                if (response.ok) {
+                if (response.status === 200) {
+                    // Member added successfully, show success message and redirect
                     alert(result.message); // Show success message
+                    window.location.href = 'AdminMemberManagment.html'; // Redirect and reload
                 } else if (response.status === 409) {
                     // Username already exists, show popup
-                    alert(result.error); // Or use a custom modal
+                    document.getElementById('error-message').textContent = 'A member with this username already exists. Please choose a different username.'
+                                                                            +'\nExample: "Jhon M Doe" instead of "Jhon Doe"';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    return;
                 } else {
-                    alert(result.error || 'An error occurred.');
+                    // Handle other errors
+                    document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    return;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while adding the member.');
+                document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                document.getElementById('error-message').style.display = 'block';
+                scrollTo(0, 0); // Scroll to the top of the page
+                return;
             }
         }
     </script>
@@ -117,6 +130,7 @@
         </label>
     </div>
     <h1>Add Member</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
     <form onsubmit="submitForm(event)">
         <label for="name">Username:</label>
         <input type="text" id="name" name="name" required>
@@ -131,7 +145,7 @@
         <input type="email" id="email" name="email" required>
 
         <div class="button-row">
-            <button type="submit" style="background-color: green" onclick="window.location.href='AdminMemberManagment.html'">Submit Member</button>
+            <button type="submit" style="background-color: green">Submit Member</button>
             <button type="button" style="background-color: red" onclick="history.back()">Cancel</button>
         </div>
     </form>

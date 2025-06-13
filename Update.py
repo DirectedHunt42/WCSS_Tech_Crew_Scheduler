@@ -69,4 +69,16 @@ if __name__ == "__main__":
     git_force_pull()
     print("Restoring resources folder...")
     restore_resources()
+    print("Restarting Apache2 server...")
+    try:
+        result = subprocess.run(
+            ["sudo", "systemctl", "restart", "apache2"],
+            capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            print("Apache2 restarted successfully.")
+        else:
+            print("Failed to restart Apache2:", result.stderr)
+    except Exception as e:
+        print("Error restarting Apache2:", e)
     print("Update complete!")

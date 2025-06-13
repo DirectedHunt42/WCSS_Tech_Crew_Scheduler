@@ -67,6 +67,32 @@ def save_event():
     end_time = request.form.get('Etime')
     people = request.form.get('people')
     volunteer_hours = request.form.get('VolHours')
+
+    # Check for duplicate event name in events.db
+    try:
+        conn_events = sqlite3.connect(EVENTS_DB_PATH)
+        cursor_events = conn_events.cursor()
+        cursor_events.execute('SELECT name FROM events')
+        existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
+        conn_events.close()
+        if event_name and event_name.strip().lower() in existing_names:
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+    except Exception as e:
+        print(f"Error checking for duplicate event name: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    # Check for duplicate event name in event_requests.db
+    try:
+        conn_events = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor_events = conn_events.cursor()
+        cursor_events.execute('SELECT name FROM event_requests')
+        existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
+        conn_events.close()
+        if event_name and event_name.strip().lower() in existing_names:
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+    except Exception as e:
+        print(f"Error checking for duplicate event name: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+
     try:
         # Connect to the events database
         conn = sqlite3.connect(EVENTS_DB_PATH)
@@ -710,6 +736,18 @@ def submit_booking():
         conn_events = sqlite3.connect(EVENTS_DB_PATH)
         cursor_events = conn_events.cursor()
         cursor_events.execute('SELECT name FROM events')
+        existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
+        conn_events.close()
+        if name and name.strip().lower() in existing_names:
+            return jsonify({"error": "An event with this name already exists. Please choose a different name."}), 409
+    except Exception as e:
+        print(f"Error checking for duplicate event name: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
+    # Check for duplicate event name in event_requests.db
+    try:
+        conn_events = sqlite3.connect(EVENT_REQUESTS_DB_PATH)
+        cursor_events = conn_events.cursor()
+        cursor_events.execute('SELECT name FROM event_requests')
         existing_names = [row[0].strip().lower() for row in cursor_events.fetchall() if row[0]]
         conn_events.close()
         if name and name.strip().lower() in existing_names:

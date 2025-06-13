@@ -128,15 +128,23 @@
                 });
 
                 const errorMessage = document.getElementById('error-message');
-                errorMessage.style.display = 'none';
-                errorMessage.textContent = '';
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('error-message').textContent = '';
 
                 if (response.ok) {
                     // Show the popup on success
                     alert('Event sent to admin for approval!');
                     window.location.href = '/UserPage/UserPage.html'; // Redirect to the user page
                 } else {
-                    let errorText = 'Failed to save the event. Please try again.';
+                    if (response.status === 409) {
+                        document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
+                                                                                +'\nExample: "School Play - Day 2" instead of "School Play"';
+                        document.getElementById('error-message').style.display = 'block';
+                        scrollTo(0, 0); // Scroll to the top of the page
+                        return;
+                    } else {
+                        let errorText = 'Failed to save the event. Please try again.';
+                    }
                     try {
                         const errorData = await response.json();
                         if (errorData && errorData.error) {
@@ -145,8 +153,8 @@
                     } catch (e) {
                         // Ignore JSON parse errors
                     }
-                    errorMessage.textContent = errorText;
-                    errorMessage.style.display = 'block';
+                    document.getElementById('error-message').textContent = errorText;
+                    document.getElementById('error-message').style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -203,7 +211,9 @@
 
                 // If end time is less than start time, throw error
                 if (end < start) {
-                    alert("End time must be after start time.");
+                    document.getElementById('error-message').textContent = 'End time cannot be earlier than start time.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
                     Etime.value = '';
                     return;
                 }

@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 // Endpoint to send email
 app.post('/send-reset-email', (req, res) => {
     const { email, username, resetCode } = req.body; // Separate email, username, and code
-    console.log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
+    log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
 
     const mailOptions = {
         from: 'wcsstechcrew@gmail.com', // Sender address
@@ -57,7 +57,7 @@ app.post('/send-reset-email', (req, res) => {
 
 app.post('/send-update-email', (req, res) => {
     const {email, name, accepted} = req.body; // Separate email, name, and accepted status
-    console.log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
+    log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
 
     const mailOptions = {};
 
@@ -103,7 +103,7 @@ app.post('/send-update-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -112,7 +112,7 @@ app.post('/send-update-email', (req, res) => {
 
 app.post('/send-opt-in-email', (req, res) => {
     const {email, username, event, approved} = req.body; // Separate email, username, and approved status
-    console.log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
+    log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
     const mailOptions = {};
     if (approved === true) {
         mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
@@ -156,7 +156,7 @@ app.post('/send-opt-in-email', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Email sent successfully');
@@ -200,7 +200,7 @@ app.post('/opt-out-request', (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error(error);
+            log(error);
             return res.status(500).send('Error sending email');
         }
         res.send('Opt-out email sent to admin');
@@ -211,7 +211,19 @@ app.get("/", (req, res) => {
     res.send("Welcome to the email sender service!");
 });
 
+const logBuffer = [];
+function log(msg) {
+    const line = `[${new Date().toISOString()}] ${msg}`;
+    logBuffer.push(line);
+    if (logBuffer.length > 200) logBuffer.shift();
+    log.log(line);
+}
+
+app.get('/log', (req, res) => {
+    res.type('text/plain').send(logBuffer.join('\n'));
+});
+
 // Start the server
-app.listen(6420, () => {
-    console.log('Server is running on port 6420');
+app.listen(6420, '0.0.0.0', () => {
+    log('Server is running on port 6420');
 });
