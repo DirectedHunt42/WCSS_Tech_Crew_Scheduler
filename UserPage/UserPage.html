@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Tech Booking</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to the default dark stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the site -->
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
         /* Ensure the body and html fill the entire screen */
@@ -19,8 +21,7 @@
 
         /* Content area to fill the remaining space */
         .content {
-            margin-left: 250px;
-            /* Matches the sidebar width */
+            margin-left: 250px; /* Matches the sidebar width */
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -28,8 +29,7 @@
             align-items: center;
             padding: 20px;
             box-sizing: border-box;
-            width: calc(100% - 250px);
-            /* Adjust width to account for sidebar */
+            width: calc(100% - 250px); /* Adjust width to account for sidebar */
         }
 
         /* Calendar styling to fill the screen */
@@ -42,17 +42,21 @@
             box-sizing: border-box;
         }
     </style>
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Include the authentication check script -->
+    <script src="/JS/authClient.js"></script>
+    <!-- Include the theme handler script -->
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle" onchange="location.reload()">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation -->
     <div class="sidebar">
         <a href="UserPage.html">Main Page</a>
         <a href="BookingPage.html">Book a Tech Event</a>
@@ -64,9 +68,10 @@
 
     <!-- Main content area -->
     <div class="content">
+        <!-- Welcome header -->
         <h1 style="text-align: center;">Welcome to the WCSS Tech Booking Site</h1>
         <p>
-            <!-- Calendar container -->
+        <!-- Calendar container -->
         <div class="calendar">
             <!-- Calendar header with navigation buttons and dropdown -->
             <div class="calendar-header">
@@ -116,7 +121,7 @@
             <h1 id="current-date">Current Date</h1>
         </div>
 
-        <!-- Link to external JavaScript file -->
+        <!-- Link to external JavaScript file for calendar functionality -->
         <script src="/JS/calendar_script.js"></script>
         </p>
     </div>

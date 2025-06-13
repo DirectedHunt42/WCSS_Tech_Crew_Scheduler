@@ -5,15 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WCSS Book a Tech Crew</title>
-    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <!-- Link to default stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <style>
+        /* Style for the main heading */
         h1 {
             margin-top: 200px;
             font-size: 3rem;
             text-align: center;
         }
 
+        /* Center the body content */
         body {
             display: flex;
             flex-direction: column;
@@ -24,6 +27,7 @@
             box-sizing: border-box;
         }
 
+        /* Style the form */
         form {
             display: flex;
             flex-direction: column;
@@ -31,11 +35,13 @@
             margin-top: 10px;
         }
 
+        /* Style for labels */
         label {
             display: block;
             margin-bottom: 10px;
         }
 
+        /* Style for input, select, and textarea fields */
         input,
         select,
         textarea {
@@ -46,12 +52,14 @@
             border: 1px solid #ccc;
         }
 
+        /* Style for buttons */
         button {
             width: 94%;
             padding: 10px;
             font-size: 12px;
         }
 
+        /* Row for submit/cancel buttons */
         .button-row {
             display: flex;
             justify-content: space-between;
@@ -63,16 +71,19 @@
             width: 48%;
         }
 
+        /* Pointer cursor for date/time inputs on hover */
         input[type="date"]:hover,
         input[type="time"]:hover {
             cursor: pointer;
         }
     </style>
-    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <!-- Authentication and theme scripts -->
+    <script src="/JS/authClient.js"></script>
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
@@ -127,24 +138,27 @@
                     body: JSON.stringify(data)
                 });
 
+                // Clear previous error messages
                 const errorMessage = document.getElementById('error-message');
                 document.getElementById('error-message').style.display = 'none';
                 document.getElementById('error-message').textContent = '';
 
                 if (response.ok) {
-                    // Show the popup on success
+                    // Show success popup and redirect
                     alert('Event sent to admin for approval!');
-                    window.location.href = '/UserPage/UserPage.html'; // Redirect to the user page
+                    window.location.href = '/UserPage/UserPage.html';
                 } else {
+                    // Handle duplicate event name error
                     if (response.status === 409) {
                         document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
                                                                                 +'\nExample: "School Play - Day 2" instead of "School Play"';
                         document.getElementById('error-message').style.display = 'block';
-                        scrollTo(0, 0); // Scroll to the top of the page
+                        scrollTo(0, 0);
                         return;
                     } else {
                         let errorText = 'Failed to save the event. Please try again.';
                     }
+                    // Try to extract error message from response
                     try {
                         const errorData = await response.json();
                         if (errorData && errorData.error) {
@@ -157,6 +171,7 @@
                     document.getElementById('error-message').style.display = 'block';
                 }
             } catch (error) {
+                // Handle network or other errors
                 console.error('Error:', error);
                 const errorMessage = document.getElementById('error-message');
                 errorMessage.textContent = 'An error occurred while submitting the form. Please try again.';
@@ -165,7 +180,9 @@
         }
     </script>
     <h1>Booking a Tech Crew</h1>
+    <!-- Error message display -->
     <p id="error-message" style="color: red; display: none;"></p>
+    <!-- Booking form -->
     <form onsubmit="submitForm(event)">
         <label for="name">Event Name:</label>
         <input type="text" id="name" name="name" required>
@@ -191,12 +208,14 @@
         <label for="VolHours">Volunteer Hours:</label>
         <input type="text" id="VolHours" name="VolHours" required>
 
+        <!-- Submit and Cancel buttons -->
         <div class="button-row">
             <button type="submit" style="background-color: green;">Submit Booking</button>
             <button type="button" onclick="history.back()" style="background-color: red;">Cancel</button>
         </div>
     </form>
     <script>
+        // Automatically calculate volunteer hours based on start and end time
         function calculateVolunteerHours() {
             const startInput = document.getElementById('Stime');
             const endInput = document.getElementById('Etime');
@@ -209,11 +228,11 @@
                 let start = new Date(0, 0, 0, startHour, startMinute, 0);
                 let end = new Date(0, 0, 0, endHour, endMinute, 0);
 
-                // If end time is less than start time, throw error
+                // If end time is less than start time, show error
                 if (end < start) {
                     document.getElementById('error-message').textContent = 'End time cannot be earlier than start time.';
                     document.getElementById('error-message').style.display = 'block';
-                    scrollTo(0, 0); // Scroll to the top of the page
+                    scrollTo(0, 0);
                     Etime.value = '';
                     return;
                 }
@@ -224,6 +243,7 @@
             }
         }
 
+        // Listen for changes to start/end time fields
         document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
         document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
     </script>

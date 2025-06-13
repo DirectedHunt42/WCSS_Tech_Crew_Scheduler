@@ -1,31 +1,34 @@
-const nodemailer = require('nodemailer');
-const express = require('express');
-const cors = require('cors');
+// Import importd modules
+const nodemailer = import('nodemailer');
+const express = import('express');
+const cors = import('cors');
 const app = express();
 
+// Enable CORS for all origins and allow credentials
 app.use(cors({
     origin: true,
     credentials: true
 }));
-app.use(express.json());
+app.use(express.json()); // Parse JSON request bodies
 
-// Configure Nodemailer
+// Configure Nodemailer transporter for Gmail
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Email provider
     auth: {
-        user: 'wcsstechcrew@gmail.com',
-        pass: 'iaqkmfajivdmzflb'
+        user: 'wcsstechcrew@gmail.com', // Sender email
+        pass: 'iaqkmfajivdmzflb'        // App password
     }
 });
 
-// Endpoint to send email
+// Endpoint to send password reset email
 app.post('/send-reset-email', (req, res) => {
-    const { email, username, resetCode } = req.body; // Separate email, username, and code
+    const { email, username, resetCode } = req.body; // Extract data from request
     log(`Password reset email requested for: ${email}, Username: ${username}, Code: ${resetCode}`);
 
+    // Email options for password reset
     const mailOptions = {
-        from: 'wcsstechcrew@gmail.com', // Sender address
-        to: email, // Recipient address
+        from: 'wcsstechcrew@gmail.com',
+        to: email,
         subject: 'Password Reset Request',
         html: `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -46,6 +49,7 @@ app.post('/send-reset-email', (req, res) => {
         `
     };
 
+    // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error(error);
@@ -55,15 +59,17 @@ app.post('/send-reset-email', (req, res) => {
     });
 });
 
+// Endpoint to send event update email (approved/rejected)
 app.post('/send-update-email', (req, res) => {
-    const {email, name, accepted} = req.body; // Separate email, name, and accepted status
+    const {email, name, accepted} = req.body; // Extract data from request
     log(`Update email requested for: ${email}, Name: ${name}, Accepted: ${accepted}`);
 
     const mailOptions = {};
 
     if (accepted === true) {
-        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
-        mailOptions.to = email; // Recipient address
+        // Email for approved event
+        mailOptions.from = 'wcsstechcrew@gmail.com';
+        mailOptions.to = email;
         mailOptions.subject = 'Event Approved';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -80,8 +86,9 @@ app.post('/send-update-email', (req, res) => {
             </div>
         `;
     } else if (accepted === false) {
-        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
-        mailOptions.to = email; // Recipient address
+        // Email for rejected event
+        mailOptions.from = 'wcsstechcrew@gmail.com';
+        mailOptions.to = email;
         mailOptions.subject = 'Event Rejected';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -98,9 +105,11 @@ app.post('/send-update-email', (req, res) => {
             </div>
         `;
     } else {
+        // Invalid request data
         return res.status(400).send('Invalid request data');
     }
 
+    // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             log(error);
@@ -110,13 +119,15 @@ app.post('/send-update-email', (req, res) => {
     });
 });
 
+// Endpoint to send opt-in approval/denial email
 app.post('/send-opt-in-email', (req, res) => {
-    const {email, username, event, approved} = req.body; // Separate email, username, and approved status
+    const {email, username, event, approved} = req.body; // Extract data from request
     log(`Opt-in email requested for: ${email}, Username: ${username}, Approved: ${approved}`);
     const mailOptions = {};
     if (approved === true) {
-        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
-        mailOptions.to = email; // Recipient address
+        // Email for approved opt-in
+        mailOptions.from = 'wcsstechcrew@gmail.com';
+        mailOptions.to = email;
         mailOptions.subject = 'Opt-in Approved';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -133,8 +144,9 @@ app.post('/send-opt-in-email', (req, res) => {
             </div>
         `;
     } else if (approved === false) {
-        mailOptions.from = 'wcsstechcrew@gmail.com'; // Sender address
-        mailOptions.to = email; // Recipient address
+        // Email for denied opt-in
+        mailOptions.from = 'wcsstechcrew@gmail.com';
+        mailOptions.to = email;
         mailOptions.subject = 'Opt-in Denied';
         mailOptions.html = `
             <div style="font-family: Arial, sans-serif; color: #333;">
@@ -151,9 +163,11 @@ app.post('/send-opt-in-email', (req, res) => {
             </div>
         `;
     } else {
+        // Invalid request data
         return res.status(400).send('Invalid request data');
     }
 
+    // Send the email
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             log(error);
@@ -163,19 +177,22 @@ app.post('/send-opt-in-email', (req, res) => {
     });
 });
 
+// Endpoint to send opt-out request email to admin
 app.post('/opt-out-request', (req, res) => {
     const { username, eventName, userEmail } = req.body;
     if (!username || !eventName || !userEmail) {
+        // Check for missing data
         return res.status(400).send('Missing data');
     }
 
-    // Generate a token for the opt-out request
+    // Generate a token for the opt-out request (base64 encoding)
     const token = Buffer.from(`${username}:${eventName}`).toString('base64'); 
 
     console.log(`Opt-out request received for: ${username}, Event: ${eventName}, Email: ${userEmail}`);
-    // The link the admin will click
+    // Link for admin to approve opt-out
     const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
 
+    // Email options for admin
     const mailOptions = {
         from: 'wcsstechcrew@gmail.com',
         to: 'jbour10@ocdsb.ca',  // change to real admin email 
@@ -198,6 +215,7 @@ app.post('/opt-out-request', (req, res) => {
         `
     };
 
+    // Send the email to admin
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             log(error);
@@ -207,10 +225,12 @@ app.post('/opt-out-request', (req, res) => {
     });
 });
 
+// Root endpoint for health check
 app.get("/", (req, res) => {
     res.send("Welcome to the email sender service!");
 });
 
+// Simple logging mechanism with buffer
 const logBuffer = [];
 function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}`;
@@ -219,11 +239,12 @@ function log(msg) {
     log.log(line);
 }
 
+// Endpoint to view logs
 app.get('/log', (req, res) => {
     res.type('text/plain').send(logBuffer.join('\n'));
 });
 
-// Start the server
+// Start the server on port 6420, accessible from any network interface
 app.listen(6420, '0.0.0.0', () => {
     log('Server is running on port 6420');
 });

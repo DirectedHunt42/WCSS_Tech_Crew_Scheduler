@@ -18,34 +18,35 @@ const dropbtn = document.querySelector('.dropbtn');
 const datesContent = document.querySelector('.dates-content');
 const buttonStyle = "background-color: #444; color: white; padding: 4px 8px; border: none; border-radius: 5px; cursor: pointer;";
 
+// Initialize current date, month, and year
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
 
-
-
+// Month names for display
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-// Copy this function from themeHandler.js
+// Helper function to get a cookie value by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Update isLightMode to use getCookie
+// Check if the current theme is light mode
 function isLightMode() {
     return getCookie('theme') === 'light';
 }
 
+// Render the calendar for a given month and year
 function renderCalendar(month, year) {
     calendarDates.innerHTML = ''; // Clear previous calendar
     monthYear.textContent = `${months[month]} ${year}`;
 
-    // Get the first day of the month
+    // Get the first day of the month (0=Sunday)
     const firstDay = new Date(year, month, 1).getDay();
 
     // Get the number of days in the month
@@ -98,7 +99,7 @@ function renderCalendar(month, year) {
     }
 }
 
-// Initial render
+// Initial render of the calendar
 renderCalendar(currentMonth, currentYear);
 
 // Event listeners for navigation buttons
@@ -130,6 +131,7 @@ nextYearBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
 });
 
+// Handle month selection from dropdown
 monthYearSelect.addEventListener('click', (event) => {
     const selectedMonth = event.target.dataset.month;
     if (selectedMonth) {
@@ -139,17 +141,20 @@ monthYearSelect.addEventListener('click', (event) => {
     }
 });
 
+// Toggle dropdown visibility
 dropbtn.addEventListener('click', () => {
     const isVisible = dropdownContent.style.display === 'block';
     dropdownContent.style.display = isVisible ? 'none' : 'block';
 });
 
+// Hide dropdown when clicking outside
 document.addEventListener('click', (event) => {
     if (!event.target.closest('.dropdown')) {
         dropdownContent.style.display = 'none';
     }
 });
 
+// Fetch the user's opt-in status for events
 async function fetchOptInStatus() {
     try {
         const response = await fetch(`${apiBase2}:6421/opt-in-status`, {
@@ -167,6 +172,7 @@ async function fetchOptInStatus() {
     }
 }
 
+// Handle opt-in/opt-out/cancel/again actions for events
 async function toggleOptIn(eventName, button) {
     let endpoint = '/opt-in';
     let successMsg = 'Opt-in request sent successfully!';
@@ -180,7 +186,7 @@ async function toggleOptIn(eventName, button) {
         failMsg = 'Failed to cancel opt-in request: ';
         nextLabel = 'Opt in';
         revertLabel = 'Cancel Request';
-    } else if (button.textContent === 'Opt in Again') {
+    } else if (button.textContent === 'Opt-in Again') {
         endpoint = '/opt-in-again';
         successMsg = 'Opt-in request submitted again!';
         failMsg = 'Failed to opt-in again: ';
@@ -213,6 +219,7 @@ async function toggleOptIn(eventName, button) {
     }
 }
 
+// Handle clicking on a calendar date
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
     if (!selectedDate) return;
@@ -220,7 +227,7 @@ calendarDates.addEventListener('click', async (event) => {
     // Parse year, month, day for both branches
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Convert to backend format: YYYY,MM,DD (no leading zeros)
+    // Convert to backend format: YYYY-MM-DD (with leading zeros)
     const backendDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     console.log('Selected date:', backendDate);
 
@@ -235,7 +242,7 @@ calendarDates.addEventListener('click', async (event) => {
     // Fetch opt-in status for the user
     const optInStatus = await fetchOptInStatus();
 
-    // Create and display the popup
+    // Create and display the popup with events
     if (events.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
@@ -260,7 +267,7 @@ calendarDates.addEventListener('click', async (event) => {
             </div>
         `;
 
-        // Set up opt-in buttons
+        // Set up opt-in buttons for each event
         const eventBlocks = datesContent.querySelectorAll('.calendar-event-block');
         eventBlocks.forEach((block, idx) => {
             const event = events[idx];
@@ -292,6 +299,7 @@ calendarDates.addEventListener('click', async (event) => {
             datesContent.style.display = 'none';
         });
     } else {
+        // If no events, show a message
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
@@ -318,14 +326,16 @@ calendarDates.addEventListener('click', async (event) => {
     datesContent.style.padding = '16px';
     datesContent.style.position = 'absolute';
 
+    // Position the popup near the clicked date cell
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;
     const popupHeight = datesContent.offsetHeight;
 
-    // Determine column and row indices
+    // Determine column and row indices in the calendar grid
     const columnIndex = Array.from(calendarDates.children).indexOf(event.target) % 7;
     const rowIndex = Math.floor(Array.from(calendarDates.children).indexOf(event.target) / 7);
 
+    // Adjust popup position based on cell location
     if (columnIndex >= 5) {
         datesContent.style.left = `${rect.left - popupWidth + rect.width + window.scrollX}px`;
     } else {
@@ -339,12 +349,9 @@ calendarDates.addEventListener('click', async (event) => {
     }
 });
 
-// Close the popup when clicking outside
+// Close the popup when clicking outside of it or a date cell
 document.addEventListener('click', (event) => {
     if (!datesContent.contains(event.target) && !event.target.dataset.day) {
         datesContent.style.display = 'none';
     }
 });
-
-
-
