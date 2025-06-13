@@ -135,7 +135,6 @@
                 button.classList.add('active');
                 document.getElementById(button.dataset.tab).classList.add('active');
                 window.location.hash = button.dataset.tab;
-                scrollTo(0, 0); // Scroll to top on tab change
             });
         });
 
@@ -580,6 +579,7 @@
                 button.addEventListener('click', () => {
                     activateTab(button.dataset.tab);
                     window.location.hash = button.dataset.tab;
+                    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top on tab swap
                 });
             });
 
