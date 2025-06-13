@@ -357,6 +357,26 @@
                                     listItem.appendChild(document.createElement('br'));
                                     listItem.appendChild(approveButton);
                                     listItem.appendChild(denyButton);
+                                } else if (event.status === 'requested_opted_out') {
+                                    const optOutInButton = document.createElement('button');
+                                    optOutInButton.textContent = 'Allow Opt-out';
+                                    optOutInButton.style.marginLeft = '10px';
+                                    optOutInButton.style.border = '1px solid black';
+                                    optOutInButton.style.backgroundColor = 'green';
+                                    optOutInButton.onclick = () => updateOptIn(event.userId, event.name, 'approve-opt-out');
+
+                                    listItem.appendChild(document.createElement('br'));
+                                    listItem.appendChild(optOutInButton);
+
+                                    const denyOptOutButton = document.createElement('button');
+                                    denyOptOutButton.textContent = 'Deny Opt-out';
+                                    denyOptOutButton.style.marginLeft = '10px';
+                                    denyOptOutButton.style.border = '1px solid black';
+                                    denyOptOutButton.style.backgroundColor = 'red';
+                                    denyOptOutButton.onclick = () => updateOptIn(event.userId, event.name, 'deny-opt-out');
+
+                                    listItem.appendChild(document.createElement('br'));
+                                    listItem.appendChild(denyOptOutButton);
                                 } else {
                                     const removeButton = document.createElement('button');
                                     removeButton.textContent = 'Remove';

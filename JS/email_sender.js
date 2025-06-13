@@ -163,47 +163,6 @@ app.post('/send-opt-in-email', (req, res) => {
     });
 });
 
-app.post('/opt-out-request', (req, res) => {
-    const { username, eventName, userEmail } = req.body;
-    if (!username || !eventName || !userEmail) {
-        return res.status(400).send('Missing data');
-    }
-
-    log(`Opt-out request received for: ${username}, Event: ${eventName}, Email: ${userEmail}`);
-    // The link the admin will click
-    const approveLink = `http://127.0.0.1:6421/approve-opt-out?token=${encodeURIComponent(token)}`;
-
-    const mailOptions = {
-        from: 'wcsstechcrew@gmail.com',
-        to: 'jbour10@ocdsb.ca',  // change to real admin email 
-        subject: `Opt-Out Request: ${username} for ${eventName}`,
-        html: `
-            <div style="font-family: Arial, sans-serif; color: #333;">
-                <h2>Opt-Out Request</h2>
-                <p><b>User:</b> ${username} (${userEmail})</p>
-                <p><b>Event:</b> ${eventName}</p>
-                <p>
-                    <a href="${approveLink}" style="display:inline-block;padding:10px 18px;background:#1976d2;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
-                        Click here to approve opt-out
-                    </a>
-                </p>
-                <hr>
-                <p style="font-size: 12px; color: #888;">
-                    Note: This is an automated message, please do not reply to this email.
-                </p>
-            </div>
-        `
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            log(error);
-            return res.status(500).send('Error sending email');
-        }
-        res.send('Opt-out email sent to admin');
-    });
-});
-
 app.get("/", (req, res) => {
     res.send("Welcome to the email sender service!");
 });

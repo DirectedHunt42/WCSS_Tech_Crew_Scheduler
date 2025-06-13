@@ -193,33 +193,14 @@
 
                         // Now send the opt-out request
                         try {
-                            const apiBase2 = window.location.origin + ":5500";
-                            console.log(`Checking login status at ${apiBase2}/auth/status`);
-                            const response = await fetch(`${apiBase2}/auth/status`, { credentials: 'include' });
-                            const data = await response.json();
-                            const username = data.loggedInUser;
-                            const email = await fetch(`${apiBase2}/get-user-email`);
-
-                            console.log('Opt-out request:', { eventName: event.name, username });
-
-                            const res = await fetch(`${apiBase}:6420/opt-out-request`, {
+                            const res = await fetch(`${apiBase}:6421/request-opt-out`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
-                                body: JSON.stringify({
-                                    eventName: event.name,
-                                    username: username,
-                                    userEmail: email,
-                                })
+                                body: JSON.stringify({ eventName: event.name }),
                             });
-                            console.log('Sending opt-out:', { eventName: event.name, username });
-                            if (res.ok) {
-                                alert('Opt-out request sent to admin!');
-                            } else {
-                                alert('Failed to send opt-out request.');
-                            }
                         } catch (err) {
-                            alert('Network error sending opt-out request.');
+                            alert('Error sending opt-out request.');
                         }
                         disableOptOutMode();
                     });
