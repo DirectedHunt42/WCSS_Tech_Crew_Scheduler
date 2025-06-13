@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Book a Tech Crew</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        h1 {
+            margin-top: 200px;
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Get the selected date from the URL and format it to YYYY-MM-DD
+        const selectedDate = getQueryParam('date');
+        const formattedDate = selectedDate ? new Date(selectedDate).toISOString().split('T')[0] : '';
+
+        // Autofill the date input field if a date is provided
+        window.onload = function () {
+            if (formattedDate) {
+                const dateInput = document.getElementById('date');
+                if (dateInput) {
+                    dateInput.value = formattedDate;
+                }
+            }
+        };
+
+        // Function to handle form submission via AJAX as JSON
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Gather form values
+            const form = event.target;
+            const data = {
+                name: form.name.value,
+                email: form.email.value,
+                date: form.date.value,
+                Stime: form.Stime.value,
+                Etime: form.Etime.value,
+                location: form.location.value,
+                people: form.people.value,
+                VolHours: form.VolHours.value
+            };
+
+            try {
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}:5500/submit-booking`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const errorMessage = document.getElementById('error-message');
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('error-message').textContent = '';
+
+                if (response.ok) {
+                    // Show the popup on success
+                    alert('Event sent to admin for approval!');
+                    window.location.href = '/UserPage/UserPage.html'; // Redirect to the user page
+                } else {
+                    if (response.status === 409) {
+                        document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
+                                                                                +'\nExample: "School Play - Day 2" instead of "School Play"';
+                        document.getElementById('error-message').style.display = 'block';
+                        scrollTo(0, 0); // Scroll to the top of the page
+                        return;
+                    } else {
+                        let errorText = 'Failed to save the event. Please try again.';
+                    }
+                    try {
+                        const errorData = await response.json();
+                        if (errorData && errorData.error) {
+                            errorText = errorData.error;
+                        }
+                    } catch (e) {
+                        // Ignore JSON parse errors
+                    }
+                    document.getElementById('error-message').textContent = errorText;
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'An error occurred while submitting the form. Please try again.';
+                errorMessage.style.display = 'block';
+            }
+        }
+    </script>
+    <h1>Booking a Tech Crew</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
+    <form onsubmit="submitForm(event)">
+        <label for="name">Event Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Your Email Address:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="date">Booking Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="Stime">Start Time:</label>
+        <input type="time" id="Stime" name="Stime" required>
+
+        <label for="Etime">End Time:</label>
+        <input type="time" id="Etime" name="Etime" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" rows="4" required>
+
+        <label for="people">Types Of People Needed: (Please List)</label>
+        <textarea id="people" name="people" rows="4"></textarea>
+
+        <label for="VolHours">Volunteer Hours:</label>
+        <input type="text" id="VolHours" name="VolHours" required>
+
+        <div class="button-row">
+            <button type="submit" style="background-color: green;">Submit Booking</button>
+            <button type="button" onclick="history.back()" style="background-color: red;">Cancel</button>
+        </div>
+    </form>
+    <script>
+        function calculateVolunteerHours() {
+            const startInput = document.getElementById('Stime');
+            const endInput = document.getElementById('Etime');
+            const volHoursInput = document.getElementById('VolHours');
+
+            if (startInput.value && endInput.value) {
+                const [startHour, startMinute] = startInput.value.split(':').map(Number);
+                const [endHour, endMinute] = endInput.value.split(':').map(Number);
+
+                let start = new Date(0, 0, 0, startHour, startMinute, 0);
+                let end = new Date(0, 0, 0, endHour, endMinute, 0);
+
+                // If end time is less than start time, throw error
+                if (end < start) {
+                    document.getElementById('error-message').textContent = 'End time cannot be earlier than start time.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    Etime.value = '';
+                    return;
+                }
+
+                let diffMs = end - start;
+                let diffHrs = diffMs / (1000 * 60 * 60);
+                volHoursInput.value = diffHrs.toFixed(2);
+            }
+        }
+
+        document.getElementById('Stime').addEventListener('change', calculateVolunteerHours);
+        document.getElementById('Etime').addEventListener('change', calculateVolunteerHours);
+    </script>
+</body>
+</html>

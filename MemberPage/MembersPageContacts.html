@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WCSS Tech Contacts</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            text-align: left;
+        }
+    </style>
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="sidebar">
+        <a href="membersPage.html">Calendar</a>
+        <a href="AnnouncementsPage.html">Announcements</a>
+        <a href="MembersEventList.html">Event List</a>
+        <a href="MembersHelpfulResources.html">Helpful Resources</a>
+        <a href="MembersPageContacts.html">Contacts</a>
+        <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
+    </div>
+    <div class="content">
+        <h1>Contact Info</h1>
+        <p>
+            <script>
+                fetch('/Resources/contacts.txt')
+                    .then(response => response.text())
+                    .then(data => {
+                        const lines = data.split('\n');
+                        lines.forEach(line => {
+                            const contactInfo = document.createElement('p');
+                            contactInfo.textContent = line;
+                            document.querySelector('.content').appendChild(contactInfo);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching contacts:', error));
+            </script>
+            <script src="/JS/authClient.js" defer></script>
+        </p>
+    </div>
+</body>
+</html>

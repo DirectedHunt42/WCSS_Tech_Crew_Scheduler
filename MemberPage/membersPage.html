@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WCSS Tech Members Page</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <script src="/JS/authClient.js" defer></script>
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <style>
+        /* Ensure the body and html fill the entire screen */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Content area to fill the remaining space */
+        .content {
+            margin-left: 250px;
+            /* Matches the sidebar width */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            width: calc(100% - 250px);
+            /* Adjust width to account for sidebar */
+        }
+
+        /* Calendar styling to fill the screen */
+        .calendar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js"></script>
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle" onchange="location.reload()">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Sidebar navigation -->
+    <div class="sidebar">
+        <a href="membersPage.html">Calendar</a>
+        <a href="AnnouncementsPage.html">Announcements</a>
+        <a href="MembersEventList.html">Event List</a>
+        <a href="MembersHelpfulResources.html">Helpful Resources</a>
+        <a href="MembersPageContacts.html">Contacts</a>
+        <a href="/UserPage/UserPage.html" onclick="signOut()">Sign Out</a>
+    </div>
+
+    <!-- Main content area -->
+    <div class="content">
+        <h1 style="text-align: center;">Event Calendar</h1>
+        <div class="calendar">
+            <!-- Calendar header with navigation buttons and dropdown -->
+            <div class="calendar-header">
+                <button id="prev-year">«</button>
+                <button id="prev-month">‹</button>
+                <div class="dropdown">
+                    <button id="month-year" class="dropbtn">Select Month</button>
+                    <div id="month-year-select" class="dropdown-content">
+                        <!-- Dropdown options for months -->
+                        <div data-month="0">January</div>
+                        <div data-month="1">February</div>
+                        <div data-month="2">March</div>
+                        <div data-month="3">April</div>
+                        <div data-month="4">May</div>
+                        <div data-month="5">June</div>
+                        <div data-month="6">July</div>
+                        <div data-month="7">August</div>
+                        <div data-month="8">September</div>
+                        <div data-month="9">October</div>
+                        <div data-month="10">November</div>
+                        <div data-month="11">December</div>
+                    </div>
+                </div>
+                <button id="next-month">›</button>
+                <button id="next-year">»</button>
+            </div>
+
+            <!-- Calendar body with weekdays and dates -->
+            <div class="calendar-body">
+                <div class="calendar-weekdays">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div class="calendar-dates">
+                    <!-- Dates are populated here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden content for specific dates -->
+        <div id="dates-content" class="dates-content">
+            <h1 id="current-date">Current Date</h1>
+        </div>
+
+        <!-- Link to external JavaScript file -->
+        <script src="/JS/calendar_script_members.js"></script>
+    </div>
+</body>
+
+</html>

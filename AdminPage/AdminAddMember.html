@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Admin Add Member</title>
+    <link rel="stylesheet" href="/CSS/DarkStyle.css"> <!-- Default stylesheet -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <script src="/JS/authClient.js"></script> <!-- Include the authentication check script -->
+    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <style>
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        .button-row button {
+            width: 48%;
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get form values
+            const username = document.getElementById('name').value;
+            const job = document.getElementById('job').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            // Send data to the Flask backend
+            try {
+                const apiBase = window.location.origin;
+                const response = await fetch(`${apiBase}:5500/add-member`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, job, password, email }),
+                });
+
+                const result = await response.json();
+
+                if (response.status === 200) {
+                    // Member added successfully, show success message and redirect
+                    alert(result.message); // Show success message
+                    window.location.href = 'AdminMemberManagment.html'; // Redirect and reload
+                } else if (response.status === 409) {
+                    // Username already exists, show popup
+                    document.getElementById('error-message').textContent = 'A member with this username already exists. Please choose a different username.'
+                                                                            +'\nExample: "Jhon M Doe" instead of "Jhon Doe"';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    return;
+                } else {
+                    // Handle other errors
+                    document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    return;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                document.getElementById('error-message').style.display = 'block';
+                scrollTo(0, 0); // Scroll to the top of the page
+                return;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <h1>Add Member</h1>
+    <p id="error-message" style="color: red; display: none;"></p>
+    <form onsubmit="submitForm(event)">
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" required>
+
+        <label for="job">Job:</label>
+        <input type="text" id="job" name="job" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <div class="button-row">
+            <button type="submit" style="background-color: green">Submit Member</button>
+            <button type="button" style="background-color: red" onclick="history.back()">Cancel</button>
+        </div>
+    </form>
+</body>
+</html>
