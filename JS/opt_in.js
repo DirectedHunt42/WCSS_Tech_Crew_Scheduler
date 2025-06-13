@@ -11,7 +11,9 @@ const app = express();
 
 // Enable CORS with specific settings
 app.use(cors({
-    origin: true,
+    origin: [
+        'http://10.191.28.44:5500'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
