@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Admin Add Member</title>
+    <!-- Link to the default dark stylesheet -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the page -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <!-- Script for authentication check -->
+    <script src="/JS/authClient.js"></script>
+    <!-- Script for theme switching (dark/light mode) -->
+    <script src="/JS/themeHandler.js" defer></script>
+    <style>
+        /* Style for the main heading */
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+        }
+
+        /* Center the content vertically and horizontally */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Style the form layout */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        /* Style for labels */
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Style for input fields, select, and textarea */
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Style for buttons */
+        button {
+            width: 94%;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        /* Row for submit/cancel buttons */
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+
+        /* Style for buttons inside the button row */
+        .button-row button {
+            width: 48%;
+        }
+
+        /* Pointer cursor for date/time inputs on hover */
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        import { apiBase } from './apiBase.js';
+        // Handles the form submission
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form values
+            const username = document.getElementById('name').value;
+            const job = document.getElementById('job').value;
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+
+            // Send data to the Flask backend
+            try {
+                const response = await fetch(`${apiBase}/add-member`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, job, password, email }),
+                });
+
+                const result = await response.json();
+
+                if (response.status === 200) {
+                    // Member added successfully, show success message and redirect
+                    alert(result.message);
+                    window.location.href = 'AdminMemberManagment.html';
+                } else if (response.status === 409) {
+                    // Username already exists, show error message
+                    document.getElementById('error-message').textContent = 'A member with this username already exists. Please choose a different username.'
+                                                                            +'\nExample: "Jhon M Doe" instead of "Jhon Doe"';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0); // Scroll to the top of the page
+                    return;
+                } else {
+                    // Handle other errors
+                    document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                    document.getElementById('error-message').style.display = 'block';
+                    scrollTo(0, 0);
+                    return;
+                }
+            } catch (error) {
+                // Handle fetch/network errors
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'An error occurred while adding the member.';
+                document.getElementById('error-message').style.display = 'block';
+                scrollTo(0, 0);
+                return;
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Theme switcher toggle -->
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Page heading -->
+    <h1>Add Member</h1>
+    <!-- Error message display -->
+    <p id="error-message" style="color: red; display: none;"></p>
+    <!-- Add member form -->
+    <form onsubmit="submitForm(event)">
+        <label for="name">Username:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="password">Password:</label>
+        <input type="text" id="password" name="password" required>
+
+        <label for="job">Job:</label>
+        <input type="text" id="job" name="job" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <!-- Submit and Cancel buttons -->
+        <div class="button-row">
+            <button type="submit" style="background-color: green">Submit Member</button>
+            <button type="button" style="background-color: red" onclick="history.back()">Cancel</button>
+        </div>
+    </form>
+</body>
+</html>
