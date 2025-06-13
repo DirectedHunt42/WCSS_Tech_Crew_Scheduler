@@ -534,7 +534,31 @@ def update_opt_in_request():
                 if event['name'] == event_name:
                     if action == 'approve':
                         event['status'] = 'approved'
+                        # Send approval email
+                        user_email = get_user_email(user_id)
+                        if user_email:
+                            email_payload = {
+                                "email": user_email,
+                                "username": user_id,
+                                "event": event_name,
+                                "approved": True
+                            }
+                            email_response = requests.post("http://localhost:6420/send-opt-in-email", json=email_payload)
+                            if email_response.status_code != 200:
+                                return jsonify({"error": "Error sending approval email"}), 503
                     elif action == 'deny':
+                        # Send denial email before removing
+                        user_email = get_user_email(user_id)
+                        if user_email:
+                            email_payload = {
+                                "email": user_email,
+                                "username": user_id,
+                                "event": event_name,
+                                "approved": False
+                            }
+                            email_response = requests.post("http://localhost:6420/send-opt-in-email", json=email_payload)
+                            if email_response.status_code != 200:
+                                return jsonify({"error": "Error sending denial email"}), 503
                         opt_in_requests[user_id].remove(event)
                     break
             else:
