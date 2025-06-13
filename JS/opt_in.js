@@ -213,7 +213,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         }
                     } catch (emailError) {
                         log('Error sending approval email:', emailError);
-                        return res.status(512).send('Error sending approval email');
+                        return res.status(512).send('Error in sending approval email function');
                     }
                 } else if (action === 'deny') {
                     try {
@@ -254,7 +254,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         }
                     } catch (emailError) {
                         log('Error sending denial email:', emailError);
-                        return res.status(512).send('Error sending denial email');
+                        return res.status(512).send('Error in sending denial email function');
                     }
                 } else if (action === 'remove') {
                     // Remove the opt-in request for this event
