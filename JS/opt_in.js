@@ -191,7 +191,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         event.status = 'approved';
                         log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                         log('userEmail:', userEmail);
-                        const emailRes = await fetch('http://localhost:6421/send-opt-in-email', {
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -225,7 +225,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         log('userEmail:', userEmail);
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         log(`Opt-in request for ${eventName} denied for user ${userId}`);
-                        const emailRes = await fetch('http://localhost:6421/send-opt-in-email', {
+                        const emailRes = await fetch('http://localhost:6420/send-opt-in-email', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
