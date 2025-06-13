@@ -333,74 +333,35 @@ app.post('/opt-in-again', (req, res) => {
     }
 });
 
-app.get('/approve-opt-out', (req, res) => {
-    const { token } = req.query;
-    if (!token) return res.status(400).send('Missing token');
+app.post(reqest-opt-out), (req, res) => {
+    const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
+    if (!userId) {
+        return res.status(401).send('User is not logged in');
+    }
+
+    const { eventName } = req.body;
+    if (!eventName) {
+        return res.status(400).send('Missing eventName');
+    }
 
     try {
-        const [username, eventName] = Buffer.from(token, 'base64').toString().split('|');
-        if (!username || !eventName) return res.status(400).send('Invalid token');
-
         const optInData = readOptInFile();
-        if (optInData[username]) {
-            const event = optInData[username].find(event => event.name.trim() === eventName.trim());
-            if (event) {
-                event.status = 'opted_out';
-                fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-                return res.send(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Opt-Out Approved</title>
-                    <link rel="stylesheet" href="/CSS/DarkStyle.css">
-                    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
-                    <style>
-                        body {
-                            background: #181818;
-                            color: #fff;
-                            font-family: Arial, sans-serif;
-                            min-height: 100vh;
-                            margin: 0;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        }
-                        .center-box {
-                            background: #232323;
-                            padding: 40px 60px;
-                            border-radius: 14px;
-                            box-shadow: 0 2px 16px #0008;
-                            text-align: center;
-                        }
-                        .center-box h2 {
-                            margin-top: 0;
-                            color: #90caf9;
-                        }
-                        .center-box b {
-                            color: #fff59d;
-                        }
-                        .center-box a {
-                            color: #90caf9;
-                            text-decoration: underline;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="center-box">
-                        <h2>Opt-Out Approved</h2>
-                        <p><b>${username}</b> has been opted out of <b>${eventName}</b>.</p>
-                        <p><a href="/MemberPage/MembersEventList.html">Return to your events page</a></p>
-                    </div>
-                </body>
-                </html>
-                `);
-            }
+        if (!optInData[userId]) {
+            optInData[userId] = [];
         }
-        res.status(404).send('Opt-in request not found');
-    } catch (err) {
-        res.status(400).send('Invalid token');
+        let event = optInData[userId].find(event => event.name.trim() === eventName.trim());
+        if (event) {
+            event.status = 'requested_opted_out';
+        } else {
+            optInData[userId].push({ name: eventName, status: 'requested_opted_out' });
+        }
+        fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+        res.send('Opt-out request saved successfully');
+    } catch (error) {
+        log('Error updating opt-out request:', error);
+        res.status(500).send('Internal server error');
     }
-});
+}   
 
 app.post('/clear-opt-in-requests', (req, res) => {
     try {
