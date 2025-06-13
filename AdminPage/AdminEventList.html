@@ -3,11 +3,13 @@
 
 <head>
     <title>WCSS Tech Admin Events</title>
+    <!-- Link to external CSS and favicon -->
     <link rel="stylesheet" href="/CSS/DarkStyle.css">
     <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Layout and styling for the admin event list page */
         body {
             margin: 0;
             padding: 0;
@@ -51,6 +53,7 @@
             background-color: green;
         }
 
+        /* Grid layout for event lists */
         #approve-opt-in-list,
         #approve-event-list,
         #manage-event-list {
@@ -61,6 +64,7 @@
             list-style: none;
         }
 
+        /* Styling for each event tile */
         #approve-opt-in-list li,
         #approve-event-list li,
         #manage-event-list li {
@@ -72,17 +76,20 @@
             word-break: break-word;
         }
     </style>
+    <!-- External JS for authentication and theme handling -->
     <script src="/JS/authClient.js" defer></script>
-    <script src="/JS/themeHandler.js" defer></script> <!-- Include the theme handler script -->
+    <script src="/JS/themeHandler.js" defer></script>
 </head>
 
 <body>
+    <!-- Theme switcher UI -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation -->
     <div class="sidebar">
         <a href="AdminPage.html">Admin Main</a>
         <a href="AdminEventList.html">Event Management</a>
@@ -94,18 +101,17 @@
     <!-- Persistent Add Event Button -->
     <button class="add-event-persistent-btn" onclick="window.location.href='AdminEventBooking.html'">Add Event</button>
 
-    <!-- Tab system -->
+    <!-- Tab system for switching between event management views -->
     <div class="tab-container">
         <!-- Tab buttons -->
         <div class="tab-buttons">
-            <!-- Removed Add Event tab -->
+            <!-- Each button switches to a different tab -->
             <button class="tab-button" data-tab="approve-event" style="flex: 1 1 auto; text-align: center;" >Approve Event</button>
             <button class="tab-button" data-tab="manage-event" style="flex: 1 1 auto; text-align: center;">Manage Events</button>
             <button class="tab-button" data-tab="approve-opt-in" style="flex: 1 1 auto; text-align: center;">Opt-in Requests</button>
         </div>
 
-        <!-- Tab content -->
-        <!-- Remove the add-event tab content -->
+        <!-- Tab content for each section -->
         <div id="approve-event" class="tab-content">
             <h2>Approve Event</h2>
             <ul id="approve-event-list"></ul>
@@ -121,7 +127,8 @@
     </div>
 
     <script>
-        // JavaScript for tab switching
+        // --- Tab Switching Logic ---
+        // Handles switching between tabs and updating the URL hash
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
 
@@ -139,6 +146,7 @@
         });
 
         // --- Approve Event Requests Logic ---
+        // Loads event requests for approval and displays them in the tab
         function loadApproveEventRequests() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/event-requests`)
@@ -147,6 +155,7 @@
                     const list = document.getElementById('approve-event-list');
                     list.innerHTML = '';
                     if (!requests.length) {
+                        // Show message if no requests
                         const msg = document.createElement('li');
                         msg.textContent = 'No event requests to display.';
                         msg.style.fontStyle = 'italic';
@@ -154,7 +163,7 @@
                         return;
                     }
 
-                    // Split into upcoming and past
+                    // Split requests into upcoming and past based on date
                     const now = new Date();
                     const upcoming = [];
                     const past = [];
@@ -176,7 +185,7 @@
                     upcoming.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
                     past.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
 
-                    // Helper to render a tile
+                    // Helper to render a tile for each event request
                     function renderEventTile(event) {
                         const li = document.createElement('li');
                         li.innerHTML = `
@@ -191,7 +200,7 @@
                         `;
                         li.style.marginBottom = '16px';
 
-                        // Approve
+                        // Approve button
                         const pushBtn = document.createElement('button');
                         pushBtn.textContent = 'Approve Event';
                         pushBtn.style.marginRight = '8px';
@@ -216,7 +225,7 @@
                             });
                         };
 
-                        // Edit
+                        // Edit button
                         const editBtn = document.createElement('button');
                         editBtn.textContent = 'Edit Event';
                         editBtn.style.marginRight = '8px';
@@ -225,7 +234,7 @@
                             window.location.href = `AdminEventEditor.html?requestId=${encodeURIComponent(event.id)}&isRequest=true`;
                         };
 
-                        // Deny
+                        // Deny button
                         const denyBtn = document.createElement('button');
                         denyBtn.textContent = 'Deny Event';
                         denyBtn.style.border = '1px solid black';
@@ -254,7 +263,7 @@
                     return li;
                 }
 
-                // Render upcoming
+                // Render upcoming event requests
                 upcoming.forEach(event => list.appendChild(renderEventTile(event)));
                 // Divider if there are past events
                 if (past.length) {
@@ -273,7 +282,8 @@
             });
         }
 
-        // Fetch and display all opt-in requests
+        // --- Opt-in Requests Logic ---
+        // Loads opt-in requests and displays them in the tab
         function loadOptInRequests() {
             const apiBase = window.location.origin;
             // First, fetch all events to get their dates
@@ -283,7 +293,6 @@
                     // Build a map: event name -> date
                     const eventDateMap = {};
                     events.forEach(ev => {
-                        // Normalize event name for matching
                         eventDateMap[ev.name] = ev.date;
                     });
 
@@ -304,6 +313,7 @@
                             });
 
                             if (!allRequests.length) {
+                                // Show message if no requests
                                 const msg = document.createElement('li');
                                 msg.textContent = 'No opt-in requests to display.';
                                 msg.style.fontStyle = 'italic';
@@ -330,7 +340,7 @@
                             upcoming.sort((a, b) => a._parsedDate - b._parsedDate);
                             past.sort((a, b) => a._parsedDate - b._parsedDate);
 
-                            // Helper to render a tile
+                            // Helper to render a tile for each opt-in request
                             function renderOptInTile(event) {
                                 const listItem = document.createElement('li');
                                 listItem.innerHTML = `
@@ -340,6 +350,7 @@
                                     ${event._eventDate ? `Date: ${event._eventDate}<br>` : ''}
                                 `;
                                 if (event.status === 'requested') {
+                                    // Approve and Deny buttons for requested status
                                     const approveButton = document.createElement('button');
                                     approveButton.textContent = 'Approve';
                                     approveButton.style.marginLeft = '10px';
@@ -358,6 +369,7 @@
                                     listItem.appendChild(approveButton);
                                     listItem.appendChild(denyButton);
                                 } else {
+                                    // Remove button for approved/denied status
                                     const removeButton = document.createElement('button');
                                     removeButton.textContent = 'Remove';
                                     removeButton.style.marginLeft = '10px';
@@ -371,7 +383,7 @@
                                 return listItem;
                             }
 
-                            // Render upcoming
+                            // Render upcoming opt-in requests
                             upcoming.forEach(event => requestList.appendChild(renderOptInTile(event)));
                             // Divider if there are past requests
                             if (past.length) {
@@ -390,7 +402,7 @@
                 .catch(error => console.error('Error fetching events for opt-in requests:', error));
         }
 
-        // Approve or deny an opt-in request
+        // Approve, deny, or remove an opt-in request
         function updateOptIn(userId, eventName, action) {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:6421/admin/update-opt-in`, {
@@ -441,6 +453,7 @@
     </script>
     <script>
         // --- Manage Events Tab ---
+        // Loads all events for management and displays them in the tab
         function loadManageEvents() {
             const apiBase = window.location.origin;
             fetch(`${apiBase}:5500/api/events`)
@@ -450,6 +463,7 @@
                     eventList.innerHTML = '';
 
                     if (!events.length) {
+                        // Show message if no events
                         const msg = document.createElement('li');
                         msg.textContent = 'No events to display.';
                         msg.style.fontStyle = 'italic';
@@ -476,7 +490,7 @@
                     upcoming.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
                     past.sort((a, b) => (a._eventDate || 0) - (b._eventDate || 0));
 
-                    // Helper to render a tile
+                    // Helper to render a tile for each event
                     function renderEventTile(event) {
                         const item = document.createElement('li');
                         item.innerHTML = `
@@ -532,7 +546,7 @@
                         return item;
                     }
 
-                    // Render upcoming
+                    // Render upcoming events
                     upcoming.forEach(event => eventList.appendChild(renderEventTile(event)));
                     // Divider if there are past events
                     if (past.length) {
@@ -552,7 +566,8 @@
         }
     </script>
     <script>
-        // Cleaned up DOMContentLoaded and tab logic
+        // --- DOMContentLoaded and Tab Initialization ---
+        // Handles tab activation and initial data loading
         document.addEventListener('DOMContentLoaded', () => {
             // Tab switching logic
             const tabButtons = document.querySelectorAll('.tab-button');

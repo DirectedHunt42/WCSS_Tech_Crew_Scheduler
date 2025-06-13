@@ -1,3 +1,4 @@
+// Get references to calendar DOM elements
 const calendarDates = document.querySelector('.calendar-dates');
 const monthYear = document.getElementById('month-year');
 
@@ -15,31 +16,35 @@ const dropbtn = document.querySelector('.dropbtn');
 const datesContent = document.querySelector('.dates-content');
 const buttonStyle = "padding: 4px 8px; border-radius: 5px; cursor: pointer;";
 
+// Track current displayed month and year
 let currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
 
+// Month names for display
 const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+// Helper to get a cookie value by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Update isLightMode to use getCookie
+// Check if the theme is light mode
 function isLightMode() {
     return getCookie('theme') === 'light';
 }
 
+// Render the calendar for a given month and year
 function renderCalendar(month, year) {
     calendarDates.innerHTML = ''; // Clear previous calendar
     monthYear.textContent = `${months[month]} ${year}`;
 
-    // Get the first day of the month
+    // Get the first day of the month (0=Sunday)
     const firstDay = new Date(year, month, 1).getDay();
 
     // Get the number of days in the month
@@ -92,14 +97,16 @@ function renderCalendar(month, year) {
     }
 }
 
-// Initial render
+// Initial render of the calendar
 renderCalendar(currentMonth, currentYear);
 
-// Make current date have a light blue border
+// Make current date have a light blue border (debugging)
 const currentDateDiv = document.querySelector(`[data-day="${currentYear}-${currentMonth + 1}-${currentDate.getDate()}"]`);
 console.log(currentDateDiv);
 
 // Event listeners for navigation buttons
+
+// Go to previous month
 prevMonthBtn.addEventListener('click', () => {
     currentMonth--;
     if (currentMonth < 0) {
@@ -107,9 +114,10 @@ prevMonthBtn.addEventListener('click', () => {
         currentYear--;
     }
     renderCalendar(currentMonth, currentYear);
-    API
+    API // (??) Possibly a leftover or typo
 });
 
+// Go to next month
 nextMonthBtn.addEventListener('click', () => {
     currentMonth++;
     if (currentMonth > 11) {
@@ -119,16 +127,19 @@ nextMonthBtn.addEventListener('click', () => {
     renderCalendar(currentMonth, currentYear);
 });
 
+// Go to previous year
 prevYearBtn.addEventListener('click', () => {
     currentYear--;
     renderCalendar(currentMonth, currentYear);
 });
 
+// Go to next year
 nextYearBtn.addEventListener('click', () => {
     currentYear++;
     renderCalendar(currentMonth, currentYear);
 });
 
+// Handle month selection from dropdown
 monthYearSelect.addEventListener('click', (event) => {
     const selectedMonth = event.target.dataset.month;
     if (selectedMonth) {
@@ -138,29 +149,32 @@ monthYearSelect.addEventListener('click', (event) => {
     }
 });
 
+// Toggle dropdown visibility
 dropbtn.addEventListener('click', () => {
     const isVisible = dropdownContent.style.display === 'block';
     dropdownContent.style.display = isVisible ? 'none' : 'block';
 });
 
+// Hide dropdown if clicking outside
 document.addEventListener('click', (event) => {
     if (!event.target.closest('.dropdown')) {
         dropdownContent.style.display = 'none';
     }
 });
 
+// Handle clicking on a calendar date
 calendarDates.addEventListener('click', async (event) => {
     const selectedDate = event.target.dataset.day;
     if (!selectedDate) return;
 
-    // Parse year, month, day for both branches
+    // Parse year, month, day from data attribute
     const [year, month, day] = selectedDate.split('-').map(Number);
 
-    // Convert to backend format: YYYY,MM,DD (no leading zeros)
+    // Format date for backend (YYYY-MM-DD)
     const backendDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     console.log('Selected date:', backendDate);
 
-    // Fetch events for the selected date from the new API
+    // Fetch events for the selected date from the API
     const apiBase = window.location.origin;
     const response = await fetch(`${apiBase}:5500/api/events-by-date?date=${backendDate}`, { credentials: 'include' });
     if (!response.ok) {
@@ -169,7 +183,7 @@ calendarDates.addEventListener('click', async (event) => {
     }
     const events = await response.json();
 
-    // Create and display the popup
+    // Create and display the popup with events
     if (events.length > 0) {
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
@@ -200,6 +214,7 @@ calendarDates.addEventListener('click', async (event) => {
             datesContent.style.display = 'none';
         });
     } else {
+        // If no events, show message and add event button
         const dayOfWeek = new Date(year, month - 1, day).toLocaleString('default', { weekday: 'long' });
         datesContent.innerHTML = `
             <div class="popup-header" style="display: grid; grid-template-columns: 1fr auto; align-items: center; position: relative; ">
@@ -227,14 +242,16 @@ calendarDates.addEventListener('click', async (event) => {
     datesContent.style.padding = '16px';
     datesContent.style.position = 'absolute';
 
+    // Position the popup near the clicked date cell
     const rect = event.target.getBoundingClientRect();
     const popupWidth = datesContent.offsetWidth;
     const popupHeight = datesContent.offsetHeight;
 
-    // Determine column and row indices
+    // Determine column and row indices in the calendar grid
     const columnIndex = Array.from(calendarDates.children).indexOf(event.target) % 7;
     const rowIndex = Math.floor(Array.from(calendarDates.children).indexOf(event.target) / 7);
 
+    // Adjust popup position to avoid overflow
     if (columnIndex >= 5) {
         datesContent.style.left = `${rect.left - popupWidth + rect.width + window.scrollX}px`;
     } else {
@@ -248,6 +265,7 @@ calendarDates.addEventListener('click', async (event) => {
     }
 });
 
+// Hide popup if clicking outside of it
 document.addEventListener('click', (event) => {
     if (datesContent.contains(event.target)) {
         return;

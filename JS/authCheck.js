@@ -1,3 +1,4 @@
+// Import required modules
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -5,18 +6,20 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
+// Enable CORS for all origins and allow credentials (cookies)
 app.use(cors({
     origin: true, // Allow requests from any origin
     credentials: true
 }));
 
+// Parse cookies and JSON bodies in requests
 app.use(cookieParser());
 app.use(express.json());
 
 // Serve static files from the LoginPage directory
 app.use(express.static(path.join(__dirname, '../LoginPage.html')));
 
-// login 
+// Handle login requests
 app.post('/login', (req, res) => {
     const { username, isAdmin } = req.body;
 
@@ -39,13 +42,15 @@ app.post('/login', (req, res) => {
             });
         }
 
+        // Respond with success message
         res.status(200).send({ message: 'Login successful' });
     } else {
+        // Respond with error if credentials are invalid
         res.status(400).send({ message: 'Invalid login credentials' });
     }
 });
 
-// logout 
+// Handle logout requests
 app.post('/logout', (req, res) => {
     // Clear cookies with the same attributes as when they were set
     res.clearCookie('loggedInUser', {
@@ -61,10 +66,11 @@ app.post('/logout', (req, res) => {
         path: '/' // Ensure the path matches the one used when setting the cookie
     });
 
+    // Respond with success message
     res.status(200).send({ message: 'Logout successful' });
 });
 
-// Start the server
+// Start the server on port 6422
 app.listen(6422, () => {
     console.log(`Server is running on port 6422`);
 });

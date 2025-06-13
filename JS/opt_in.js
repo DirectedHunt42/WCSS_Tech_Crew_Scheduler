@@ -1,44 +1,50 @@
+// Import required modules
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
-const fetch = require('node-fetch'); // Add this at the top
+const fetch = require('node-fetch'); // For making HTTP requests
 
 const app = express();
+
+// Enable CORS with specific settings
 app.use(cors({
-    origin: true, // Allow requests from any origin
-    credentials: true, // Allow cookies to be sent with requests
-    methods: ['GET', 'POST', 'OPTIONS'], // Allow specific HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Parse JSON bodies and cookies
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// Path to the opt-in requests JSON file
 const optInFile = path.join(__dirname, '../Resources/optInRequests.json');
 
-// Function to safely read and parse the JSON file
+// Function to safely read and parse the opt-in JSON file
 function readOptInFile() {
     try {
         const fileContent = fs.readFileSync(optInFile, 'utf-8');
-        return fileContent ? JSON.parse(fileContent) : {}; // Return an empty object if the file is empty
+        return fileContent ? JSON.parse(fileContent) : {};
     } catch (error) {
         log('Error reading opt-in file:', error);
-        return 503; // Return a 503 status code if there's an error
+        return 503;
     }
 }
 
-// Ensure the opt-in file exists
+// Ensure the opt-in file exists, create if not
 if (!fs.existsSync(optInFile)) {
     try {
-        fs.writeFileSync(optInFile, JSON.stringify({})); // Create an empty JSON object
+        fs.writeFileSync(optInFile, JSON.stringify({}));
     } catch (error) {
         log('Error creating opt-in file:', error);
     }
 }
 
-// Endpoint to handle opt-in requests
+// Endpoint: User submits an opt-in request for an event
 app.post('/opt-in', (req, res) => {
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
@@ -46,7 +52,6 @@ app.post('/opt-in', (req, res) => {
     }
 
     const { eventName } = req.body;
-
     if (!eventName) {
         return res.status(400).send('Missing eventName');
     }
@@ -58,6 +63,7 @@ app.post('/opt-in', (req, res) => {
             optInData[userId] = [];
         }
 
+        // Only add if not already opted in
         const existingOptIn = optInData[userId].find(event => event.name.trim() === eventName.trim());
         if (!existingOptIn) {
             optInData[userId].push({ name: eventName, status: 'requested' });
@@ -71,9 +77,8 @@ app.post('/opt-in', (req, res) => {
     }
 });
 
-// Endpoint to get opt-in state for a user
+// Endpoint: Get opt-in state for the logged-in user
 app.get('/opt-in-state', (req, res) => {
-
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
         return res.status(401).send('User is not logged in');
@@ -88,9 +93,8 @@ app.get('/opt-in-state', (req, res) => {
     }
 });
 
-// Endpoint to get opt-in status
+// Endpoint: Get opt-in status for the logged-in user (duplicate of above)
 app.get('/opt-in-status', (req, res) => {
-
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
         return res.status(401).send('User is not logged in');
@@ -105,6 +109,7 @@ app.get('/opt-in-status', (req, res) => {
     }
 });
 
+// Endpoint: Admin approves a user's opt-in request
 app.post('/approve-opt-in', (req, res) => {
     const { userId, eventName } = req.body;
     if (!userId || !eventName) {
@@ -118,7 +123,6 @@ app.post('/approve-opt-in', (req, res) => {
         if (event) {
             event.status = 'approved';
             fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-
             return res.send('Opt-in approved successfully');
         }
     }
@@ -126,6 +130,7 @@ app.post('/approve-opt-in', (req, res) => {
     res.status(404).send('Opt-in request not found');
 });
 
+// Endpoint: User cancels their opt-in request for an event
 app.post('/cancel-opt-in', (req, res) => {
     let userId = `${req.cookies?.loggedInUser || ''} ${req.cookies?.loggedInAdmin || ''}`.trim();
     if (!userId) {
@@ -148,18 +153,18 @@ app.post('/cancel-opt-in', (req, res) => {
     res.status(404).send('Opt-in request not found');
 });
 
-// Endpoint to fetch all opt-in requests for admin
+// Endpoint: Admin fetches all opt-in requests
 app.get('/admin/opt-in-requests', (req, res) => {
     try {
         const optInData = readOptInFile();
-        res.json(optInData); // Send all opt-in requests to the admin
+        res.json(optInData);
     } catch (error) {
         log('Error reading opt-in file:', error);
         res.status(500).send('Internal server error');
     }
 });
 
-// Endpoint to approve or deny opt-in requests
+// Endpoint: Admin approves, denies, or removes an opt-in request
 app.post('/admin/update-opt-in', async (req, res) => {
     const { userId, eventName, action } = req.body;
     if (!userId || !eventName || !action) {
@@ -177,7 +182,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
             if (event || action === 'remove') {
                 if (action === 'approve') {
                     try {
-                        // Use hardcoded base URLs for backend services
+                        // Fetch user email from another service
                         const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
                         const userEmailData = await userEmailRes.json();
                         const userEmail = userEmailData.email;
@@ -191,6 +196,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         event.status = 'approved';
                         log(`Approving opt-in for user: ${userId}, event: ${eventName}`);
                         log('userEmail:', userEmail);
+                        // Send approval email
                         const emailRes = await fetch('http://localhost:6421/send-opt-in-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -212,7 +218,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     }
                 } else if (action === 'deny') {
                     try {
-                        // Use hardcoded base URLs for backend services
+                        // Fetch user email from another service
                         const userEmailRes = await fetch('http://localhost:5500/get-user-email?userId=' + encodeURIComponent(userId));
                         const userEmailData = await userEmailRes.json();
                         const userEmail = userEmailData.email;
@@ -223,8 +229,10 @@ app.post('/admin/update-opt-in', async (req, res) => {
                         log('userId:', userId);
                         log('eventName:', eventName);
                         log('userEmail:', userEmail);
+                        // Remove the denied event
                         optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
                         log(`Opt-in request for ${eventName} denied for user ${userId}`);
+                        // Send denial email
                         const emailRes = await fetch('http://localhost:6421/send-opt-in-email', {
                             method: 'POST',
                             headers: {
@@ -265,13 +273,14 @@ app.post('/admin/update-opt-in', async (req, res) => {
     }
 });
 
+// Endpoint: Remove an event and all related opt-in requests
 app.post('/remove_event', (req, res) => {
     const { id } = req.body;
     if (!id) {
         return res.status(400).send('Missing event id');
     }
 
-    // Remove the event from the event list
+    // Remove the event from the event list file
     const eventListPath = path.join(__dirname, '../Resources/eventList.txt');
     let eventName = null;
     try {
@@ -298,7 +307,6 @@ app.post('/remove_event', (req, res) => {
         let changed = false;
         for (const userId in optInData) {
             const before = optInData[userId].length;
-            // Trim both event.name and eventName for comparison
             optInData[userId] = optInData[userId].filter(event => event.name.trim() !== eventName.trim());
             if (optInData[userId].length !== before) changed = true;
         }
@@ -313,6 +321,7 @@ app.post('/remove_event', (req, res) => {
     res.send('Event and related opt-in requests removed successfully');
 });
 
+// Endpoint: User opts in again for an event (sets status back to requested)
 app.post('/opt-in-again', (req, res) => {
     const userId = `${req.cookies.loggedInUser || ''} ${req.cookies.loggedInAdmin || ''}`.trim();
     if (!userId) {
@@ -343,11 +352,13 @@ app.post('/opt-in-again', (req, res) => {
     }
 });
 
+// Endpoint: Approve opt-out via a token (used for email links)
 app.get('/approve-opt-out', (req, res) => {
     const { token } = req.query;
     if (!token) return res.status(400).send('Missing token');
 
     try {
+        // Decode token to get username and event name
         const [username, eventName] = Buffer.from(token, 'base64').toString().split('|');
         if (!username || !eventName) return res.status(400).send('Invalid token');
 
@@ -357,6 +368,7 @@ app.get('/approve-opt-out', (req, res) => {
             if (event) {
                 event.status = 'opted_out';
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+                // Return a confirmation HTML page
                 return res.send(`
                 <!DOCTYPE html>
                 <html>
@@ -412,6 +424,7 @@ app.get('/approve-opt-out', (req, res) => {
     }
 });
 
+// Endpoint: Clear all opt-in requests (admin)
 app.post('/clear-opt-in-requests', (req, res) => {
     try {
         fs.writeFileSync(optInFile, JSON.stringify({}, null, 2));
@@ -422,6 +435,7 @@ app.post('/clear-opt-in-requests', (req, res) => {
     }
 });
 
+// Simple in-memory log buffer for debugging
 const logBuffer = [];
 function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}`;
@@ -430,12 +444,12 @@ function log(msg) {
     console.log(line);
 }
 
-// Endpoint to get logs
+// Endpoint: Get server logs
 app.get('/log', (req, res) => {
     res.type('text/plain').send(logBuffer.join('\n'));
 });
 
-// Start the server
+// Start the server on port 6421
 app.listen(6421, '0.0.0.0', () => {
     log('Server is running on port 6421');
 });
