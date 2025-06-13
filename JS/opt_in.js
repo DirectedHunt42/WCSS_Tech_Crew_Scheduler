@@ -232,14 +232,14 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     // Approve the opt-out request for this event
                     const event = optInData[userId].find(e => e.name === eventName);
                     if (event) {
-                        event.status = 'approved_opted_out';
+                        event.status = null;
                         log(`Opt-out request for ${eventName} approved for user ${userId}`);
                     }
                 } else if (action === 'deny_opt_out') {
                     // Deny the opt-out request for this event
                     const event = optInData[userId].find(e => e.name === eventName);
                     if (event) {
-                        event.status = 'requested';
+                        event.status = 'approved';
                         log(`Opt-out request for ${eventName} denied for user ${userId}`);
                     }
                 }
