@@ -132,11 +132,13 @@
                     endpoint = '/request-opt-out';
                     successMsg = 'Opt-out request sent successfully!';
                     failMsg = 'Failed to send opt-out request: ';
-                    nextLabel = 'Opt-in Again';
+                    nextLabel = 'Opt-out Pending';
                     revertLabel = 'Request Opt-out';
                 }
 
                 try {
+                    button.textContent = 'Processing...';
+                    button.disabled = true;
                     const apiBase = window.location.origin;
                     const response = await fetch(`${apiBase}:6421${endpoint}`, {
                         method: 'POST',
