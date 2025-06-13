@@ -213,7 +213,7 @@ function log(msg) {
     const line = `[${new Date().toISOString()}] ${msg}`;
     logBuffer.push(line);
     if (logBuffer.length > 200) logBuffer.shift();
-    log.log(line);
+    console.log(line);
 }
 
 app.get('/log', (req, res) => {
