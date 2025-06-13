@@ -230,13 +230,9 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     return res.status(200).send('Opt-in removed successfully');
                 } else if (action === 'approve_opt_out') {
                     // Approve the opt-out request for this event
-                    const eventIndex = optInData[userId].findIndex(e => e.name === eventName);
-                    if (eventIndex !== -1) {
-                        // Remove the opt-in from the list if opt-out is approved
-                        optInData[userId] = optInData[userId].splice(eventIndex, 1);
-                        fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
-                        log(`Opt-out request for ${eventName} approved and opt-in removed for user ${userId}`);
-                    }
+                    optInData[userId] = optInData[userId].filter(e => e.name !== eventName);
+                    fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
+                    log(`Opt-out request for ${eventName} approved and opt-in removed for user ${userId}`);
                 } else if (action === 'deny_opt_out') {
                     // Deny the opt-out request for this event
                     if (!event) {
