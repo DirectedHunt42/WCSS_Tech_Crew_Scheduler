@@ -1,17 +1,19 @@
-// Import importd modules
-const express = import('express');
-const cors = import('cors');
-const bodyParser = import('body-parser');
-const cookieParser = import('cookie-parser');
-const fs = import('fs');
-const path = import('path');
-const fetch = import('node-fetch'); // For making HTTP requests
+// Import required modules
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const fs = require('fs');
+const path = require('path');
+const fetch = require('node-fetch'); // For making HTTP requests
 
 const app = express();
 
 // Enable CORS with specific settings
 app.use(cors({
-    origin: true,
+    origin: [
+        'http://10.191.28.44:5500'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
