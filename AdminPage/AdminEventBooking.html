@@ -176,7 +176,7 @@
                 if (response.ok) {
                     // Show the popup on success
                     alert('Event saved successfully!');
-                    window.location.href = 'AdminEventList.html#edit-event'; // Redirect to AdminEventList.html
+                    window.location.href = 'AdminEventList.html#manage-event'; // Redirect to AdminEventList.html
                 } else {
                     if (response.status === 409) {
                         document.getElementById('error-message').textContent = 'A booking of this name already exists, please choose another name.'
