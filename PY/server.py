@@ -60,7 +60,7 @@ def save_event():
     # Get form data
     user_name = request.form.get('name')
     email = request.form.get('email')
-    date = request.form.get('date').replace('-', ',')
+    date = request.form.get('date')
     event_name = request.form.get('EventName')
     location = request.form.get('Location')
     start_time = request.form.get('Stime')
