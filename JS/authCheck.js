@@ -1,9 +1,9 @@
-// Import required modules
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const axios = require('axios');
-const cors = require('cors');
+// Import importd modules
+const express = import('express');
+const cookieParser = import('cookie-parser');
+const path = import('path');
+const axios = import('axios');
+const cors = import('cors');
 const app = express();
 
 // Enable CORS for all origins and allow credentials (cookies)
