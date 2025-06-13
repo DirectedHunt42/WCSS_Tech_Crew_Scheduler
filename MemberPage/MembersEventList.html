@@ -8,6 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Layout and styling for the page and event list */
         body {
             margin: 0;
             padding: 0;
@@ -45,6 +46,7 @@
             width: 250px;
         }
 
+        /* Opt-out mode button styling */
         #opt-out-mode-btn {
             position: fixed;
             bottom: 35px;
@@ -64,6 +66,7 @@
             background: #d32f2f;
         }
 
+        /* Highlight for opt-out candidate events */
         .opt-out-candidate {
             outline: 3px solid #d32f2f !important;
             cursor: pointer !important;
@@ -74,12 +77,14 @@
 </head>
 
 <body>
+    <!-- Theme switcher toggle -->
     <div id="theme-switcher">
         <label class="switch">
             <input type="checkbox" id="theme-toggle">
             <span class="slider"></span>
         </label>
     </div>
+    <!-- Sidebar navigation -->
     <div class="sidebar">
         <a href="membersPage.html">Calendar</a>
         <a href="AnnouncementsPage.html">Announcements</a>
@@ -91,6 +96,7 @@
     <div class="content">
         <h1>Upcoming Events</h1>
         <script>
+            // Fetch the user's opt-in status for events
             async function fetchOptInStatus() {
                 try {
                     const apiBase = window.location.protocol + "//" + window.location.hostname;
@@ -109,6 +115,7 @@
                 }
             }
 
+            // Handle opt-in/opt-out/cancel/again button logic
             async function toggleOptIn(eventName, button) {
                 let endpoint = '/opt-in';
                 let successMsg = 'Opt-in request sent successfully!';
@@ -116,6 +123,7 @@
                 let nextLabel = 'Cancel Request';
                 let revertLabel = 'Opt into event';
 
+                // Determine which endpoint and messages to use based on button label
                 if (button.textContent === 'Cancel Request') {
                     endpoint = '/cancel-opt-in';
                     successMsg = 'Opt-in request canceled successfully!';
@@ -155,6 +163,8 @@
                     alert(failMsg + 'Please try again.');
                 }
             }
+
+            // Fetch and render the event list (first rendering, not used for opt-out mode)
             apiBase = window.location.protocol + "//" + window.location.hostname;
 
             fetch(`${apiBase}:5500/api/events`)
@@ -183,6 +193,7 @@
                         listItem.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
                         listItem.style.transition = 'background 0.2s';
 
+                        // Event details
                         listItem.innerHTML = `
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-size: large; font-weight: bold;"><strong></strong> ${event.name}</p>
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Date:</strong> ${event.date}</p>
@@ -193,14 +204,13 @@
                             <p style="margin: 0; overflow-wrap: anywhere; word-break: break-word; font-weight: bold;"><strong>Volunteer Hours:</strong> ${event.volunteerHours}</p>
                         `;
 
-                        // Create the opt-in button
+                        // Create the opt-in button and set its label/status
                         const optInButton = document.createElement('button');
                         optInButton.style.marginTop = '5px';
                         optInButton.style.marginBottom = '10px';
                         optInButton.style.border = '1px solid black';
 
                         const userEvent = optInStatus.find(e => e.name === event.name);
-
 
                         if (userEvent) {
                             if (userEvent.status === 'requested') {
@@ -215,8 +225,8 @@
                             optInButton.textContent = 'Opt into event';
                         }
 
+                        // Button click handler
                         optInButton.addEventListener('click', async () => {
-
                             optInButton.disabled = true; // Prevent multiple clicks
                             await toggleOptIn(event.name, optInButton);
                         });
@@ -231,11 +241,13 @@
                 .catch(error => console.error('Error fetching events:', error));
         </script>
     </div>
+    <!-- Button to enable opt-out mode -->
     <button id="opt-out-mode-btn" title="Opt out of an approved event">Opt Out of Event</button>
 
     <script>
-        let optOutMode = false;
+        let optOutMode = false; // Tracks if opt-out mode is active
 
+        // Enable opt-out mode: highlight approved events and add click handlers
         function enableOptOutMode(optInStatus) {
             optOutMode = true;
             document.getElementById('opt-out-mode-btn').classList.add('opt-out-active');
@@ -302,6 +314,7 @@
             });
         }
 
+        // Disable opt-out mode: remove highlights and handlers
         function disableOptOutMode() {
             optOutMode = false;
             document.getElementById('opt-out-mode-btn').classList.remove('opt-out-active');
@@ -315,6 +328,7 @@
             });
         }
 
+        // Toggle opt-out mode on button click
         document.getElementById('opt-out-mode-btn').addEventListener('click', async function () {
             if (optOutMode) {
                 disableOptOutMode();
@@ -325,7 +339,10 @@
             }
         });
 
+        // Render event list with support for opt-out mode and past/upcoming split
         apiBase = window.location.origin;
+        // Used to track event list items for opt-out mode
+        var eventListItems = [];
         fetch(`${apiBase}:5500/api/events`)
             .then(response => response.json())
             .then(async events => {
@@ -336,7 +353,7 @@
                 const oldList = document.getElementById('member-event-list');
                 if (oldList) oldList.remove();
 
-                // Split into upcoming and past
+                // Split into upcoming and past events
                 const now = new Date();
                 const upcoming = [];
                 const past = [];
@@ -362,7 +379,7 @@
                 eventList.style.padding = '0';
                 eventList.style.marginLeft = '20px';
 
-                // Helper to render a tile
+                // Helper to render a tile for each event
                 function renderEventTile(event) {
                     const listItem = document.createElement('li');
                     listItem.style.border = '1px solid #333';
@@ -373,6 +390,7 @@
                     listItem.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
                     listItem.style.transition = 'background 0.2s';
 
+                    // Event details
                     listItem.innerHTML = `
                         <strong>${event.name}</strong><br>
                         <span><strong>Date:</strong> ${event.date}</span><br>
@@ -383,7 +401,7 @@
                         <span><strong>Volunteer Hours:</strong> ${event.volunteerHours || event.volunteer_hours || ''}</span><br>
                     `;
 
-                    // Create the opt-in button
+                    // Create the opt-in button and set its label/status
                     const optInButton = document.createElement('button');
                     optInButton.style.marginTop = '5px';
                     optInButton.style.marginBottom = '10px';
@@ -406,8 +424,8 @@
                         optInButton.textContent = 'Opt into event';
                     }
 
+                    // Button click handler
                     optInButton.addEventListener('click', async () => {
-
                         optInButton.disabled = true; // Prevent multiple clicks
                         await toggleOptIn(event.name, optInButton);
                     });
@@ -415,14 +433,14 @@
                     listItem.appendChild(document.createElement('br'));
                     listItem.appendChild(optInButton);
 
-                    // For opt-out mode support
+                    // For opt-out mode support, track the list item and event
                     if (typeof eventListItems !== 'undefined') {
                         eventListItems.push({ li: listItem, event });
                     }
                     return listItem;
                 }
 
-                // Render upcoming
+                // Render upcoming events
                 upcoming.forEach(event => eventList.appendChild(renderEventTile(event)));
                 // Divider if there are past events
                 if (past.length) {
@@ -440,6 +458,7 @@
         .catch(error => console.error('Error fetching events:', error));
     </script>
 </body>
+<!-- Auth and theme scripts -->
 <script src="/JS/authClient.js"></script>
 <script src="/JS/themeHandler.js"></script>
 </html>
