@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WCSS Tech Booking Help</title>
+    <!-- Link to external CSS for dark theme styling -->
+    <link rel="stylesheet" href="/CSS/DarkStyle.css">
+    <!-- Favicon for the website -->
+    <link rel="icon" type="image/x-icon" href="/FavIcon.ico">
+    <style>
+        /* Flex layout for the body */
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main content styling */
+        .how-to-use {
+            width: 90%;
+            max-width: 800px;
+            margin-left: 300px;
+            text-align: left;
+            font-size: 1.5em;
+        }
+
+        /* Info box for admin/member details */
+        .admin-member-info {
+            margin-top: 2em;
+            background: #222;
+            border-radius: 8px;
+            padding: 1.5em;
+            font-size: 1em;
+        }
+
+        .admin-member-info h3 {
+            margin-top: 0;
+        }
+    </style>
+    <!-- Authentication and theme scripts -->
+    <script src="/JS/authClient.js"></script>
+    <script src="/JS/themeHandler.js" defer></script>
+</head>
+
+<body>
+    <!-- Theme switcher toggle -->
+    <div id="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <!-- Sidebar navigation links -->
+    <div class="sidebar">
+        <a href="UserPage.html">Main Page</a>
+        <a href="BookingPage.html">Book a Tech Event</a>
+        <a href="/LoginPage/LogInPage.html">Member Login</a>
+        <a href="https://internal.westcarletonss.ca/">WCSS Internal</a>
+        <a href="https://westcarletonss.ocdsb.ca/">WCSS External</a>
+        <a href="HelpPage.html">Help</a>
+    </div>
+
+    <!-- Main Content: Help instructions -->
+    <div class="how-to-use">
+        <h2>How to Use This Website</h2>
+        <p>Welcome to the WCSS Tech Booking Site! This page will help you book an event and understand what happens after you submit your request.</p>
+        <ol>
+            <li>
+                <!-- Step 1: Navigation to booking -->
+                Go to <a href="BookingPage.html">Book a Tech Event</a> in the sidebar, or click on the day of your event on the <a href="UserPage.html">Calendar</a> and use the "Book an event" button.
+            </li>
+            <li>
+                <!-- Step 2: Fill out booking form -->
+                On the booking page, fill out the required fields:
+                <ul>
+                    <li><strong>Event Name:</strong> Enter the name of your event.</li>
+                    <li><strong>Email Address:</strong> Provide a valid email address for communication.</li>
+                    <li><strong>Booking Date:</strong> Select the date of your event using the date picker.</li>
+                    <li><strong>Start Time:</strong> Enter the starting time for your event.</li>
+                    <li><strong>End Time:</strong> Enter the time your event will end.</li>
+                    <li><strong>Location:</strong> Enter the location of the event (e.g. "Small Gym", "Room 225").</li>
+                    <li><strong>Types of People Needed:</strong> List the tech roles you need (e.g. "Sound", "Lights").</li>
+                    <li><strong>Volunteer Hours:</strong> This will be auto-filled based on your times, but you can edit it if your event is during school hours.</li>
+                </ul>
+            </li>
+            <li>
+                <!-- Step 3: Submit booking -->
+                Once all fields are completed, click the <strong>Submit Booking</strong> button to send your request.
+            </li>
+            <li>
+                <!-- Step 4: Email notification -->
+                You will receive an email once your request has been approved or denied by an admin.
+            </li>
+            <li>
+                <!-- Step 5: Return to main page -->
+                If you need to return to the main page, click the <strong>Back to Main Page</strong> button.
+            </li>
+        </ol>
+        <p>If you encounter any issues, please contact the WCSS Tech Crew for assistance.</p>
+
+        <!-- Admin/member process information -->
+        <div class="admin-member-info">
+            <h3>What Happens After You Submit?</h3>
+            <ul>
+                <li>
+                    <strong>Admin Review:</strong> Your booking request is sent to the Tech Crew admins for approval. They check for conflicts and ensure your event can be supported.
+                </li>
+                <li>
+                    <strong>Member Sign-Ups:</strong> Once approved, Tech Crew members can see your event and "opt in" to help. Members choose which events and roles they want to support.
+                </li>
+                <li>
+                    <strong>Communication:</strong> If more information is needed, admins may contact you using the email you provided.
+                </li>
+                <li>
+                    <strong>Volunteer Assignment:</strong> The Tech Crew team will assign members to your event based on the roles you requested.
+                </li>
+                <li>
+                    <strong>Event Status:</strong> You will be notified by email when your event is approved, and again if there are any changes or if your request is denied.
+                </li>
+            </ul>
+            <h3>Other Notes</h3>
+            <ul>
+                <li>
+                    <strong>Editing or Cancelling:</strong> If you need to change or cancel your booking after submitting, please contact the Tech Crew directly.
+                </li>
+                <li>
+                    <strong>Tech Crew Members:</strong> Only approved members can see the full event list and sign up for events. As a non-member, you only need to use the booking form and check your email for updates.
+                </li>
+                <li>
+                    <strong>Need Help?</strong> If you're unsure about any step, don't hesitate to reach out to the Tech Crew for guidance.
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
