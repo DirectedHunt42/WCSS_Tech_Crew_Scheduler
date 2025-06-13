@@ -206,7 +206,7 @@ app.post('/admin/update-opt-in', async (req, res) => {
 
         if (optInData[userId]) {
             const event = optInData[userId].find(event => event.name === eventName);
-            if (event || action === 'remove') {
+            if (event || action === 'remove' || action === 'approve_opt_out' || action === 'deny_opt_out') {
                 if (action === 'approve') {
                     // Approve the opt-in request for this event
                     if (!event) {
@@ -233,16 +233,18 @@ app.post('/admin/update-opt-in', async (req, res) => {
                     const eventIndex = optInData[userId].findIndex(e => e.name === eventName);
                     if (eventIndex !== -1) {
                         // Remove the opt-in from the list if opt-out is approved
-                        optInData[userId].splice(eventIndex, 1);
+                        optInData[userId] = optInData[userId].splice(eventIndex, 1);
+                        fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
                         log(`Opt-out request for ${eventName} approved and opt-in removed for user ${userId}`);
                     }
                 } else if (action === 'deny_opt_out') {
                     // Deny the opt-out request for this event
-                    const event = optInData[userId].find(e => e.name === eventName);
-                    if (event) {
+                    if (!event) {
+                        optInData[userId].push({ name: eventName, status: 'approved' });
+                    } else {
                         event.status = 'approved';
-                        log(`Opt-out request for ${eventName} denied for user ${userId}`);
                     }
+                    log(`Opt-out request for ${eventName} denied for user ${userId}`);
                 }
                 fs.writeFileSync(optInFile, JSON.stringify(optInData, null, 2));
                 return res.status(200).send(`Opt-in ${event && event.status ? event.status : action} successfully`);
