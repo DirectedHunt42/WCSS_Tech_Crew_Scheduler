@@ -17,6 +17,7 @@ Authors
 
 Releases
 
+    2.0.0
     hotfix 1.0.1
     1.0.0
     beta 0.3.0
